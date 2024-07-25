@@ -40,6 +40,6 @@ public class AuthArgumentResolver implements HandlerMethodArgumentResolver {
         if (StringUtils.hasText(bearerToken) && bearerToken.startsWith("Bearer ")) {
            return bearerToken.substring(7);
         }
-        throw new UnAuthorizationException("인증 없이 로그인 할 수 없습니다.");
+        throw new UnAuthorizationException("로그인 없이 접근 할 수 없습니다.");
     }
 }
