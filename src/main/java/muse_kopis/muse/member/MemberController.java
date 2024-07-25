@@ -17,7 +17,7 @@ public class MemberController {
     private final JwtService jwtService;
 
     @PostMapping
-    public ResponseEntity<String> signUpMember(@RequestBody SignUpRequest signUpRequest) {
+    public ResponseEntity<String> signUp(@RequestBody SignUpRequest signUpRequest) {
         String memberId = memberService.signUp(
                 signUpRequest.memberId(),
                 signUpRequest.password(),

@@ -1,8 +1,7 @@
 package muse_kopis.muse.member;
 
-import java.util.Optional;
 import lombok.RequiredArgsConstructor;
-import muse_kopis.muse.common.ConfilctException;
+import muse_kopis.muse.common.ConflictException;
 import muse_kopis.muse.common.UnAuthorizationException;
 import org.springframework.stereotype.Service;
 
@@ -18,7 +17,7 @@ public class MemberService {
             String name
     ) {
         memberRepository.findByMemberId(memberId).ifPresent(it -> {
-                    throw new ConfilctException("이미 존재하는 회원입니다.");
+                    throw new ConflictException("이미 존재하는 회원입니다.");
         });
 
         memberRepository.save(
