@@ -9,25 +9,35 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import muse_kopis.muse.auth.PasswordEncoder;
 import muse_kopis.muse.common.UnAuthorizationException;
 
 @Entity
-@Builder
 @Getter
 @NoArgsConstructor
-@AllArgsConstructor
 public class Member {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    private String memberId;
+    private String username;
     private String password;
     private String name;
 
-    public void login(String password) {
-        if (this.password.equals(password)) {
-            return;
+    public Member(String username, String password, String name) {
+        this.username = username;
+        this.password = password;
+        this.name = name;
+    }
+
+    public Long login(String password) {
+        if (PasswordEncoder.checkPassword(password, this.password)) {
+            return id;
         }
         throw new UnAuthorizationException("비밀번호가 일치하지 않습니다.");
+    }
+
+    public void signUp(MemberValidator validator) {
+        validator.validateSignUp(this.username);
     }
 }

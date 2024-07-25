@@ -1,8 +1,7 @@
 package muse_kopis.muse.member;
 
 import lombok.RequiredArgsConstructor;
-import muse_kopis.muse.common.ConflictException;
-import muse_kopis.muse.common.UnAuthorizationException;
+import muse_kopis.muse.auth.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -11,28 +10,20 @@ public class MemberService {
 
     private final MemberRepository memberRepository;
 
-    public String signUp(
-            String memberId,
+    public Long signUp(
+            String username,
             String password,
             String name
     ) {
-        memberRepository.findByMemberId(memberId).ifPresent(it -> {
-                    throw new ConflictException("이미 존재하는 회원입니다.");
-        });
-
-        memberRepository.save(
-                Member.builder()
-                        .memberId(memberId)
-                        .password(password)
-                        .name(name)
-                .build());
-        return memberId;
+        MemberValidator memberValidator = new MemberValidator(memberRepository);
+        String encodedPassword = PasswordEncoder.hashPassword(password);
+        Member member = new Member(username, encodedPassword, name);
+        member.signUp(memberValidator);
+        return memberRepository.save(member).getId();
     }
 
-    public String login(String memberId, String password) {
-        Member member = memberRepository.findByMemberId(memberId)
-                .orElseThrow(() -> new UnAuthorizationException("존재하지 않는 회원입니다."));
-        member.login(password);
-        return member.getMemberId();
+    public Long login(String username, String password) {
+        Member member = memberRepository.getByUsername(username);
+        return member.login(password);
     }
 }

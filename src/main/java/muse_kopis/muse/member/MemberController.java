@@ -17,19 +17,20 @@ public class MemberController {
     private final JwtService jwtService;
 
     @PostMapping
-    public ResponseEntity<String> signUp(@RequestBody SignUpRequest signUpRequest) {
-        String memberId = memberService.signUp(
-                signUpRequest.memberId(),
+    public ResponseEntity<Long> signUp(@RequestBody SignUpRequest signUpRequest) {
+
+        Long id = memberService.signUp(
+                signUpRequest.username(),
                 signUpRequest.password(),
                 signUpRequest.name()
         );
-        return ResponseEntity.ok().body(memberId);
+        return ResponseEntity.ok().body(id);
     }
 
     @PostMapping("/login")
     public ResponseEntity<LoginResponse> login(@RequestBody LoginRequest loginRequest) {
-        String memberId = memberService.login(loginRequest.memberId(), loginRequest.password());
-        String token = jwtService.createToken(memberId);
+        Long id = memberService.login(loginRequest.username(), loginRequest.password());
+        String token = jwtService.createToken(id);
         return ResponseEntity.ok().body(new LoginResponse(token));
     }
 }

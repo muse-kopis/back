@@ -3,6 +3,7 @@ package muse_kopis.muse.auth;
 import lombok.RequiredArgsConstructor;
 import muse_kopis.muse.auth.jwt.JwtService;
 import muse_kopis.muse.common.UnAuthorizationException;
+import muse_kopis.muse.member.Member;
 import org.springframework.core.MethodParameter;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
@@ -20,8 +21,8 @@ public class AuthArgumentResolver implements HandlerMethodArgumentResolver {
     @Override
     public boolean supportsParameter(MethodParameter parameter) {
         boolean hasAuth = parameter.hasParameterAnnotation(Auth.class);
-        boolean equals = parameter.getParameterType().equals(String.class);
-        return hasAuth && equals;
+        boolean authType = parameter.getParameterType().equals(Long.class);
+        return hasAuth && authType;
     }
 
     @Override
