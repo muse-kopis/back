@@ -31,7 +31,8 @@ public class Member {
     }
 
     public Long login(String password) {
-        if (PasswordEncoder.checkPassword(password, this.password)) {
+        PasswordEncoder passwordEncoder = new PasswordEncoder();
+        if (passwordEncoder.checkPassword(password, this.password)) {
             return id;
         }
         throw new UnAuthorizationException("비밀번호가 일치하지 않습니다.");

@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 public class MemberService {
 
     private final MemberRepository memberRepository;
+    private final PasswordEncoder passwordEncoder;
 
     public Long signUp(
             String username,
@@ -16,7 +17,7 @@ public class MemberService {
             String name
     ) {
         MemberValidator memberValidator = new MemberValidator(memberRepository);
-        String encodedPassword = PasswordEncoder.hashPassword(password);
+        String encodedPassword = passwordEncoder.hashPassword(password);
         Member member = new Member(username, encodedPassword, name);
         member.signUp(memberValidator);
         return memberRepository.save(member).getId();

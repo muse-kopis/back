@@ -2,6 +2,9 @@ package muse_kopis.muse.member;
 
 import lombok.RequiredArgsConstructor;
 import muse_kopis.muse.auth.jwt.JwtService;
+import muse_kopis.muse.member.dto.LoginRequest;
+import muse_kopis.muse.member.dto.LoginResponse;
+import muse_kopis.muse.member.dto.SignUpRequest;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -18,7 +21,6 @@ public class MemberController {
 
     @PostMapping
     public ResponseEntity<Long> signUp(@RequestBody SignUpRequest signUpRequest) {
-
         Long id = memberService.signUp(
                 signUpRequest.username(),
                 signUpRequest.password(),
