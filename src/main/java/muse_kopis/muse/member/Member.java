@@ -30,8 +30,7 @@ public class Member {
         this.name = name;
     }
 
-    public Long login(String password) {
-        PasswordEncoder passwordEncoder = new PasswordEncoder();
+    public Long login(String password, PasswordEncoder passwordEncoder) {
         if (passwordEncoder.checkPassword(password, this.password)) {
             return id;
         }

@@ -25,6 +25,6 @@ public class MemberService {
 
     public Long login(String username, String password) {
         Member member = memberRepository.getByUsername(username);
-        return member.login(password);
+        return member.login(password, passwordEncoder);
     }
 }
