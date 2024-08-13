@@ -12,6 +12,5 @@ public class MuseApplication {
 
 	public static void main(String[] args) {
 		SpringApplication.run(MuseApplication.class, args);
-
 	}
 }

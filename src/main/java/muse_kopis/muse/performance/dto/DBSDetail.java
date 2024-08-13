@@ -1,4 +1,4 @@
-package muse_kopis.muse.performance;
+package muse_kopis.muse.performance.dto;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlElementWrapper;

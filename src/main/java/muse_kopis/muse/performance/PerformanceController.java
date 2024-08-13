@@ -1,6 +1,5 @@
 package muse_kopis.muse.performance;
 
-import jakarta.annotation.PostConstruct;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -8,6 +7,8 @@ import java.util.concurrent.Executors;
 import lombok.extern.slf4j.Slf4j;
 import muse_kopis.muse.performance.dto.PerformanceRequest;
 import muse_kopis.muse.performance.dto.PerformanceResponse;
+import muse_kopis.muse.performance.dto.PopularPerformanceRequest;
+import muse_kopis.muse.performance.dto.PopularPerformanceResponse;
 import muse_kopis.muse.performance.genre.GenreService;
 import muse_kopis.muse.performance.genre.GenreType;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,17 +31,28 @@ public class PerformanceController {
         this.genreService = genreService;
     }
 
-    @GetMapping("/kopis/performances")
+    @GetMapping("/performances/kopis")
     public ResponseEntity<Void> getPerformances(@ModelAttribute PerformanceRequest performanceRequest) {
         performanceService.fetchPerformances(performanceRequest.startDate(), performanceRequest.endDate(), performanceRequest.currentPage(),
                 performanceRequest.rows(), performanceRequest.state(), performanceRequest.genre());
         return ResponseEntity.ok().build();
-    }
+    } // KOPIS 전체 공연 목록
 
-    @GetMapping("/performances")
+    @GetMapping("/performances/search")
     public ResponseEntity<List<PerformanceResponse>> searchPerformance(@RequestParam String search) {
         return ResponseEntity.ok().body(performanceService.findAllPerformanceBySearch(search));
-    }
+    } // 검색어를 통한 공연 목록
+
+    @GetMapping("/performances/state")
+    public ResponseEntity<List<PerformanceResponse>> getPerformance(@RequestParam String state) {
+        return ResponseEntity.ok().body(performanceService.findAllPerformance(state));
+    } // 공연 목록
+
+    @GetMapping("/performances/popular")
+    public ResponseEntity<List<PopularPerformanceResponse>> getPerformancePopular(@ModelAttribute PopularPerformanceRequest popularPerformanceRequest) {
+        return ResponseEntity.ok().body(performanceService.fetchPopularPerformance(popularPerformanceRequest.type(), popularPerformanceRequest.date(),
+                popularPerformanceRequest.genre()));
+    } // 인기있는 공연 목록
 
 //    @PostConstruct
     public void init() {
@@ -62,12 +74,10 @@ public class PerformanceController {
                         String.valueOf(currentPage), "100", "01", "GGGA"));
             }
         }
-        executorService.shutdown();
-//        saveGenres();
         log.info("Initialization ended");
     }
 
-    @GetMapping("/genres")
+//    @GetMapping("/genres")
     private void saveGenres() {
         genreService.saveGenre("진짜나쁜소녀", GenreType.CRIME);
         genreService.saveGenre("진짜나쁜소녀", GenreType.THRILLER);
