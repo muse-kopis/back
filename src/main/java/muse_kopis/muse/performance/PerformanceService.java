@@ -4,7 +4,6 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.dataformat.xml.XmlMapper;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
@@ -59,7 +58,7 @@ public class PerformanceService {
         try {
             DBS dbs = xmlMapper.readValue(response, DBS.class);
             saveAllPerformance(dbs);
-            log.info("저장 완료");
+            log.info("저장 완료 {}, {}", currentPage, state);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -88,7 +87,6 @@ public class PerformanceService {
                             .performanceCrews(performanceDetail.crews())
                             .state(performanceDetail.state())
                     .build());
-            log.info(performanceDetail.state());
         }
     }
 
