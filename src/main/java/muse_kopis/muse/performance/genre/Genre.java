@@ -13,10 +13,10 @@ import muse_kopis.muse.performance.Performance;
 public class Genre {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    Long id;
+    private Long id;
     @ManyToOne
-    Performance performance;
-    GenreType genre;
+    private Performance performance;
+    private GenreType genre;
 
     public Genre(Performance performance, GenreType genre) {
         this.performance = performance;

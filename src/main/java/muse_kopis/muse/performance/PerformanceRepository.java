@@ -7,7 +7,9 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface PerformanceRepository extends JpaRepository<Performance, Long> {
-    Optional<List<Performance>> findAllByPerformanceNameContains(String search);
-    Optional<List<Performance>> findByPerformanceName(String performanceName);
-    Optional<List<Performance>> findAllByState(String state);
+
+    List<Performance> findAllByPerformanceNameContains(String search);
+    List<Performance> findByPerformanceName(String performanceName);
+    List<Performance> findAllByState(String state);
+    Optional<Performance> findByPerformanceNameAndVenue(String performanceName, String venue);
 }

@@ -34,7 +34,6 @@ public class PerformanceService {
     private final RestTemplate restTemplate;
     private final XmlMapper xmlMapper;
 
-
     public PerformanceService(PerformanceRepository performanceRepository) {
         this.performanceRepository = performanceRepository;
         this.restTemplate = new RestTemplate();
@@ -43,36 +42,16 @@ public class PerformanceService {
 
     public List<PerformanceResponse> findAllPerformance(String state){
         return performanceRepository.findAllByState(state)
-                .orElseThrow(() -> new NotFoundPerformanceException("공연을 찾지 못했습니다."))
                 .stream()
-                .map(performance -> PerformanceResponse.builder()
-                        .performanceName(performance.getPerformanceName())
-                        .startDate(performance.getStartDate())
-                        .endDate(performance.getEndDate())
-                        .venue(performance.getVenue())
-                        .poster(performance.getPoster())
-                        .performanceTime(performance.getPerformanceTime())
-                        .limitAge(performance.getLimitAge())
-                        .performanceCrews(performance.getPerformanceCrews())
-                        .entertainment(performance.getEntertainment())
-                        .build()).collect(Collectors.toList());
+                .map(PerformanceResponse::from)
+                .collect(Collectors.toList());
     }
 
     public List<PerformanceResponse> findAllPerformanceBySearch(String search) {
         return performanceRepository.findAllByPerformanceNameContains(search)
-                .orElseThrow(() -> new NotFoundPerformanceException("공연을 찾지 못했습니다."))
                 .stream()
-                .map(performance -> PerformanceResponse.builder()
-                        .performanceName(performance.getPerformanceName())
-                        .startDate(performance.getStartDate())
-                        .endDate(performance.getEndDate())
-                        .venue(performance.getVenue())
-                        .poster(performance.getPoster())
-                        .performanceTime(performance.getPerformanceTime())
-                        .limitAge(performance.getLimitAge())
-                        .performanceCrews(performance.getPerformanceCrews())
-                        .entertainment(performance.getEntertainment())
-                        .build()).collect(Collectors.toList());
+                .map(PerformanceResponse::from)
+                .collect(Collectors.toList());
     }
 
     public void fetchPerformances(String startDate, String endDate, String currentPage, String rows, String state, String genre) {
@@ -100,16 +79,7 @@ public class PerformanceService {
                     .toList();
             log.info(boxofList.getFirst().mt20id());
             return boxofList.stream()
-                    .map(performance -> PopularPerformanceResponse.builder()
-                            .venue(performance.prfplcnm())
-                            .rank(performance.rnum())
-                            .poster(performance.poster())
-                            .performancePeriod(performance.prfpd())
-                            .performanceName(performance.prfnm())
-                            .performanceCount(performance.prfdtcnt())
-                            .area(performance.area())
-                            .build()
-                    ).collect(Collectors.toList());
+                    .map(PopularPerformanceResponse::from).collect(Collectors.toList());
         } catch (Exception e) {
             throw new NotFoundPerformanceException("공연을 찾을 수 없습니다.");
         }

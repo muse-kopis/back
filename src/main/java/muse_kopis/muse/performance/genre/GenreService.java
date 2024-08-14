@@ -18,8 +18,7 @@ public class GenreService {
     }
 
     public void saveGenre(String performanceName, GenreType genreType) {
-        List<Performance> performances = performanceRepository.findByPerformanceName(performanceName)
-                .orElseThrow(() -> new NotFoundPerformanceException("공연을 찾지 못했습니다."));
+        List<Performance> performances = performanceRepository.findByPerformanceName(performanceName);
         for (Performance performance : performances) {
             genreRepository.save(new Genre(performance, genreType));
         }

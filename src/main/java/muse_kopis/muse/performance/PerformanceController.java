@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import muse_kopis.muse.performance.dto.PerformanceRequest;
 import muse_kopis.muse.performance.dto.PerformanceResponse;
@@ -20,16 +21,11 @@ import org.springframework.web.bind.annotation.RestController;
 
 @Slf4j
 @RestController
+@RequiredArgsConstructor
 public class PerformanceController {
 
     private final PerformanceService performanceService;
     private final GenreService genreService;
-
-    @Autowired
-    public PerformanceController(PerformanceService performanceService, GenreService genreService) {
-        this.performanceService = performanceService;
-        this.genreService = genreService;
-    }
 
     @GetMapping("/performances/kopis")
     public ResponseEntity<Void> getPerformances(@ModelAttribute PerformanceRequest performanceRequest) {
@@ -78,7 +74,7 @@ public class PerformanceController {
     }
 
 //    @GetMapping("/genres")
-    private void saveGenres() {
+    public void saveGenres() {
         genreService.saveGenre("진짜나쁜소녀", GenreType.CRIME);
         genreService.saveGenre("진짜나쁜소녀", GenreType.THRILLER);
 
