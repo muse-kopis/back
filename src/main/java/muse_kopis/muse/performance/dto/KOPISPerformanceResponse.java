@@ -7,7 +7,7 @@ import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlProperty;
 import java.util.List;
 
 @JacksonXmlRootElement(localName = "dbs")
-public record DBS(
+public record KOPISPerformanceResponse(
     @JacksonXmlElementWrapper(useWrapping = false)
     @JacksonXmlProperty(localName = "db")
     List<DB> db

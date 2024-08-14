@@ -1,5 +1,6 @@
 package muse_kopis.muse.performance;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -28,7 +29,8 @@ public class PerformanceController {
     private final GenreService genreService;
 
     @GetMapping("/performances/kopis")
-    public ResponseEntity<Void> getPerformances(@ModelAttribute PerformanceRequest performanceRequest) {
+    public ResponseEntity<Void> getPerformances(@ModelAttribute PerformanceRequest performanceRequest)
+            throws JsonProcessingException {
         performanceService.fetchPerformances(performanceRequest.startDate(), performanceRequest.endDate(), performanceRequest.currentPage(),
                 performanceRequest.rows(), performanceRequest.state(), performanceRequest.genre());
         return ResponseEntity.ok().build();
@@ -58,16 +60,34 @@ public class PerformanceController {
             final int currentPage = i;
             log.info("Processing page: " + currentPage);
             if (i < 3) {
-                executorService.submit(() -> performanceService.fetchPerformances("20180101", "20241231",
-                        String.valueOf(currentPage), "100", "02", "GGGA"));
+                executorService.submit(() -> {
+                    try {
+                        performanceService.fetchPerformances("20180101", "20241231",
+                                String.valueOf(currentPage), "100", "02", "GGGA");
+                    } catch (JsonProcessingException e) {
+                        throw new RuntimeException(e);
+                    }
+                });
             }
             if (i < 9) {
-                executorService.submit(() -> performanceService.fetchPerformances("20180101", "20241231",
-                        String.valueOf(currentPage), "200", "03", "GGGA"));
+                executorService.submit(() -> {
+                    try {
+                        performanceService.fetchPerformances("20180101", "20241231",
+                                String.valueOf(currentPage), "200", "03", "GGGA");
+                    } catch (JsonProcessingException e) {
+                        throw new RuntimeException(e);
+                    }
+                });
             }
             if (i < 5) {
-                executorService.submit(() -> performanceService.fetchPerformances("20180101", "20241231",
-                        String.valueOf(currentPage), "100", "01", "GGGA"));
+                executorService.submit(() -> {
+                    try {
+                        performanceService.fetchPerformances("20180101", "20241231",
+                                String.valueOf(currentPage), "100", "01", "GGGA");
+                    } catch (JsonProcessingException e) {
+                        throw new RuntimeException(e);
+                    }
+                });
             }
         }
         log.info("Initialization ended");

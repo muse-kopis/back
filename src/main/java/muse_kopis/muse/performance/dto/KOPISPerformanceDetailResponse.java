@@ -7,13 +7,13 @@ import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlRootElement;
 import java.util.List;
 
 @JacksonXmlRootElement(localName = "dbs")
-public record DBSDetail(
+public record KOPISPerformanceDetailResponse(
     @JacksonXmlElementWrapper(useWrapping = false)
     @JacksonXmlProperty(localName = "db")
-    List<DB> db
+    List<Detail> detail
 ) {
     @JsonIgnoreProperties(ignoreUnknown = true)
-    public record DB(
+    public record Detail(
         @JacksonXmlProperty(localName = "mt20id") String mt20id,
         @JacksonXmlProperty(localName = "prfnm") String performanceName,
         @JacksonXmlProperty(localName = "prfpdfrom") String startDate,
