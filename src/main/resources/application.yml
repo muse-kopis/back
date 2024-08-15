@@ -1,17 +1,36 @@
 spring:
-  application:
-    name: muse
-  h2:
-    console:
-      enabled: true
-      path: /h2-console
   datasource:
-    driver-class-name: org.h2.Driver
-    username: sa
-    password:
+    url: jdbc:mysql://localhost:3306/muse
+    username: muse
+    password: muse
+    driver-class-name: com.mysql.cj.jdbc.Driver
     hikari:
-      jdbc-url: jdbc:h2:mem:testdb
-
+      maximum-pool-size: 40
+  jpa:
+    hibernate:
+      ddl-auto: update
+    properties:
+      hibernate:
+    open-in-view: false
+oauth:
+  kakao:
+    client-id: 38a487b313e59735a000457c4e952343
+    client-secret: YKu3oIEcVNfRzWjxR2erPMGjf9MpYaGq
+    scope: account_email, profile_nickname
+    redirect-uri: http://localhost:3000/oauth/redirected/kakao
+#  datasource:
+#    url: jdbc:h2:mem:testdb
+#    driverClassName: org.h2.Driver
+#    username: sa
+#    password:
+#  jpa:
+#    hibernate:
+#      ddl-auto: update
+#  h2:
+#    console:
+#      enabled: true
+#      path: /h2-console
 jwt:
   access-token-expiration-day: 10
   secret-key: a29waXMtYmlnLWRhdGEtbXVzZQ==
+

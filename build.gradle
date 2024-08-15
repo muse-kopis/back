@@ -9,7 +9,7 @@ version = '0.0.1-SNAPSHOT'
 
 java {
 	toolchain {
-		languageVersion = JavaLanguageVersion.of(17)
+		languageVersion = JavaLanguageVersion.of(21)
 	}
 }
 
@@ -30,13 +30,23 @@ dependencies {
 	implementation 'com.auth0:java-jwt:4.4.0'
 	implementation 'org.mindrot:jbcrypt:0.4'
 	implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.1.0'
+	implementation 'org.springframework.boot:spring-boot-starter-webflux:3.1.0'
 
-	runtimeOnly 'com.h2database:h2'
+	// JAXB API
+	implementation 'javax.xml.bind:jaxb-api:2.3.1'
+	implementation 'com.fasterxml.jackson.dataformat:jackson-dataformat-xml:2.15.0'
+//	 JAXB Runtime (for marshalling and unmarshalling)
+	implementation 'com.sun.xml.bind:jaxb-core:2.3.0.1'
+	implementation 'com.sun.xml.bind:jaxb-impl:2.3.3'
+
+	// Spring Context Support (for XML processing)
+	implementation 'org.springframework:spring-context-support:5.3.23'
+//	runtimeOnly 'com.h2database:h2'
+	runtimeOnly 'mysql:mysql-connector-java:8.0.32'
 	compileOnly 'org.projectlombok:lombok'
 	annotationProcessor 'org.projectlombok:lombok'
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
 	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
-
 }
 
 tasks.named('test') {
