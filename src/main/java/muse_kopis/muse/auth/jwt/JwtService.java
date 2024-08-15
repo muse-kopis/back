@@ -21,13 +21,13 @@ public class JwtService {
         this.algorithm = Algorithm.HMAC256(jwtProperty.secretKey());
     }
 
-    public String createToken(Long id) {
+    public String createToken(Long memberId) {
         return JWT.create()
                 .withExpiresAt(new Date(
                             System.currentTimeMillis() + accessTokenExpirationDayToMills
                         ))
                 .withIssuedAt(new Date())
-                .withClaim("id", id)
+                .withClaim("memberId", memberId)
                 .sign(algorithm);
     }
 
@@ -36,8 +36,8 @@ public class JwtService {
             return JWT.require(algorithm)
                     .build()
                     .verify(token)
-                    .getClaim("id")
-                    .asString();
+                    .getClaim("memberId")
+                    .asLong();
         } catch (JWTVerificationException e) {
             throw new UnAuthorizationException("유효하지 않은 토큰입니다.");
         }
