@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import lombok.extern.slf4j.Slf4j;
+import muse_kopis.muse.common.FetchFailException;
 import muse_kopis.muse.common.NotFoundPerformanceException;
 import muse_kopis.muse.performance.dto.Boxofs;
 import muse_kopis.muse.performance.dto.Boxofs.Boxof;
@@ -60,13 +61,13 @@ public class PerformanceService {
                 "&cpage=" + currentPage + "&rows=" + rows + "&prfstate=" + state+"&shcate=" + genre;
         log.info("데이터 요청 {}, {}", currentPage, state);
         String response = restTemplate.getForObject(url, String.class);
-//        try {
+        try {
             KOPISPerformanceResponse KOPISPerformanceResponse = xmlMapper.readValue(response, KOPISPerformanceResponse.class);
             saveAllPerformance(KOPISPerformanceResponse);
             log.info("저장 완료 {}, {}", currentPage, state);
-//        } catch (Exception e) {
-//            throw new FetchFailException("데이터 패치에 실패했습니다.");
-//        }
+        } catch (Exception e) {
+            throw new FetchFailException("데이터 패치에 실패했습니다.");
+        }
     }
 
     public List<PopularPerformanceResponse> fetchPopularPerformance(String type, String date, String genre) {
@@ -95,20 +96,7 @@ public class PerformanceService {
                 return;
             }
             Detail performanceDetail = performance.detail().getFirst();
-            performanceRepository.save(Performance.builder()
-                            .performanceTime(performanceDetail.performanceTime())
-                            .price(performanceDetail.price())
-                            .poster(performanceDetail.poster())
-                            .performanceTime(performanceDetail.performanceTime())
-                            .performanceName(performanceDetail.performanceName())
-                            .venue(performanceDetail.venue())
-                            .startDate(LocalDate.parse(performanceDetail.startDate(), DateTimeFormatter.ofPattern("yyyy.MM.dd")))
-                            .endDate(LocalDate.parse(performanceDetail.endDate(), DateTimeFormatter.ofPattern("yyyy.MM.dd")))
-                            .limitAge(performanceDetail.limitAge())
-                            .entertainment(performanceDetail.entertainment())
-                            .performanceCrews(performanceDetail.crews())
-                            .state(performanceDetail.state())
-                    .build());
+            performanceRepository.save(Performance.from(performanceDetail));
         }
     }
 

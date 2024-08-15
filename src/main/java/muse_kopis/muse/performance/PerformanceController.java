@@ -1,6 +1,7 @@
 package muse_kopis.muse.performance;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import jakarta.annotation.PostConstruct;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -13,44 +14,49 @@ import muse_kopis.muse.performance.dto.PopularPerformanceRequest;
 import muse_kopis.muse.performance.dto.PopularPerformanceResponse;
 import muse_kopis.muse.performance.genre.GenreService;
 import muse_kopis.muse.performance.genre.GenreType;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @Slf4j
 @RestController
+@RequestMapping("/performances")
 @RequiredArgsConstructor
 public class PerformanceController {
 
     private final PerformanceService performanceService;
     private final GenreService genreService;
 
-    @GetMapping("/performances/kopis")
+    // KOPIS 전체 공연 목록
+    @GetMapping("/kopis")
     public ResponseEntity<Void> getPerformances(@ModelAttribute PerformanceRequest performanceRequest)
             throws JsonProcessingException {
         performanceService.fetchPerformances(performanceRequest.startDate(), performanceRequest.endDate(), performanceRequest.currentPage(),
                 performanceRequest.rows(), performanceRequest.state(), performanceRequest.genre());
         return ResponseEntity.ok().build();
-    } // KOPIS 전체 공연 목록
+    }
 
-    @GetMapping("/performances/search")
+    // 검색어를 통한 공연 목록
+    @GetMapping("/search")
     public ResponseEntity<List<PerformanceResponse>> searchPerformance(@RequestParam String search) {
         return ResponseEntity.ok().body(performanceService.findAllPerformanceBySearch(search));
-    } // 검색어를 통한 공연 목록
+    }
 
-    @GetMapping("/performances/state")
+    // 공연 목록
+    @GetMapping("/state")
     public ResponseEntity<List<PerformanceResponse>> getPerformance(@RequestParam String state) {
         return ResponseEntity.ok().body(performanceService.findAllPerformance(state));
-    } // 공연 목록
+    }
 
-    @GetMapping("/performances/popular")
+    // 인기있는 공연 목록
+    @GetMapping("/popular")
     public ResponseEntity<List<PopularPerformanceResponse>> getPerformancePopular(@ModelAttribute PopularPerformanceRequest popularPerformanceRequest) {
         return ResponseEntity.ok().body(performanceService.fetchPopularPerformance(popularPerformanceRequest.type(), popularPerformanceRequest.date(),
                 popularPerformanceRequest.genre()));
-    } // 인기있는 공연 목록
+    }
 
 //    @PostConstruct
     public void init() {
@@ -93,7 +99,6 @@ public class PerformanceController {
         log.info("Initialization ended");
     }
 
-//    @GetMapping("/genres")
     public void saveGenres() {
         genreService.saveGenre("진짜나쁜소녀", GenreType.CRIME);
         genreService.saveGenre("진짜나쁜소녀", GenreType.THRILLER);
