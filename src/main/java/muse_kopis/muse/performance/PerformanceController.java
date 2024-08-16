@@ -30,7 +30,7 @@ public class PerformanceController {
     private final PerformanceService performanceService;
     private final GenreService genreService;
 
-    // KOPIS 전체 공연 목록
+    // KOPIS 전체 공연 목록 저장
     @GetMapping("/kopis")
     public ResponseEntity<Void> getPerformances(@ModelAttribute PerformanceRequest performanceRequest)
             throws JsonProcessingException {
@@ -45,7 +45,7 @@ public class PerformanceController {
         return ResponseEntity.ok().body(performanceService.findAllPerformanceBySearch(search));
     }
 
-    // 공연 목록
+    // 상태에 따른 공연 목록
     @GetMapping("/state")
     public ResponseEntity<List<PerformanceResponse>> getPerformance(@RequestParam String state) {
         return ResponseEntity.ok().body(performanceService.findAllPerformance(state));
