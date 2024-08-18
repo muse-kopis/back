@@ -22,6 +22,7 @@ public class OauthController {
     private final OauthService oauthService;
     private final JwtService jwtService;
 
+    // AuthCode 얻기위한 URL redirect
     @SneakyThrows
     @GetMapping("/{oauthServerType}")
     public ResponseEntity<Void> redirectAuthCodeRequestUrl(
@@ -31,7 +32,7 @@ public class OauthController {
         String redirectUrl = oauthService.getAuthCodeRequestUrl(oauthServerType);
         response.sendRedirect(redirectUrl);
         return ResponseEntity.ok().build();
-    } // AuthCode 얻기위한 URL redirect
+    }
 
     @GetMapping("/login/{oauthServerType}")
     public ResponseEntity<LoginResponse> login(

@@ -1,4 +1,4 @@
-package muse_kopis.muse.review;
+package muse_kopis.muse.performance.castmember;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -14,22 +14,18 @@ import muse_kopis.muse.performance.Performance;
 @Entity
 @Getter
 @NoArgsConstructor
-public class Review {
+public class CastMember {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+    private String name;
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "performance_id")
     private Performance performance;
-    private String content;
-    private Integer star;
-    private Boolean visible;
 
-    public Review(Performance performance, String content, Integer star, Boolean visible) {
+    public CastMember(String name, Performance performance) {
+        this.name = name;
         this.performance = performance;
-        this.content = content;
-        this.star = star;
-        this.visible = visible;
     }
 }

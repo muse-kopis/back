@@ -4,18 +4,21 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.OneToMany;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.util.List;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import muse_kopis.muse.performance.castmember.CastMember;
 import muse_kopis.muse.performance.dto.KOPISPerformanceDetailResponse.Detail;
 
 @Entity
-@Builder
 @Getter
+@Builder
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
 public class Performance {
@@ -26,7 +29,8 @@ public class Performance {
     private LocalDate startDate;
     private LocalDate endDate;
     private String venue; // 공연장
-    private String performanceCrews;
+    @OneToMany(mappedBy = "performance")
+    private List<CastMember> castMembers;
     private String limitAge;
     private String price;
     private String poster;
@@ -46,7 +50,6 @@ public class Performance {
                 .endDate(LocalDate.parse(performanceDetail.endDate(), DateTimeFormatter.ofPattern("yyyy.MM.dd")))
                 .limitAge(performanceDetail.limitAge())
                 .entertainment(performanceDetail.entertainment())
-                .performanceCrews(performanceDetail.crews())
                 .state(performanceDetail.state())
                 .build();
     }

@@ -17,7 +17,6 @@ public class OauthService {
     private final AuthCodeRequestUrlProviderComposite authCodeRequestUrlProviderComposite;
     private final OauthMemberClientComposite oauthMemberClientComposite;
     private final OauthMemberRepository oauthMemberRepository;
-    private final UserGenreService userGenreService;
 
     public String getAuthCodeRequestUrl(OauthServerType oauthServerType) {
         return authCodeRequestUrlProviderComposite.provide(oauthServerType);

@@ -11,5 +11,6 @@ public interface PerformanceRepository extends JpaRepository<Performance, Long> 
     List<Performance> findAllByPerformanceNameContains(String search);
     List<Performance> findByPerformanceName(String performanceName);
     List<Performance> findAllByState(String state);
+    List<Performance> findAllByStateOrState(String currentPerformances, String upcomingPerformances);
     Optional<Performance> findByPerformanceNameAndVenue(String performanceName, String venue);
 }

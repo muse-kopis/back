@@ -11,12 +11,12 @@ import lombok.extern.slf4j.Slf4j;
 import muse_kopis.muse.performance.dto.PerformanceRequest;
 import muse_kopis.muse.performance.dto.PerformanceResponse;
 import muse_kopis.muse.performance.dto.PopularPerformanceRequest;
-import muse_kopis.muse.performance.dto.PopularPerformanceResponse;
 import muse_kopis.muse.performance.genre.GenreService;
 import muse_kopis.muse.performance.genre.GenreType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -47,15 +47,21 @@ public class PerformanceController {
 
     // 상태에 따른 공연 목록
     @GetMapping("/state")
-    public ResponseEntity<List<PerformanceResponse>> getPerformance(@RequestParam String state) {
+    public ResponseEntity<List<PerformanceResponse>> getPerformances(@RequestParam String state) {
         return ResponseEntity.ok().body(performanceService.findAllPerformance(state));
     }
 
     // 인기있는 공연 목록
     @GetMapping("/popular")
-    public ResponseEntity<List<PopularPerformanceResponse>> getPerformancePopular(@ModelAttribute PopularPerformanceRequest popularPerformanceRequest) {
+    public ResponseEntity<List<PerformanceResponse>> getPerformancePopular(@ModelAttribute PopularPerformanceRequest popularPerformanceRequest) {
         return ResponseEntity.ok().body(performanceService.fetchPopularPerformance(popularPerformanceRequest.type(), popularPerformanceRequest.date(),
                 popularPerformanceRequest.genre()));
+    }
+
+    // 특정 공연
+    @GetMapping("/{id}")
+    public ResponseEntity<PerformanceResponse> getPerformance(@PathVariable Long id) {
+        return ResponseEntity.ok().body(performanceService.findById(id));
     }
 
 //    @PostConstruct
@@ -99,6 +105,7 @@ public class PerformanceController {
         log.info("Initialization ended");
     }
 
+//    @GetMapping("/genre")
     public void saveGenres() {
         genreService.saveGenre("진짜나쁜소녀", GenreType.CRIME);
         genreService.saveGenre("진짜나쁜소녀", GenreType.THRILLER);

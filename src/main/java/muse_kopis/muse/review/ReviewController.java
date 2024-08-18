@@ -28,7 +28,9 @@ public class ReviewController {
                 reviewRequest.performanceName(),
                 reviewRequest.venue(),
                 reviewRequest.content(),
-                reviewRequest.star());
+                reviewRequest.star(),
+                reviewRequest.visible()
+        );
         return ResponseEntity.ok().build();
     }
 
