@@ -81,32 +81,32 @@ public class UserGenre {
 
     public void incrementGenreWeight(GenreType genreType) {
         switch (genreType) {
-            case CRIME: crime = crime + 1; break;
-            case FANTASY: fantasy = fantasy + 1; break;
-            case FAIRY_TALE: fairyTale = fairyTale + 1; break;
-            case FAMILY: family = family + 1; break;
-            case ADVENTURE: adventure = adventure+ 1; break;
-            case HEALING: healing = healing+ 1; break;
-            case ROMANCE: romance = romance+ 1; break;
-            case CHILD: child = child+ 1; break;
-            case THRILLER: thriller = thriller+ 1; break;
-            case HISTORY: history = history+ 1; break;
-            case DRAMA: drama = drama+ 1; break;
-            case PHILOSOPHY: philosophy = philosophy+ 1; break;
-            case JAZZ: jazz = jazz+ 1; break;
-            case HUMOR: humor = humor+ 1; break;
-            case COMEDY: comedy = comedy+ 1; break;
-            case ROCK: rock = rock+ 1; break;
-            case ACTION: action = action+ 1; break;
-            case OFFICE: office = office+ 1; break;
-            case PARODY: parody = parody+ 1; break;
-            case NON_VERBAL: nonverbal = nonverbal+ 1; break;
-            case PERFORMANCE: performance = performance+ 1; break;
-            case ART: art = art+ 1; break;
-            case INTERACTIVE: interactive = interactive+ 1; break;
-            case EMOTION: emotion = emotion+ 1; break;
-            case YOUTHFUL_GROWTH: youthfulGrowth = youthfulGrowth+ 1; break;
-            case CABARET: cabaret = cabaret+ 1; break;
+            case CRIME -> crime++;
+            case FANTASY -> fantasy++;
+            case FAIRY_TALE -> fairyTale++;
+            case FAMILY -> family++;
+            case ADVENTURE -> adventure++;
+            case HEALING -> healing++;
+            case ROMANCE -> romance++;
+            case CHILD -> child++;
+            case THRILLER -> thriller++;
+            case HISTORY -> history++;
+            case DRAMA -> drama++;
+            case PHILOSOPHY -> philosophy++;
+            case JAZZ -> jazz++;
+            case HUMOR -> humor++;
+            case COMEDY -> comedy++;
+            case ROCK -> rock++;
+            case ACTION -> action++;
+            case OFFICE -> office++;
+            case PARODY -> parody++;
+            case NON_VERBAL -> nonverbal++;
+            case PERFORMANCE -> performance++;
+            case ART -> art++;
+            case INTERACTIVE -> interactive++;
+            case EMOTION -> emotion++;
+            case YOUTHFUL_GROWTH -> youthfulGrowth++;
+            case CABARET -> cabaret++;
         }
         updateFavoriteGenre();
     }

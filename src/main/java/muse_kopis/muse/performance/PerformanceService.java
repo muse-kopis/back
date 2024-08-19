@@ -39,6 +39,8 @@ public class PerformanceService {
     private final XmlMapper xmlMapper;
     private final static String CURRENT = "공연중";
     private final static String UPCOMING = "공연예정";
+    private final static String BLANK_OR_COMMA = "[,\\s]+";
+    public static final String BLANK_OR_PARENTHESIS = "[\\s()]";
 
     public PerformanceService(PerformanceRepository performanceRepository, CastMemberRepository castMemberRepository) {
         this.performanceRepository = performanceRepository;
@@ -48,8 +50,7 @@ public class PerformanceService {
     }
 
     public PerformanceResponse findById(Long performanceId) {
-        return PerformanceResponse.from(performanceRepository.findById(performanceId)
-                .orElseThrow(() -> new NotFoundPerformanceException("공연을 찾을 수 없습니다.")));
+        return PerformanceResponse.from(performanceRepository.getByPerformanceId(performanceId));
     }
 
     public List<PerformanceResponse> findAllPerformance(String state){
@@ -93,7 +94,7 @@ public class PerformanceService {
             Detail performanceDetail = performanceResponse.detail().getFirst();
             Performance performance = Performance.from(performanceDetail);
             performanceRepository.save(performance);
-            List<CastMember> castMembers = Arrays.stream(performanceDetail.crews().split("[,\\s]+"))
+            List<CastMember> castMembers = Arrays.stream(performanceDetail.crews().split(BLANK_OR_COMMA))
                     .map(String::trim)
                     .map(name -> name.endsWith("등") ? name.substring(0, name.length() - 1).trim() : name)
                     .filter(name -> !name.isEmpty())  // 빈 문자열 필터링
@@ -115,7 +116,7 @@ public class PerformanceService {
             LevenshteinDistance levenshtein = new LevenshteinDistance();
             List<Performance> collect = boxofList.stream().map(it -> performanceRepository.findAllByStateOrState(CURRENT, UPCOMING).stream()
                             .filter(p -> p.getPerformanceName().equals(it.prfnm())
-                                    && levenshtein.apply(p.getVenue().replaceAll("[\\s()]", ""), it.prfplcnm().replaceAll("[\\s()]", "")) <= 20)
+                                    && levenshtein.apply(p.getVenue().replaceAll(BLANK_OR_PARENTHESIS, ""), it.prfplcnm().replaceAll(BLANK_OR_PARENTHESIS, "")) <= 20)
                             .findFirst())
                     .filter(Optional::isPresent)
                     .map(Optional::get)

@@ -7,9 +7,6 @@ import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import muse_kopis.muse.auth.oauth.domain.OauthMember;
 import muse_kopis.muse.auth.oauth.domain.OauthMemberRepository;
-import muse_kopis.muse.common.NotFoundMemberException;
-import muse_kopis.muse.common.NotFoundPerformanceException;
-import muse_kopis.muse.common.NotFoundTicketBookException;
 import muse_kopis.muse.performance.Performance;
 import muse_kopis.muse.performance.PerformanceRepository;
 import muse_kopis.muse.performance.usergenre.UserGenreService;
@@ -31,8 +28,7 @@ public class TicketBookService {
     private final UserGenreService userGenreService;
 
     public List<TicketBookResponse> ticketBooks(Long memberId) {
-        OauthMember oauthMember = oauthMemberRepository.findById(memberId)
-                .orElseThrow(() -> new NotFoundMemberException("사용자를 찾을 수 없습니다."));
+        OauthMember oauthMember = oauthMemberRepository.getByOauthMemberId(memberId);
         return ticketBookRepository.findAllByOauthMember(oauthMember)
                 .stream()
                 .map(TicketBookResponse::from)
@@ -41,10 +37,8 @@ public class TicketBookService {
 
     @Transactional
     public Long writeTicketBook(Long memberId, Long performanceId, LocalDate viewDate, List<PhotoDto> photos, ReviewResponse review) {
-        OauthMember oauthMember = oauthMemberRepository.findById(memberId)
-                .orElseThrow(() -> new NotFoundMemberException("사용자를 찾을 수 없습니다."));
-        Performance performance = performanceRepository.findById(performanceId)
-                .orElseThrow(() -> new NotFoundPerformanceException("공연을 찾을 수 없습니다."));
+        OauthMember oauthMember = oauthMemberRepository.getByOauthMemberId(memberId);
+        Performance performance = performanceRepository.getByPerformanceId(performanceId);
         TicketBook ticketBook = ticketBookRepository.save(TicketBook.from(oauthMember, viewDate, review, performance));
         photoRepository.saveAll(photos.stream().map(photo -> new Photo(photo.url(), ticketBook)).toList());
         userGenreService.updateGenre(performance, oauthMember);
@@ -52,18 +46,14 @@ public class TicketBookService {
     }
 
     public TicketBookResponse ticketBook(Long memberId, Long ticketBookId) {
-        oauthMemberRepository.findById(memberId)
-                .orElseThrow(() -> new NotFoundMemberException("사용자를 찾을 수 없습니다."));
-        return TicketBookResponse.from(ticketBookRepository.findById(ticketBookId)
-                .orElseThrow(() -> new NotFoundTicketBookException("티켓북을 찾을 수 없습니다.")));
+        oauthMemberRepository.getByOauthMemberId(memberId);
+        return TicketBookResponse.from(ticketBookRepository.getByTicketBookId(ticketBookId));
     }
 
     @Transactional
     public Long deleteTicketBook(Long memberId, Long ticketBookId) {
-        oauthMemberRepository.findById(memberId)
-                .orElseThrow(() -> new NotFoundMemberException("사용자를 찾을 수 없습니다."));
-        TicketBook ticketBook = ticketBookRepository.findById(ticketBookId)
-                .orElseThrow(() -> new NotFoundTicketBookException("티켓북을 찾을 수 없습니다."));
+        oauthMemberRepository.getByOauthMemberId(memberId);
+        TicketBook ticketBook = ticketBookRepository.getByTicketBookId(ticketBookId);
         photoRepository.deleteAll(photoRepository.findAllByTicketBook(ticketBook));
         ticketBookRepository.delete(ticketBook);
         return ticketBookId;

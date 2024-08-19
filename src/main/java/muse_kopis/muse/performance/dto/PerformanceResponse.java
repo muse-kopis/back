@@ -18,8 +18,6 @@ public record PerformanceResponse(
         String limitAge,
         List<CastMemberDto> castMembers,
         String entertainment
-//        String ticketing,
-//        String ticketingURL
 ) {
     public static PerformanceResponse from(Performance performance) {
         return PerformanceResponse.builder()

@@ -33,13 +33,14 @@ public class TicketBookController {
 
     @PostMapping
     public ResponseEntity<Long> writeTicketBooks(@Auth Long memberId, @RequestBody TicketBookRequest ticketBookRequest) {
-        return ResponseEntity.ok()
-                .body(ticketBookService.writeTicketBook(
+        return ResponseEntity.ok().body(
+                ticketBookService.writeTicketBook(
                         memberId,
                         ticketBookRequest.performanceId(),
                         ticketBookRequest.viewDate(),
                         ticketBookRequest.photos(),
-                        ticketBookRequest.review()));
+                        ticketBookRequest.review())
+        );
     }
 
     @DeleteMapping("/{ticketBookId}")
