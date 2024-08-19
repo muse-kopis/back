@@ -47,8 +47,8 @@ public class PerformanceService {
         this.xmlMapper = new XmlMapper();
     }
 
-    public PerformanceResponse findById(Long id) {
-        return PerformanceResponse.from(performanceRepository.findById(id)
+    public PerformanceResponse findById(Long performanceId) {
+        return PerformanceResponse.from(performanceRepository.findById(performanceId)
                 .orElseThrow(() -> new NotFoundPerformanceException("공연을 찾을 수 없습니다.")));
     }
 

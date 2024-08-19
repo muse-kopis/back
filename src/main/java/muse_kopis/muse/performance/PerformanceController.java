@@ -59,9 +59,9 @@ public class PerformanceController {
     }
 
     // 특정 공연
-    @GetMapping("/{id}")
-    public ResponseEntity<PerformanceResponse> getPerformance(@PathVariable Long id) {
-        return ResponseEntity.ok().body(performanceService.findById(id));
+    @GetMapping("/{performanceId}")
+    public ResponseEntity<PerformanceResponse> getPerformance(@PathVariable Long performanceId) {
+        return ResponseEntity.ok().body(performanceService.findById(performanceId));
     }
 
 //    @PostConstruct
