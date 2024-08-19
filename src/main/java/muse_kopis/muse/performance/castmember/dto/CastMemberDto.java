@@ -4,11 +4,11 @@ import lombok.Builder;
 import muse_kopis.muse.performance.castmember.CastMember;
 
 @Builder
-public record CastMemberResponse(
+public record CastMemberDto(
         String name
 ) {
-    public static CastMemberResponse from(CastMember castMember) {
-        return CastMemberResponse.builder()
+    public static CastMemberDto from(CastMember castMember) {
+        return CastMemberDto.builder()
                 .name(castMember.getName())
                 .build();
     }

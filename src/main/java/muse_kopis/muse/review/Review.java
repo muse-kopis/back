@@ -7,13 +7,18 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import muse_kopis.muse.auth.oauth.domain.OauthMember;
 import muse_kopis.muse.performance.Performance;
 
 @Entity
 @Getter
+@Builder
 @NoArgsConstructor
+@AllArgsConstructor
 public class Review {
 
     @Id
@@ -25,8 +30,12 @@ public class Review {
     private String content;
     private Integer star;
     private Boolean visible;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "oauth_member_id")
+    private OauthMember oauthMember;
 
-    public Review(Performance performance, String content, Integer star, Boolean visible) {
+    public Review(OauthMember oauthMember, Performance performance, String content, Integer star, Boolean visible) {
+        this.oauthMember = oauthMember;
         this.performance = performance;
         this.content = content;
         this.star = star;

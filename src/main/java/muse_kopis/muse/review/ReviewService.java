@@ -21,11 +21,11 @@ public class ReviewService {
     private final OauthMemberRepository oauthMemberRepository;
 
     public void writeReviews(Long memberId, String performanceName, String venue, String content, Integer star, Boolean visible) {
-        oauthMemberRepository.findById(memberId)
+        OauthMember oauthMember = oauthMemberRepository.findById(memberId)
                 .orElseThrow(() -> new NotFoundMemberException("로그인 후 사용할 수 있습니다."));
         Performance performance = performanceRepository.findByPerformanceNameAndVenue(performanceName, venue)
                 .orElseThrow(() -> new NotFoundPerformanceException("공연을 찾을 수 없습니다."));
-        reviewRepository.save(new Review(performance, content, star, visible));
+        reviewRepository.save(new Review(oauthMember, performance, content, star, visible));
     }
 
     public List<ReviewResponse> getReviews(Long memberId, String performanceName, String venue) {
