@@ -51,7 +51,9 @@ public class TicketBookService {
         return ticketBook.getId();
     }
 
-    public TicketBookResponse ticketBook(Long ticketBookId) {
+    public TicketBookResponse ticketBook(Long memberId, Long ticketBookId) {
+        oauthMemberRepository.findById(memberId)
+                .orElseThrow(() -> new NotFoundMemberException("사용자를 찾을 수 없습니다."));
         return TicketBookResponse.from(ticketBookRepository.findById(ticketBookId)
                 .orElseThrow(() -> new NotFoundTicketBookException("티켓북을 찾을 수 없습니다.")));
     }

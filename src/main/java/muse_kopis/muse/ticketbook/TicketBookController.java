@@ -27,8 +27,8 @@ public class TicketBookController {
     }
 
     @GetMapping("/{ticketBookId}")
-    public TicketBookResponse ticketBook(@PathVariable Long ticketBookId) {
-        return ticketBookService.ticketBook(ticketBookId);
+    public TicketBookResponse ticketBook(@Auth Long memberId, @PathVariable Long ticketBookId) {
+        return ticketBookService.ticketBook(memberId, ticketBookId);
     }
 
     @PostMapping
