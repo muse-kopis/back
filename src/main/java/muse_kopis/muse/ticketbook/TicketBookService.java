@@ -76,7 +76,7 @@ public class TicketBookService {
     @Transactional
     public TicketBookResponse ticketBookInDate(Long memberId, LocalDate localDate) {
         OauthMember oauthMember = oauthMemberRepository.getByOauthMemberId(memberId);
-        TicketBook ticketBook = ticketBookRepository.findByOauthMemberAndAndViewDate(oauthMember, localDate)
+        TicketBook ticketBook = ticketBookRepository.findByOauthMemberAndViewDate(oauthMember, localDate)
                 .orElseThrow(() -> new NotFoundTicketBookException("티켓북이 존재하지 않습니다."));
         List<Photo> photos = photoRepository.findAllByTicketBook(ticketBook);
         return TicketBookResponse.from(ticketBook, photos);
