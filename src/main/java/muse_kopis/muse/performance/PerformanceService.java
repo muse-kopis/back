@@ -116,7 +116,7 @@ public class PerformanceService {
             LevenshteinDistance levenshtein = new LevenshteinDistance();
             List<Performance> collect = boxofList.stream().map(it -> performanceRepository.findAllByStateOrState(CURRENT, UPCOMING).stream()
                             .filter(p -> p.getPerformanceName().equals(it.prfnm())
-                                    && levenshtein.apply(p.getVenue().replaceAll(BLANK_OR_PARENTHESIS, ""), it.prfplcnm().replaceAll(BLANK_OR_PARENTHESIS, "")) <= 20)
+                                    && levenshtein.apply(p.getVenue().replaceAll(BLANK_OR_PARENTHESIS, ""), it.prfplcnm().replaceAll(BLANK_OR_PARENTHESIS, "")) <= 5)
                             .findFirst())
                     .filter(Optional::isPresent)
                     .map(Optional::get)

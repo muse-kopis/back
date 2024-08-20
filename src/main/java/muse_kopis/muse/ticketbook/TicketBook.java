@@ -16,6 +16,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 import muse_kopis.muse.auth.oauth.domain.OauthMember;
 import muse_kopis.muse.performance.Performance;
 import muse_kopis.muse.performance.castmember.CastMember;
