@@ -4,6 +4,7 @@ public record ReviewRequest(
         String performanceName,
         String venue,
         String content,
-        Integer star
+        Integer star,
+        Boolean visible
 ) {
 }

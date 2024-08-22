@@ -1,27 +1,30 @@
-package muse_kopis.muse.performance.genre;
+package muse_kopis.muse.ticketbook.photo;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import muse_kopis.muse.performance.Performance;
+import muse_kopis.muse.ticketbook.TicketBook;
 
 @Entity
 @Getter
 @NoArgsConstructor
-public class Genre {
+public class Photo {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+    private String url;
     @ManyToOne
-    private Performance performance;
-    private GenreType genre;
+    @JoinColumn(name = "ticket_book_id")
+    private TicketBook ticketBook;
 
-    public Genre(Performance performance, GenreType genre) {
-        this.performance = performance;
-        this.genre = genre;
+    public Photo(String url, TicketBook ticketBook) {
+        this.url = url;
+        this.ticketBook = ticketBook;
     }
 }

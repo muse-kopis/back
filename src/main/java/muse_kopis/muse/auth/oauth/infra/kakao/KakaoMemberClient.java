@@ -1,6 +1,7 @@
 package muse_kopis.muse.auth.oauth.infra.kakao;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import muse_kopis.muse.auth.oauth.domain.OauthMember;
 import muse_kopis.muse.auth.oauth.domain.OauthServerType;
 import muse_kopis.muse.auth.oauth.domain.client.OauthMemberClient;
@@ -11,6 +12,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 
+@Slf4j
 @Component
 @RequiredArgsConstructor
 public class KakaoMemberClient implements OauthMemberClient {
@@ -26,9 +28,10 @@ public class KakaoMemberClient implements OauthMemberClient {
 
     @Override
     public OauthMember fetch(String authCode) {
-        KakaoToken tokenInfo = kakaoApiClient.fetchToken(tokenRequestParams(authCode)); // (1)
+        KakaoToken tokenInfo = kakaoApiClient.fetchToken(tokenRequestParams(authCode));
         KakaoMemberResponse kakaoMemberResponse =
-                kakaoApiClient.fetchMember("Bearer " + tokenInfo.accessToken());  // (2)
+                kakaoApiClient.fetchMember("Bearer " + tokenInfo.accessToken());
+        log.info("kakao access token : {}",tokenInfo.accessToken());
         return kakaoMemberResponse.toDomain();
     }
 
