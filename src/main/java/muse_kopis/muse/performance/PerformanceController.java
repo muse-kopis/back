@@ -53,7 +53,8 @@ public class PerformanceController {
 
     // 인기있는 공연 목록
     @GetMapping("/popular")
-    public ResponseEntity<List<PerformanceResponse>> getPerformancePopular(@ModelAttribute PopularPerformanceRequest popularPerformanceRequest) {
+    public ResponseEntity<List<PerformanceResponse>> getPerformancePopular(@ModelAttribute PopularPerformanceRequest popularPerformanceRequest)
+            throws JsonProcessingException {
         return ResponseEntity.ok().body(performanceService.fetchPopularPerformance(popularPerformanceRequest.type(), popularPerformanceRequest.date(),
                 popularPerformanceRequest.genre()));
     }

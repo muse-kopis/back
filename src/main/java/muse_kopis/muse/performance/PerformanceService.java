@@ -60,6 +60,7 @@ public class PerformanceService {
                 .collect(Collectors.toList());
     }
 
+    @Transactional
     public List<PerformanceResponse> findAllPerformanceBySearch(String search) {
         return performanceRepository.findAllByPerformanceNameContains(search)
                 .stream()
@@ -104,7 +105,9 @@ public class PerformanceService {
         }
     }
 
-    public List<PerformanceResponse> fetchPopularPerformance(String type, String date, String genre) {
+    @Transactional
+    public List<PerformanceResponse> fetchPopularPerformance(String type, String date, String genre)
+            throws JsonProcessingException {
         String url = API_URL_BOX_OFFICE + "?service=" + kopisKey + "&ststype=" + type + "&date=" + date + "&catecode=" + genre;
         String response = restTemplate.getForObject(url, String.class);
         try {

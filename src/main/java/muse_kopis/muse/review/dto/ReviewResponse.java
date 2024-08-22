@@ -1,10 +1,12 @@
 package muse_kopis.muse.review.dto;
 
+import io.swagger.v3.oas.annotations.media.Schema;
 import java.util.List;
 import lombok.Builder;
 import muse_kopis.muse.performance.castmember.dto.CastMemberDto;
 import muse_kopis.muse.review.Review;
 
+@Schema
 @Builder
 public record ReviewResponse(
         String content,

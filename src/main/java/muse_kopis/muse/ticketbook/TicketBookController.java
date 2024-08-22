@@ -1,5 +1,6 @@
 package muse_kopis.muse.ticketbook;
 
+import io.swagger.v3.oas.annotations.Operation;
 import java.time.LocalDate;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
@@ -8,16 +9,18 @@ import muse_kopis.muse.auth.Auth;
 import muse_kopis.muse.ticketbook.dto.MonthDto;
 import muse_kopis.muse.ticketbook.dto.TicketBookRequest;
 import muse_kopis.muse.ticketbook.dto.TicketBookResponse;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 
 @Slf4j
 @RestController
@@ -44,12 +47,14 @@ public class TicketBookController {
 
     @GetMapping("/month")
     public ResponseEntity<List<TicketBookResponse>> ticketBooksByMonth(@Auth Long memberId, @ModelAttribute MonthDto monthDto) {
-        log.error("year {}",monthDto.year());
         return ResponseEntity.ok().body(ticketBookService.ticketBooksForMonth(memberId, monthDto.year(), monthDto.month()));
     }
 
-    @PostMapping
-    public ResponseEntity<Long> writeTicketBooks(@Auth Long memberId, @RequestBody TicketBookRequest ticketBookRequest) {
+    @Operation(summary = "TicketBookRequest 스키마 참조",
+            description = "{\"performanceId\":Long,\n viewDate:\"2024-08-23\",\n "
+                    + "review : { \"content\": \"string\", \"star\": \"int\", \"castMembers\": [{\"name\":\"string\"}], visible:\"boolean\"}}")
+    @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<Long> writeTicketBooks(@Auth Long memberId, @ModelAttribute TicketBookRequest ticketBookRequest) {
         return ResponseEntity.ok()
                 .body(
                         ticketBookService.writeTicketBook(

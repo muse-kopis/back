@@ -10,16 +10,17 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
 import muse_kopis.muse.auth.oauth.domain.OauthMember;
 import muse_kopis.muse.performance.Performance;
 import muse_kopis.muse.performance.castmember.CastMember;
+import muse_kopis.muse.performance.castmember.dto.CastMemberDto;
 import muse_kopis.muse.review.Review;
 import muse_kopis.muse.review.dto.ReviewResponse;
 import muse_kopis.muse.ticketbook.photo.Photo;
@@ -52,11 +53,15 @@ public class TicketBook {
             ReviewResponse review,
             Performance performance
     ) {
+        List<CastMemberDto> castMemberDtos = review.castMembers();
+        if (castMemberDtos == null) {
+            castMemberDtos = new ArrayList<>();
+        }
         return TicketBook.builder()
                 .oauthMember(oauthMember)
                 .viewDate(viewDate)
                 .venue(performance.getVenue())
-                .castMembers(review.castMembers().stream().map(cast -> new CastMember(cast.name(), performance))
+                .castMembers(castMemberDtos.stream().map(cast -> new CastMember(cast.name(), performance))
                         .collect(Collectors.toList()))
                 .review(Review.builder()
                         .star(review.star())
