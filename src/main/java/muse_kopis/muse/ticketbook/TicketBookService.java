@@ -10,11 +10,14 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import muse_kopis.muse.auth.oauth.domain.OauthMember;
 import muse_kopis.muse.auth.oauth.domain.OauthMemberRepository;
+import muse_kopis.muse.auth.oauth.domain.UserTier;
 import muse_kopis.muse.common.InvalidLocalDateException;
 import muse_kopis.muse.common.NotFoundTicketBookException;
+import muse_kopis.muse.common.UnAuthorizationException;
 import muse_kopis.muse.performance.Performance;
 import muse_kopis.muse.performance.PerformanceRepository;
 import muse_kopis.muse.performance.usergenre.UserGenreService;
+import muse_kopis.muse.review.dto.ReviewRequest;
 import muse_kopis.muse.review.dto.ReviewResponse;
 import muse_kopis.muse.ticketbook.dto.TicketBookResponse;
 import muse_kopis.muse.ticketbook.photo.Photo;
@@ -62,7 +65,14 @@ public class TicketBookService {
         }).toList();
         photoRepository.saveAll(list);
         userGenreService.updateGenre(performance, oauthMember);
+        tierUpdate(oauthMember);
         return ticketBook.getId();
+    }
+
+    private void tierUpdate(OauthMember oauthMember) {
+        long counted = ticketBookRepository.countTicketBookByOauthMember(oauthMember);
+        oauthMember.updateUserTier(UserTier.fromCount(counted));
+        oauthMemberRepository.save(oauthMember);
     }
 
     @Transactional
@@ -75,8 +85,9 @@ public class TicketBookService {
 
     @Transactional
     public Long deleteTicketBook(Long memberId, Long ticketBookId) {
-        oauthMemberRepository.getByOauthMemberId(memberId);
+        OauthMember oauthMember = oauthMemberRepository.getByOauthMemberId(memberId);
         TicketBook ticketBook = ticketBookRepository.getByTicketBookId(ticketBookId);
+        ticketBook.valid(oauthMember);
         photoRepository.findAllByTicketBook(ticketBook).forEach(photo -> photoService.deleteImageFromS3(photo.getUrl()));
         photoRepository.deleteAll(photoRepository.findAllByTicketBook(ticketBook));
         ticketBookRepository.delete(ticketBook);
@@ -107,5 +118,21 @@ public class TicketBookService {
                             return TicketBookResponse.from(ticketBook, photos);
                         })
                 .collect(Collectors.toList());
+    }
+
+    @Transactional
+    public Long updateTicketBook(Long memberId, Long ticketBookId, LocalDate viewDate,
+                                 List<MultipartFile> photos, ReviewResponse review) {
+        TicketBook ticketBook = ticketBookRepository.getByTicketBookId(ticketBookId);
+        OauthMember oauthMember = oauthMemberRepository.getByOauthMemberId(memberId);
+        ticketBook.valid(oauthMember);
+        photoRepository.findAllByTicketBook(ticketBook).forEach(photo -> photoService.deleteImageFromS3(photo.getUrl()));
+        List<Photo> list = photos.stream().map(photo -> {
+            String url = photoService.upload(photo);
+            return new Photo(url, ticketBook);
+        }).toList();
+        photoRepository.saveAll(list);
+        ticketBook.update(viewDate, review);
+        return ticketBookRepository.save(ticketBook).getId();
     }
 }

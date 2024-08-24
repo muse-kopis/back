@@ -7,6 +7,7 @@ import com.fasterxml.jackson.databind.annotation.JsonNaming;
 import java.time.LocalDateTime;
 import muse_kopis.muse.auth.oauth.domain.OauthId;
 import muse_kopis.muse.auth.oauth.domain.OauthMember;
+import muse_kopis.muse.auth.oauth.domain.UserTier;
 
 @JsonNaming(SnakeCaseStrategy.class)
 public record KakaoMemberResponse(

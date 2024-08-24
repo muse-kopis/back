@@ -18,10 +18,12 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import muse_kopis.muse.auth.oauth.domain.OauthMember;
+import muse_kopis.muse.common.UnAuthorizationException;
 import muse_kopis.muse.performance.Performance;
 import muse_kopis.muse.performance.castmember.CastMember;
 import muse_kopis.muse.performance.castmember.dto.CastMemberDto;
 import muse_kopis.muse.review.Review;
+import muse_kopis.muse.review.dto.ReviewRequest;
 import muse_kopis.muse.review.dto.ReviewResponse;
 import muse_kopis.muse.ticketbook.photo.Photo;
 
@@ -70,5 +72,16 @@ public class TicketBook {
                         .performance(performance)
                         .build())
                 .build();
+    }
+
+    public void update(LocalDate viewDate, ReviewResponse request) {
+        this.viewDate = viewDate;
+        this.review = review.update(request.content(), request.star(), request.visible());
+    }
+
+    public void valid(OauthMember oauthMember) {
+        if (!this.oauthMember.equals(oauthMember)){
+            throw new UnAuthorizationException("티켓북 삭제 권한이 없습니다.");
+        }
     }
 }

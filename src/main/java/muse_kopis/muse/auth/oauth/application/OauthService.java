@@ -25,7 +25,17 @@ public class OauthService {
     public Long login(OauthServerType oauthServerType, String authCode) {
         OauthMember oauthMember = oauthMemberClientComposite.fetch(oauthServerType, authCode);
         OauthMember saved = oauthMemberRepository.findByOauthId(oauthMember.oauthId())
-                .orElseGet(() -> oauthMemberRepository.save(oauthMember));
+                .orElseGet(() -> {
+                    oauthMember.usernameInit();
+                    oauthMember.userTierInit();
+                    return oauthMemberRepository.save(oauthMember);
+                });
         return saved.id();
+    }
+
+    public void updateUsername(Long memberId, String newUsername) {
+        OauthMember oauthMember = oauthMemberRepository.getByOauthMemberId(memberId);
+        oauthMember.updateUsername(newUsername);
+        oauthMemberRepository.save(oauthMember);
     }
 }

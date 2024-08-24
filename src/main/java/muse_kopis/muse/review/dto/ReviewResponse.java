@@ -9,6 +9,7 @@ import muse_kopis.muse.review.Review;
 @Schema
 @Builder
 public record ReviewResponse(
+        String userName,
         String content,
         Integer star,
         List<CastMemberDto> castMembers,
@@ -16,6 +17,7 @@ public record ReviewResponse(
 ) {
     public static ReviewResponse from(Review review) {
         return ReviewResponse.builder()
+                .userName(review.getOauthMember().nickname())
                 .content(review.getContent())
                 .star(review.getStar())
                 .castMembers(review.getPerformance().getCastMembers()

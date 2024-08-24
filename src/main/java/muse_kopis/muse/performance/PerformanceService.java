@@ -114,7 +114,7 @@ public class PerformanceService {
             Boxofs boxofs = xmlMapper.readValue(response, Boxofs.class);
             List<Boxof> boxofList = boxofs.boxof()
                     .stream()
-                    .limit(10)
+                    .limit(6)
                     .toList();
             LevenshteinDistance levenshtein = new LevenshteinDistance();
             List<Performance> collect = boxofList.stream().map(it -> performanceRepository.findAllByStateOrState(CURRENT, UPCOMING).stream()

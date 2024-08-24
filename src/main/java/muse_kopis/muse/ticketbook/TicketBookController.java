@@ -14,13 +14,12 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.multipart.MultipartFile;
 
 @Slf4j
 @RestController
@@ -69,5 +68,17 @@ public class TicketBookController {
     @DeleteMapping("/{ticketBookId}")
     public ResponseEntity<Long> deleteTicketBooks(@Auth Long memberId, @PathVariable Long ticketBookId) {
         return ResponseEntity.ok().body(ticketBookService.deleteTicketBook(memberId, ticketBookId));
+    }
+
+    @PatchMapping("/{ticketBookId}")
+    public ResponseEntity<Long> updateTicketBook(@Auth Long memberId, @PathVariable Long ticketBookId, @ModelAttribute TicketBookRequest ticketBookRequest) {
+        return ResponseEntity.ok()
+                .body(
+                        ticketBookService.updateTicketBook(
+                                memberId,
+                                ticketBookId,
+                                ticketBookRequest.viewDate(),
+                                ticketBookRequest.photos(),
+                                ticketBookRequest.review()));
     }
 }

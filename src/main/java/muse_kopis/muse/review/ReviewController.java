@@ -1,5 +1,6 @@
 package muse_kopis.muse.review;
 
+import io.swagger.v3.oas.annotations.Operation;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import muse_kopis.muse.auth.Auth;
@@ -34,9 +35,17 @@ public class ReviewController {
         return ResponseEntity.ok().build();
     }
 
-    @GetMapping
-    public ResponseEntity<List<ReviewResponse>> getReviews(@Auth Long memberId, @ModelAttribute PerformanceInfo performanceInfo) {
-        return ResponseEntity.ok().body(reviewService.getReviews(memberId, performanceInfo.performanceName(),
+    @Operation(description = "공연상세 페이지 후기란에서 확인 할 수 있는 리뷰")
+    @GetMapping("/public")
+    public ResponseEntity<List<ReviewResponse>> getPublicReviews(@Auth Long memberId, @ModelAttribute PerformanceInfo performanceInfo) {
+        return ResponseEntity.ok().body(reviewService.getPublicReviews(memberId, performanceInfo.performanceName(),
+                performanceInfo.venue()));
+    }
+
+    @Operation(description = "사용자가 작성한 리뷰 전체")
+    @GetMapping("/private")
+    public ResponseEntity<List<ReviewResponse>> getPrivateReviews(@Auth Long memberId, @ModelAttribute PerformanceInfo performanceInfo) {
+        return ResponseEntity.ok().body(reviewService.getPrivateReview(memberId, performanceInfo.performanceName(),
                 performanceInfo.venue()));
     }
 }

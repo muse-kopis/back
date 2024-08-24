@@ -13,6 +13,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import muse_kopis.muse.auth.oauth.domain.OauthMember;
 import muse_kopis.muse.performance.Performance;
+import muse_kopis.muse.review.dto.ReviewRequest;
+import muse_kopis.muse.review.dto.ReviewResponse;
 
 @Entity
 @Getter
@@ -40,5 +42,12 @@ public class Review {
         this.content = content;
         this.star = star;
         this.visible = visible;
+    }
+
+    public Review update(String content, Integer star, Boolean visible) {
+        this.content = content;
+        this.star = star;
+        this.visible = visible;
+        return this;
     }
 }
