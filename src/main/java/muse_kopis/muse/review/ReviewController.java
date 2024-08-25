@@ -23,8 +23,8 @@ public class ReviewController {
     private final ReviewService reviewService;
 
     @PostMapping
-    public ResponseEntity<Void> writeReviews(@Auth Long memberId, @RequestBody ReviewRequest reviewRequest) {
-        reviewService.writeReviews(
+    public ResponseEntity<Long> writeReview(@Auth Long memberId, @RequestBody ReviewRequest reviewRequest) {
+        Review review = reviewService.writeReview(
                 memberId,
                 reviewRequest.performanceName(),
                 reviewRequest.venue(),
@@ -32,7 +32,7 @@ public class ReviewController {
                 reviewRequest.star(),
                 reviewRequest.visible()
         );
-        return ResponseEntity.ok().build();
+        return ResponseEntity.ok().body(review.getId());
     }
 
     @Operation(description = "공연상세 페이지 후기란에서 확인 할 수 있는 리뷰")

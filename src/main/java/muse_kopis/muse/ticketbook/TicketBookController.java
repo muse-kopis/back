@@ -2,6 +2,7 @@ package muse_kopis.muse.ticketbook;
 
 import io.swagger.v3.oas.annotations.Operation;
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -9,6 +10,7 @@ import muse_kopis.muse.auth.Auth;
 import muse_kopis.muse.ticketbook.dto.MonthDto;
 import muse_kopis.muse.ticketbook.dto.TicketBookRequest;
 import muse_kopis.muse.ticketbook.dto.TicketBookResponse;
+import muse_kopis.muse.ticketbook.photo.PhotoService;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -28,6 +30,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class TicketBookController {
 
     private final TicketBookService ticketBookService;
+    private final PhotoService photoService;
 
     @GetMapping
     public ResponseEntity<List<TicketBookResponse>> ticketBooks(@Auth Long memberId) {
@@ -54,14 +57,22 @@ public class TicketBookController {
                     + "review : { \"content\": \"string\", \"star\": \"int\", \"castMembers\": [{\"name\":\"string\"}], visible:\"boolean\"}}")
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<Long> writeTicketBooks(@Auth Long memberId, @ModelAttribute TicketBookRequest ticketBookRequest) {
+        List<String> urls = new ArrayList<>();
+        if (ticketBookRequest.photos() != null) {
+            urls = ticketBookRequest.photos().stream().map(photoService::upload).toList();
+        }
         return ResponseEntity.ok()
                 .body(
                         ticketBookService.writeTicketBook(
-                        memberId,
-                        ticketBookRequest.performanceId(),
-                        ticketBookRequest.viewDate(),
-                        ticketBookRequest.photos(),
-                        ticketBookRequest.review())
+                                memberId,
+                                ticketBookRequest.performanceId(),
+                                ticketBookRequest.viewDate(),
+                                urls,
+                                ticketBookRequest.star(),
+                                ticketBookRequest.content(),
+                                ticketBookRequest.visible(),
+                                ticketBookRequest.castMembers()
+                        )
                 );
     }
 
@@ -72,13 +83,19 @@ public class TicketBookController {
 
     @PatchMapping("/{ticketBookId}")
     public ResponseEntity<Long> updateTicketBook(@Auth Long memberId, @PathVariable Long ticketBookId, @ModelAttribute TicketBookRequest ticketBookRequest) {
+        List<String> urls = photoService.updateTicketBookImage(ticketBookId, ticketBookRequest.photos());
         return ResponseEntity.ok()
                 .body(
                         ticketBookService.updateTicketBook(
                                 memberId,
                                 ticketBookId,
                                 ticketBookRequest.viewDate(),
-                                ticketBookRequest.photos(),
-                                ticketBookRequest.review()));
+                                urls,
+                                ticketBookRequest.star(),
+                                ticketBookRequest.content(),
+                                ticketBookRequest.visible(),
+                                ticketBookRequest.castMembers()
+                        )
+                );
     }
 }

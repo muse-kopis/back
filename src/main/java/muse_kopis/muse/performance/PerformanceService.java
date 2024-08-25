@@ -9,6 +9,8 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import lombok.extern.slf4j.Slf4j;
+import muse_kopis.muse.auth.oauth.domain.OauthMember;
+import muse_kopis.muse.auth.oauth.domain.OauthMemberRepository;
 import muse_kopis.muse.common.FetchFailException;
 import muse_kopis.muse.common.NotFoundPerformanceException;
 import muse_kopis.muse.performance.castmember.CastMember;
@@ -20,6 +22,10 @@ import muse_kopis.muse.performance.dto.KOPISPerformanceResponse;
 import muse_kopis.muse.performance.dto.KOPISPerformanceResponse.DB;
 import muse_kopis.muse.performance.dto.KOPISPerformanceDetailResponse;
 import muse_kopis.muse.performance.dto.PerformanceResponse;
+import muse_kopis.muse.performance.genre.GenreRepository;
+import muse_kopis.muse.performance.genre.GenreType;
+import muse_kopis.muse.performance.usergenre.UserGenre;
+import muse_kopis.muse.performance.usergenre.UserGenreRepository;
 import org.apache.commons.text.similarity.LevenshteinDistance;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -35,6 +41,9 @@ public class PerformanceService {
     private final String API_URL_BOX_OFFICE = "http://kopis.or.kr/openApi/restful/boxoffice";
     private final PerformanceRepository performanceRepository;
     private final CastMemberRepository castMemberRepository;
+    private final UserGenreRepository userGenreRepository;
+    private final OauthMemberRepository oauthMemberRepository;
+    private final GenreRepository genreRepository;
     private final RestTemplate restTemplate;
     private final XmlMapper xmlMapper;
     private final static String CURRENT = "공연중";
@@ -42,17 +51,28 @@ public class PerformanceService {
     private final static String BLANK_OR_COMMA = "[,\\s]+";
     public static final String BLANK_OR_PARENTHESIS = "[\\s()]";
 
-    public PerformanceService(PerformanceRepository performanceRepository, CastMemberRepository castMemberRepository) {
+    public PerformanceService(
+            PerformanceRepository performanceRepository,
+            CastMemberRepository castMemberRepository,
+            UserGenreRepository userGenreRepository,
+            OauthMemberRepository oauthMemberRepository,
+            GenreRepository genreRepository
+    ) {
         this.performanceRepository = performanceRepository;
         this.castMemberRepository = castMemberRepository;
+        this.userGenreRepository = userGenreRepository;
+        this.oauthMemberRepository = oauthMemberRepository;
+        this.genreRepository = genreRepository;
         this.restTemplate = new RestTemplate();
         this.xmlMapper = new XmlMapper();
     }
 
+    @Transactional
     public PerformanceResponse findById(Long performanceId) {
         return PerformanceResponse.from(performanceRepository.getByPerformanceId(performanceId));
     }
 
+    @Transactional
     public List<PerformanceResponse> findAllPerformance(String state){
         return performanceRepository.findAllByState(state)
                 .stream()
@@ -99,15 +119,14 @@ public class PerformanceService {
                     .map(String::trim)
                     .map(name -> name.endsWith("등") ? name.substring(0, name.length() - 1).trim() : name)
                     .filter(name -> !name.isEmpty())  // 빈 문자열 필터링
-                    .map(name -> new CastMember(name,performance))
+                    .map(name -> new CastMember(name.replace("\"",""),performance))
                     .toList();
             castMemberRepository.saveAll(castMembers);
         }
     }
 
     @Transactional
-    public List<PerformanceResponse> fetchPopularPerformance(String type, String date, String genre)
-            throws JsonProcessingException {
+    public List<PerformanceResponse> fetchPopularPerformance(String type, String date, String genre) {
         String url = API_URL_BOX_OFFICE + "?service=" + kopisKey + "&ststype=" + type + "&date=" + date + "&catecode=" + genre;
         String response = restTemplate.getForObject(url, String.class);
         try {
@@ -134,5 +153,15 @@ public class PerformanceService {
         String url = API_URL + "/" + performanceId +"?service="+kopisKey;
         String response = restTemplate.getForObject(url, String.class);
         return xmlMapper.readValue(response, KOPISPerformanceDetailResponse.class);
+    }
+
+    public List<PerformanceResponse> recommendPerformance(Long memberId) {
+        OauthMember oauthMember = oauthMemberRepository.getByOauthMemberId(memberId);
+        UserGenre userGenre = userGenreRepository.getUserGenreByOauthMember(oauthMember);
+        GenreType favorite = userGenre.favorite();
+        return genreRepository.findAllByGenre(favorite)
+                .stream()
+                .map(genre -> PerformanceResponse.from(genre.getPerformance()))
+                .toList();
     }
 }

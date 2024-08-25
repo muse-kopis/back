@@ -8,15 +8,20 @@ import java.util.concurrent.Executors;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import muse_kopis.muse.auth.Auth;
+import muse_kopis.muse.performance.dto.PerformanceIds;
 import muse_kopis.muse.performance.dto.PerformanceRequest;
 import muse_kopis.muse.performance.dto.PerformanceResponse;
 import muse_kopis.muse.performance.dto.PopularPerformanceRequest;
 import muse_kopis.muse.performance.genre.GenreService;
 import muse_kopis.muse.performance.genre.GenreType;
+import muse_kopis.muse.performance.usergenre.UserGenreService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -29,6 +34,7 @@ public class PerformanceController {
 
     private final PerformanceService performanceService;
     private final GenreService genreService;
+    private final UserGenreService userGenreService;
 
     // KOPIS 전체 공연 목록 저장
     @GetMapping("/kopis")
@@ -53,8 +59,7 @@ public class PerformanceController {
 
     // 인기있는 공연 목록
     @GetMapping("/popular")
-    public ResponseEntity<List<PerformanceResponse>> getPerformancePopular(@ModelAttribute PopularPerformanceRequest popularPerformanceRequest)
-            throws JsonProcessingException {
+    public ResponseEntity<List<PerformanceResponse>> getPerformancePopular(@ModelAttribute PopularPerformanceRequest popularPerformanceRequest) {
         return ResponseEntity.ok().body(performanceService.fetchPopularPerformance(popularPerformanceRequest.type(), popularPerformanceRequest.date(),
                 popularPerformanceRequest.genre()));
     }
@@ -63,6 +68,22 @@ public class PerformanceController {
     @GetMapping("/{performanceId}")
     public ResponseEntity<PerformanceResponse> getPerformance(@PathVariable Long performanceId) {
         return ResponseEntity.ok().body(performanceService.findById(performanceId));
+    }
+
+    @GetMapping("/recommend")
+    public ResponseEntity<List<PerformanceResponse>> recommendPerformance(@Auth Long memberId){
+        return ResponseEntity.ok().body(performanceService.recommendPerformance(memberId));
+    }
+
+    @GetMapping("/onboarding")
+    public ResponseEntity<List<PerformanceResponse>> showOnboarding() {
+        return ResponseEntity.ok().body(userGenreService.showOnboarding());
+    }
+
+    @PostMapping("/onboarding")
+    public ResponseEntity<Void> updateUserGenre(@Auth Long memberId, @RequestBody PerformanceIds performanceIds) {
+        userGenreService.updateGenres(performanceIds.ids(), memberId);
+        return ResponseEntity.ok().build();
     }
 
 //    @PostConstruct

@@ -50,4 +50,8 @@ public class Review {
         this.visible = visible;
         return this;
     }
+
+    public Boolean isVisible() {
+        return visible;
+    }
 }

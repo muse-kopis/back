@@ -22,6 +22,8 @@ public record KakaoMemberResponse(
                 .oauthId(new OauthId(String.valueOf(id), KAKAO))
                 .nickname(kakaoAccount.profile.nickname)
                 .profileImageUrl(kakaoAccount.profile.profileImageUrl)
+                .username(kakaoAccount.profile.nickname)
+                .tier(UserTier.NEWBIE)
                 .build();
     }
 

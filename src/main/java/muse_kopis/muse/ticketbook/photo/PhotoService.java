@@ -13,11 +13,15 @@ import java.io.UnsupportedEncodingException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLDecoder;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import muse_kopis.muse.common.S3Exception;
+import muse_kopis.muse.ticketbook.TicketBook;
+import muse_kopis.muse.ticketbook.TicketBookRepository;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -27,7 +31,12 @@ import org.springframework.web.multipart.MultipartFile;
 @RequiredArgsConstructor
 public class PhotoService {
 
+    private final static PhotoValidator validator = new PhotoValidator();
+
+    private final TicketBookRepository ticketBookRepository;
+    private final PhotoRepository photoRepository;
     private final AmazonS3 amazonS3;
+
     @Value("${cloud.aws.s3.bucketName}")
     private String bucketName;
 
@@ -39,7 +48,6 @@ public class PhotoService {
     }
 
     private String uploadImage(MultipartFile image) {
-        PhotoValidator validator = new PhotoValidator();
         validator.validateImageFileExtention(Objects.requireNonNull(image.getOriginalFilename()));
         try {
             return this.uploadImageToS3(image);
@@ -91,5 +99,14 @@ public class PhotoService {
         }catch (MalformedURLException | UnsupportedEncodingException e){
             throw new S3Exception("삭제에 실패했습니다.");
         }
+    }
+
+    public List<String> updateTicketBookImage(Long ticketBookId, List<MultipartFile> photos) {
+        TicketBook ticketBook = ticketBookRepository.getByTicketBookId(ticketBookId);
+        photoRepository.findAllByTicketBook(ticketBook).forEach(photo -> deleteImageFromS3(photo.getUrl()));
+        if (photos == null) {
+            photos = new ArrayList<>();
+        }
+        return photos.stream().map(this::upload).toList();
     }
 }

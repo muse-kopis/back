@@ -12,4 +12,9 @@ public record CastMemberDto(
                 .name(castMember.getName())
                 .build();
     }
+
+    @Override
+    public String toString() {
+        return name;
+    }
 }

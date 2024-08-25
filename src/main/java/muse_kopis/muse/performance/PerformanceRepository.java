@@ -14,6 +14,11 @@ public interface PerformanceRepository extends JpaRepository<Performance, Long> 
         return findById(performanceId)
                 .orElseThrow(() -> new NotFoundPerformanceException("공연을 찾을 수 없습니다."));
     }
+
+    default Performance getByPerformanceNameAndVenue(String performanceName, String venue) {
+        return findByPerformanceNameAndVenue(performanceName, venue)
+                .orElseThrow(() -> new NotFoundPerformanceException("공연을 찾을 수 없습니다."));
+    }
     List<Performance> findAllByPerformanceNameContains(String search);
     List<Performance> findByPerformanceName(String performanceName);
     List<Performance> findAllByState(String state);

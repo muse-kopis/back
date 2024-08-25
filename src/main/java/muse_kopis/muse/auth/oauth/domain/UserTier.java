@@ -1,11 +1,8 @@
 package muse_kopis.muse.auth.oauth.domain;
 
 public enum UserTier {
-    NEWBIE("Newbie"), LOVER("Lover"), MANIA("Mania")
+    NEWBIE, LOVER, MANIA
     ;
-
-    UserTier(String tier) {
-    }
 
     public static UserTier fromCount(long count) {
         if (count >= 20) {

@@ -1,6 +1,6 @@
 package muse_kopis.muse.ticketbook.dto;
 
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 import lombok.Builder;
@@ -13,7 +13,7 @@ import muse_kopis.muse.ticketbook.photo.dto.PhotoResponse;
 @Builder
 public record TicketBookResponse(
         Long id,
-        LocalDate viewDate,
+        LocalDateTime viewDate,
         String venue,
         List<PhotoResponse> photos,
         ReviewResponse reviewResponse

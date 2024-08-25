@@ -60,16 +60,12 @@ public class OauthMember {
         return profileImageUrl;
     }
 
-    public void userTierInit() {
-        this.tier = UserTier.NEWBIE;
+    public UserTier userTier() {
+        return tier;
     }
 
     public void updateUserTier(UserTier tier) {
         this.tier = tier;
-    }
-
-    public void usernameInit() {
-        this.username = nickname;
     }
 
     public void updateUsername(String username) {
