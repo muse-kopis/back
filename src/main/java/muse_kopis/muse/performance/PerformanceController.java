@@ -3,6 +3,7 @@ package muse_kopis.muse.performance;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import jakarta.annotation.PostConstruct;
 import java.util.List;
+import java.util.Set;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -73,6 +74,11 @@ public class PerformanceController {
     @GetMapping("/recommend")
     public ResponseEntity<List<PerformanceResponse>> recommendPerformance(@Auth Long memberId){
         return ResponseEntity.ok().body(performanceService.recommendPerformance(memberId));
+    }
+
+    @GetMapping("/random")
+    public ResponseEntity<Set<PerformanceResponse>> randomPerformance(@Auth Long memberId) {
+        return ResponseEntity.ok().body(performanceService.getRandomPerformance(memberId));
     }
 
     @GetMapping("/onboarding")

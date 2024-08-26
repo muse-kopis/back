@@ -3,10 +3,14 @@ package muse_kopis.muse.performance;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.dataformat.xml.XmlMapper;
 import jakarta.transaction.Transactional;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
+import java.util.Random;
+import java.util.Set;
 import java.util.stream.Collectors;
 import lombok.extern.slf4j.Slf4j;
 import muse_kopis.muse.auth.oauth.domain.OauthMember;
@@ -155,6 +159,7 @@ public class PerformanceService {
         return xmlMapper.readValue(response, KOPISPerformanceDetailResponse.class);
     }
 
+    @Transactional
     public List<PerformanceResponse> recommendPerformance(Long memberId) {
         OauthMember oauthMember = oauthMemberRepository.getByOauthMemberId(memberId);
         UserGenre userGenre = userGenreRepository.getUserGenreByOauthMember(oauthMember);
@@ -163,5 +168,19 @@ public class PerformanceService {
                 .stream()
                 .map(genre -> PerformanceResponse.from(genre.getPerformance()))
                 .toList();
+    }
+
+    @Transactional
+    public Set<PerformanceResponse> getRandomPerformance(Long memberId) {
+        oauthMemberRepository.getByOauthMemberId(memberId);
+        List<Performance> performances = performanceRepository.findAllByState(CURRENT);
+        Set<PerformanceResponse> responses = new HashSet<>();
+        while (responses.size() < 7){
+            if (!performances.isEmpty()) {
+                Random random = new Random();
+                responses.add(PerformanceResponse.from(performances.get(random.nextInt(performances.size()))));
+            }
+        }
+        return responses;
     }
 }

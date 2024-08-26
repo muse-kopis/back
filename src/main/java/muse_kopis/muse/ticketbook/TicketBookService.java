@@ -11,6 +11,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import muse_kopis.muse.auth.oauth.domain.OauthMember;
 import muse_kopis.muse.auth.oauth.domain.OauthMemberRepository;
+import muse_kopis.muse.auth.oauth.domain.TierImageURL;
 import muse_kopis.muse.auth.oauth.domain.UserTier;
 import muse_kopis.muse.common.InvalidLocalDateException;
 import muse_kopis.muse.common.NotFoundTicketBookException;
@@ -23,13 +24,13 @@ import muse_kopis.muse.ticketbook.photo.Photo;
 import muse_kopis.muse.ticketbook.photo.PhotoRepository;
 import muse_kopis.muse.ticketbook.photo.PhotoService;
 import org.springframework.stereotype.Service;
-import org.springframework.web.multipart.MultipartFile;
 
 @Slf4j
 @Service
 @RequiredArgsConstructor
 public class TicketBookService {
 
+    private final TierImageURL tierImageURL;
     private final OauthMemberRepository oauthMemberRepository;
     private final TicketBookRepository ticketBookRepository;
     private final PerformanceRepository performanceRepository;
@@ -73,7 +74,12 @@ public class TicketBookService {
 
     private void tierUpdate(OauthMember oauthMember) {
         long counted = ticketBookRepository.countTicketBookByOauthMember(oauthMember);
-        oauthMember.updateUserTier(UserTier.fromCount(counted));
+        UserTier tier = UserTier.fromCount(counted);
+        switch (tier) {
+            case MANIA -> oauthMember.updateUserTier(tier, tierImageURL.getMania());
+            case LOVER -> oauthMember.updateUserTier(tier, tierImageURL.getLover());
+            case NEWBIE -> oauthMember.updateUserTier(tier, tierImageURL.getNewbie());
+        }
         oauthMemberRepository.save(oauthMember);
     }
 
@@ -93,18 +99,18 @@ public class TicketBookService {
         photoRepository.findAllByTicketBook(ticketBook).forEach(photo -> photoService.deleteImageFromS3(photo.getUrl()));
         photoRepository.deleteAll(photoRepository.findAllByTicketBook(ticketBook));
         ticketBookRepository.delete(ticketBook);
+        tierUpdate(oauthMember);
         return ticketBookId;
     }
 
     @Transactional
-    public TicketBookResponse ticketBookInDate(Long memberId, LocalDate localDate) {
+    public List<TicketBookResponse> ticketBookInDate(Long memberId, LocalDate localDate) {
         OauthMember oauthMember = oauthMemberRepository.getByOauthMemberId(memberId);
         LocalDateTime startDateTime = localDate.atStartOfDay();
         LocalDateTime endDateTime = localDate.plusDays(1).atStartOfDay();
-        TicketBook ticketBook = ticketBookRepository.findByOauthMemberAndViewDate(memberId, startDateTime, endDateTime)
-                .orElseThrow(() -> new NotFoundTicketBookException("티켓북이 존재하지 않습니다."));
-        List<Photo> photos = photoRepository.findAllByTicketBook(ticketBook);
-        return TicketBookResponse.from(ticketBook, photos);
+        List<TicketBook> ticketBook = ticketBookRepository.findByOauthMemberAndViewDate(memberId, startDateTime, endDateTime);
+        return ticketBook.stream().map(ticket ->
+            TicketBookResponse.from(ticket, photoRepository.findAllByTicketBook(ticket))).toList();
     }
 
     @Transactional

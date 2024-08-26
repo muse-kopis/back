@@ -43,7 +43,7 @@ public class TicketBookController {
     }
 
     @GetMapping("/date")
-    public ResponseEntity<TicketBookResponse> ticketBookInDate(@Auth Long memberId, @RequestParam LocalDate localDate) {
+    public ResponseEntity<List<TicketBookResponse>> ticketBookInDate(@Auth Long memberId, @RequestParam LocalDate localDate) {
         return ResponseEntity.ok().body(ticketBookService.ticketBookInDate(memberId, localDate));
     }
 

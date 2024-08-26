@@ -7,6 +7,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import java.util.Objects;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import muse_kopis.muse.performance.Performance;
@@ -27,5 +28,19 @@ public class CastMember {
     public CastMember(String name, Performance performance) {
         this.name = name;
         this.performance = performance;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        CastMember that = (CastMember) o;
+        return Objects.equals(name, that.name) &&
+                Objects.equals(performance, that.performance);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(name, performance);
     }
 }

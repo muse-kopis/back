@@ -57,5 +57,4 @@ public class OauthController {
     public ResponseEntity<UserInfo> userInfo(@Auth Long memberId) {
         return ResponseEntity.ok().body(oauthService.getInfo(memberId));
     }
-
 }
