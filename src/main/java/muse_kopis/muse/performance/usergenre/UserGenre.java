@@ -142,4 +142,8 @@ public class UserGenre {
 
         favorite = Collections.max(genreWeights.entrySet(), Map.Entry.comparingByValue()).getKey();
     }
+
+    public GenreType favorite() {
+        return favorite;
+    }
 }

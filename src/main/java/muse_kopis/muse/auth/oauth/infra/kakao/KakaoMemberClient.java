@@ -3,6 +3,7 @@ package muse_kopis.muse.auth.oauth.infra.kakao;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import muse_kopis.muse.auth.oauth.domain.OauthMember;
+import muse_kopis.muse.auth.oauth.domain.OauthMemberRepository;
 import muse_kopis.muse.auth.oauth.domain.OauthServerType;
 import muse_kopis.muse.auth.oauth.domain.client.OauthMemberClient;
 import muse_kopis.muse.auth.oauth.infra.kakao.client.KakaoApiClient;
@@ -19,7 +20,6 @@ public class KakaoMemberClient implements OauthMemberClient {
 
     private final KakaoApiClient kakaoApiClient;
     private final KakaoOauthConfig kakaoOauthConfig;
-
 
     @Override
     public OauthServerType supportServer() {

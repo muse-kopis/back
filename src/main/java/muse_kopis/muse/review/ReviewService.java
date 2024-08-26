@@ -1,12 +1,11 @@
 package muse_kopis.muse.review;
 
+import jakarta.transaction.Transactional;
 import java.util.List;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import muse_kopis.muse.auth.oauth.domain.OauthMember;
 import muse_kopis.muse.auth.oauth.domain.OauthMemberRepository;
-import muse_kopis.muse.common.NotFoundMemberException;
-import muse_kopis.muse.common.NotFoundPerformanceException;
 import muse_kopis.muse.performance.Performance;
 import muse_kopis.muse.performance.PerformanceRepository;
 import muse_kopis.muse.review.dto.ReviewResponse;
@@ -20,17 +19,27 @@ public class ReviewService {
     private final ReviewRepository reviewRepository;
     private final OauthMemberRepository oauthMemberRepository;
 
-    public void writeReviews(Long memberId, String performanceName, String venue, String content, Integer star, Boolean visible) {
+    @Transactional
+    public Review writeReview(Long memberId, String performanceName, String venue, String content, Integer star, Boolean visible) {
         OauthMember oauthMember = oauthMemberRepository.getByOauthMemberId(memberId);
-        Performance performance = performanceRepository.findByPerformanceNameAndVenue(performanceName, venue)
-                .orElseThrow(() -> new NotFoundPerformanceException("공연을 찾을 수 없습니다."));
-        reviewRepository.save(new Review(oauthMember, performance, content, star, visible));
+        Performance performance = performanceRepository.getByPerformanceNameAndVenue(performanceName, venue);
+        return reviewRepository.save(new Review(oauthMember, performance, content, star, visible));
     }
 
-    public List<ReviewResponse> getReviews(Long memberId, String performanceName, String venue) {
+    @Transactional
+    public List<ReviewResponse> getPublicReviews(Long memberId, String performanceName, String venue) {
         oauthMemberRepository.getByOauthMemberId(memberId);
-        Performance performance = performanceRepository.findByPerformanceNameAndVenue(performanceName, venue)
-                .orElseThrow(() -> new NotFoundPerformanceException("공연을 찾을 수 없습니다."));
+        Performance performance = performanceRepository.getByPerformanceNameAndVenue(performanceName, venue);
+        List<Review> reviews = reviewRepository.findAllByPerformance(performance).stream()
+                .filter(Review::isVisible)
+                .toList();
+        return reviews.stream().map(ReviewResponse::from).collect(Collectors.toList());
+    }
+
+    @Transactional
+    public List<ReviewResponse> getPrivateReview(Long memberId, String performanceName, String venue) {
+        oauthMemberRepository.getByOauthMemberId(memberId);
+        Performance performance = performanceRepository.getByPerformanceNameAndVenue(performanceName, venue);
         List<Review> reviews = reviewRepository.findAllByPerformance(performance);
         return reviews.stream().map(ReviewResponse::from).collect(Collectors.toList());
     }

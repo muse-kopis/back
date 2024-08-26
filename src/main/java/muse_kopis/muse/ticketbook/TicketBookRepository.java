@@ -1,6 +1,7 @@
 package muse_kopis.muse.ticketbook;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import muse_kopis.muse.auth.oauth.domain.OauthMember;
@@ -15,7 +16,9 @@ public interface TicketBookRepository extends JpaRepository<TicketBook, Long> {
         return findById(ticketBookId).orElseThrow(() -> new NotFoundTicketBookException("티켓북을 찾을 수 없습니다."));
     }
     List<TicketBook> findAllByOauthMember(OauthMember oauthMember);
-    Optional<TicketBook> findByOauthMemberAndViewDate(OauthMember oauthMember, LocalDate viewDate);
     @Query("SELECT tb FROM TicketBook tb WHERE tb.oauthMember.id = :oauthId and tb.viewDate BETWEEN :startDate AND :endDate")
-    List<TicketBook> findAllByOauthMemberAndViewDateBetween(@Param("oauthId")Long oauthId, @Param("startDate") LocalDate startDate, @Param("endDate") LocalDate endDate);
+    Optional<TicketBook> findByOauthMemberAndViewDate(@Param("oauthId")Long oauthId, @Param("startDate") LocalDateTime startDate, @Param("endDate") LocalDateTime endDate);
+    @Query("SELECT tb FROM TicketBook tb WHERE tb.oauthMember.id = :oauthId and tb.viewDate BETWEEN :startDate AND :endDate")
+    List<TicketBook> findAllByOauthMemberAndViewDateBetween(@Param("oauthId")Long oauthId, @Param("startDate") LocalDateTime startDate, @Param("endDate") LocalDateTime endDate);
+    long countTicketBookByOauthMember(OauthMember oauthMember);
 }

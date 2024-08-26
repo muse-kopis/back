@@ -36,9 +36,10 @@ public class OauthMember {
 
     @Embedded
     private OauthId oauthId;
-    private String nickname;
+    private String nickname; // 카카오에서 받아온 사용자 이름
     private String profileImageUrl;
-
+    private UserTier tier;
+    private String username; // 서비스 내부에서 보이는 사용자 이름
     public Long id() {
         return id;
     }
@@ -51,7 +52,23 @@ public class OauthMember {
         return nickname;
     }
 
+    public String username() {
+        return username;
+    }
+
     public String profileImageUrl() {
         return profileImageUrl;
+    }
+
+    public UserTier userTier() {
+        return tier;
+    }
+
+    public void updateUserTier(UserTier tier) {
+        this.tier = tier;
+    }
+
+    public void updateUsername(String username) {
+        this.username = username;
     }
 }
