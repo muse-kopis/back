@@ -9,6 +9,7 @@ import muse_kopis.muse.performance.dto.PerformanceResponse;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -22,16 +23,16 @@ public class HeartController {
 
     private final HeartService heartService;
 
-    @PostMapping("/like")
-    public ResponseEntity<Void> like(@Auth Long memberId, @RequestBody LikeRequest likeRequest) {
+    @PostMapping("/{performanceId}/like")
+    public ResponseEntity<Void> like(@Auth Long memberId, @PathVariable Long performanceId) {
         log.info("memberId = {}", memberId);
-        heartService.like(memberId, likeRequest.performanceName(), likeRequest.venue());
+        heartService.like(memberId, performanceId);
         return ResponseEntity.ok().build();
     }
 
-    @DeleteMapping("/like")
-    public ResponseEntity<Void> unlike(@Auth Long memberId, @RequestBody LikeRequest likeRequest) {
-        heartService.unlike(memberId, likeRequest.performanceName(), likeRequest.venue());
+    @DeleteMapping("/{performanceId}/like")
+    public ResponseEntity<Void> unlike(@Auth Long memberId, @PathVariable Long performanceId) {
+        heartService.unlike(memberId, performanceId);
         return ResponseEntity.ok().build();
     }
 
@@ -39,4 +40,10 @@ public class HeartController {
     public ResponseEntity<List<PerformanceResponse>> getPerformances(@Auth Long memberId) {
         return ResponseEntity.ok().body(heartService.getMembersLikePerformanceList(memberId));
     }
+
+    @GetMapping("/{performanceId}/like")
+    public ResponseEntity<Boolean> getPerformance(@Auth Long memberId, @PathVariable Long performanceId) {
+        return ResponseEntity.ok().body(heartService.getMemberIsLikePerformance(memberId, performanceId));
+    }
+
 }

@@ -26,7 +26,12 @@ public enum GenreType {
     INTERACTIVE("체험형"),
     EMOTION("감성"),
     YOUTHFUL_GROWTH("청춘성장"),
-    CABARET("캬바레");
+    CABARET("캬바레"),
+    FEMALE_ONLY("여성전용"),
+    BAND_MUSICAL("밴드뮤지컬"),
+    RELIGION("종교"),
+    CLASSIC_NOVEL("고전소설"),
+    TALK_CONCERT("토크콘서트");
 
     GenreType(String genre) {
     }

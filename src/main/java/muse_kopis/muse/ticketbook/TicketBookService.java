@@ -14,7 +14,6 @@ import muse_kopis.muse.auth.oauth.domain.OauthMemberRepository;
 import muse_kopis.muse.auth.oauth.domain.TierImageURL;
 import muse_kopis.muse.auth.oauth.domain.UserTier;
 import muse_kopis.muse.common.InvalidLocalDateException;
-import muse_kopis.muse.common.NotFoundTicketBookException;
 import muse_kopis.muse.performance.Performance;
 import muse_kopis.muse.performance.PerformanceRepository;
 import muse_kopis.muse.performance.usergenre.UserGenreService;
@@ -64,8 +63,8 @@ public class TicketBookService {
     ) {
         OauthMember oauthMember = oauthMemberRepository.getByOauthMemberId(memberId);
         Performance performance = performanceRepository.getByPerformanceId(performanceId);
-        ReviewResponse reviewResponse = ReviewResponse.from(oauthMember, performance, star, content, visible, castMembers);
-        TicketBook ticketBook = ticketBookRepository.save(TicketBook.from(oauthMember, viewDate, reviewResponse, performance));
+        ReviewResponse reviewResponse = ReviewResponse.from(oauthMember, star, content, visible, castMembers);
+        TicketBook ticketBook = ticketBookRepository.save(TicketBook.from(oauthMember, viewDate, reviewResponse, performance, castMembers));
         photoRepository.saveAll(validPhotos(urls, ticketBook));
         userGenreService.updateGenre(performance, oauthMember);
         tierUpdate(oauthMember);
@@ -121,7 +120,10 @@ public class TicketBookService {
         YearMonth yearMonth = YearMonth.of(year, month);
         LocalDateTime startDate = yearMonth.atDay(1).atTime(0,0,0);
         LocalDateTime endDate = yearMonth.atEndOfMonth().plusDays(1).atStartOfDay();
-        List<TicketBook> ticketBooks = ticketBookRepository.findAllByOauthMemberAndViewDateBetween(memberId, startDate, endDate);
+        log.info("start {}", startDate);
+        log.info("end {}", endDate);
+        List<TicketBook> ticketBooks = ticketBookRepository.findByOauthMemberAndViewDate(memberId, startDate, endDate);
+        log.info("{}", ticketBooks.getFirst());
         return ticketBooks.stream()
                 .map(ticketBook -> {
                             List<Photo> photos = photoRepository.findAllByTicketBook(ticketBook);
@@ -145,8 +147,7 @@ public class TicketBookService {
         OauthMember oauthMember = oauthMemberRepository.getByOauthMemberId(memberId);
         ticketBook.validate(oauthMember);
         List<Photo> list = validPhotos(urls, ticketBook);
-        ReviewResponse review = ReviewResponse.from(oauthMember, ticketBook.getReview().getPerformance(), star,
-                content, visible, castMembers);
+        ReviewResponse review = ReviewResponse.from(oauthMember, star, content, visible, castMembers);
         photoRepository.saveAll(list);
         ticketBook.update(viewDate, review);
         return ticketBookRepository.save(ticketBook).getId();

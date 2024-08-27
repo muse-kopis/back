@@ -17,7 +17,5 @@ public interface TicketBookRepository extends JpaRepository<TicketBook, Long> {
     List<TicketBook> findAllByOauthMember(OauthMember oauthMember);
     @Query("SELECT tb FROM TicketBook tb WHERE tb.oauthMember.id = :oauthId and tb.viewDate BETWEEN :startDate AND :endDate")
     List<TicketBook> findByOauthMemberAndViewDate(@Param("oauthId")Long oauthId, @Param("startDate") LocalDateTime startDate, @Param("endDate") LocalDateTime endDate);
-    @Query("SELECT tb FROM TicketBook tb WHERE tb.oauthMember.id = :oauthId and tb.viewDate BETWEEN :startDate AND :endDate")
-    List<TicketBook> findAllByOauthMemberAndViewDateBetween(@Param("oauthId")Long oauthId, @Param("startDate") LocalDateTime startDate, @Param("endDate") LocalDateTime endDate);
     long countTicketBookByOauthMember(OauthMember oauthMember);
 }

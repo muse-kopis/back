@@ -8,7 +8,6 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface GenreRepository extends JpaRepository<Genre, Long> {
-
     List<Genre> findAllByPerformance(Performance performance);
     List<Genre> findAllByGenre(GenreType genreType);
 }

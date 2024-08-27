@@ -24,7 +24,9 @@ public class AuthConfig implements WebMvcConfigurer {
     @Override
     public void addCorsMappings(CorsRegistry registry) {
         registry.addMapping("/**")
-                .allowedOrigins("http://localhost:3000")
+                .allowedOrigins("http://localhost:3000",
+                        "https://musee-app-55c26600f777.herokuapp.com:3000,",
+                        "https://musee-app-55c26600f777.herokuapp.com")
                 .allowedMethods(
                         HttpMethod.GET.name(),
                         HttpMethod.POST.name(),

@@ -10,6 +10,7 @@ import muse_kopis.muse.auth.oauth.domain.UserTier;
 import muse_kopis.muse.auth.oauth.domain.authcode.AuthCodeRequestUrlProviderComposite;
 import muse_kopis.muse.auth.oauth.domain.client.OauthMemberClientComposite;
 import muse_kopis.muse.auth.oauth.domain.dto.UserInfo;
+import muse_kopis.muse.performance.usergenre.UserGenreService;
 import org.springframework.stereotype.Service;
 
 @Slf4j
@@ -21,6 +22,7 @@ public class OauthService {
     private final AuthCodeRequestUrlProviderComposite authCodeRequestUrlProviderComposite;
     private final OauthMemberClientComposite oauthMemberClientComposite;
     private final OauthMemberRepository oauthMemberRepository;
+    private final UserGenreService userGenreService;
 
     public String getAuthCodeRequestUrl(OauthServerType oauthServerType) {
         return authCodeRequestUrlProviderComposite.provide(oauthServerType);
@@ -31,8 +33,10 @@ public class OauthService {
         OauthMember saved = oauthMemberRepository.findByOauthId(oauthMember.oauthId())
                 .orElseGet(() -> {
                         oauthMember.updateUserTier(UserTier.NEWBIE, tierImageURL.getNewbie());
-                        return oauthMemberRepository.save(oauthMember);
-                }
+                        OauthMember save = oauthMemberRepository.save(oauthMember);
+                        userGenreService.initGenre(oauthMember);
+                        return save;
+                    }
                 );
         return saved.id();
     }

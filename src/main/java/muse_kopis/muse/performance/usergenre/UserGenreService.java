@@ -7,7 +7,6 @@ import muse_kopis.muse.auth.oauth.domain.OauthMember;
 import muse_kopis.muse.auth.oauth.domain.OauthMemberRepository;
 import muse_kopis.muse.performance.Performance;
 import muse_kopis.muse.performance.PerformanceRepository;
-import muse_kopis.muse.performance.dto.PerformanceIds;
 import muse_kopis.muse.performance.dto.PerformanceResponse;
 import muse_kopis.muse.performance.genre.Genre;
 import muse_kopis.muse.performance.genre.GenreRepository;
@@ -22,6 +21,7 @@ public class UserGenreService {
     private final PerformanceRepository performanceRepository;
     private final OauthMemberRepository oauthMemberRepository;
 
+    @Transactional
     public void updateGenre(Performance performance, OauthMember oauthMember) {
         List<Genre> genre = genreRepository.findAllByPerformance(performance);
         UserGenre userGenre = userGenreRepository.findByOauthMember(oauthMember)
@@ -29,6 +29,7 @@ public class UserGenreService {
         genre.forEach(it -> userGenre.incrementGenreWeight(it.getGenre()));
     }
 
+    @Transactional
     public void updateGenres(List<Long> performanceIds, Long memberId) {
         OauthMember oauthMember = oauthMemberRepository.getByOauthMemberId(memberId);
         List<Performance> performances = performanceIds.stream()
@@ -36,6 +37,7 @@ public class UserGenreService {
         performances.forEach(performance -> updateGenre(performance, oauthMember));
     }
 
+    @Transactional
     public UserGenre initGenre(OauthMember oauthMember) {
         return userGenreRepository.save(new UserGenre(oauthMember));
     }

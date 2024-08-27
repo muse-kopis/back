@@ -27,9 +27,9 @@ public class ReviewService {
     }
 
     @Transactional
-    public List<ReviewResponse> getPublicReviews(Long memberId, String performanceName, String venue) {
+    public List<ReviewResponse> getPublicReviews(Long memberId, Long performanceId) {
         oauthMemberRepository.getByOauthMemberId(memberId);
-        Performance performance = performanceRepository.getByPerformanceNameAndVenue(performanceName, venue);
+        Performance performance = performanceRepository.getByPerformanceId(performanceId);
         List<Review> reviews = reviewRepository.findAllByPerformance(performance).stream()
                 .filter(Review::isVisible)
                 .toList();
@@ -37,9 +37,9 @@ public class ReviewService {
     }
 
     @Transactional
-    public List<ReviewResponse> getPrivateReview(Long memberId, String performanceName, String venue) {
+    public List<ReviewResponse> getPrivateReview(Long memberId, Long performanceId) {
         oauthMemberRepository.getByOauthMemberId(memberId);
-        Performance performance = performanceRepository.getByPerformanceNameAndVenue(performanceName, venue);
+        Performance performance = performanceRepository.getByPerformanceId(performanceId);
         List<Review> reviews = reviewRepository.findAllByPerformance(performance);
         return reviews.stream().map(ReviewResponse::from).collect(Collectors.toList());
     }
