@@ -10,7 +10,8 @@ import java.util.concurrent.Executors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import muse_kopis.muse.auth.Auth;
-import muse_kopis.muse.performance.dto.PerformanceIds;
+import muse_kopis.muse.auth.oauth.application.OauthService;
+import muse_kopis.muse.performance.dto.Onboarding;
 import muse_kopis.muse.performance.dto.PerformanceRequest;
 import muse_kopis.muse.performance.dto.PerformanceResponse;
 import muse_kopis.muse.performance.genre.GenreService;
@@ -38,6 +39,7 @@ public class PerformanceController {
     private final PerformanceService performanceService;
     private final GenreService genreService;
     private final UserGenreService userGenreService;
+    private final OauthService oauthService;
 
     // 검색어를 통한 공연 목록
     @GetMapping("/search")
@@ -62,7 +64,7 @@ public class PerformanceController {
     public ResponseEntity<PerformanceResponse> getPerformance(@PathVariable Long performanceId) {
         return ResponseEntity.ok().body(performanceService.findById(performanceId));
     }
-
+    
     @GetMapping("/recommend")
     public ResponseEntity<List<PerformanceResponse>> recommendPerformance(@Auth Long memberId){
         return ResponseEntity.ok().body(performanceService.recommendPerformance(memberId));
@@ -79,9 +81,11 @@ public class PerformanceController {
     }
 
     @PostMapping("/onboarding")
-    public ResponseEntity<Void> updateUserGenre(@Auth Long memberId, @RequestBody PerformanceIds performanceIds) {
-        userGenreService.updateGenres(performanceIds.ids(), memberId);
-        return ResponseEntity.ok().build();
+    public ResponseEntity<String> updateUserGenre(@Auth Long memberId, @RequestBody Onboarding onboarding) {
+        String username = oauthService.updateUsername(memberId, onboarding.username());
+        oauthService.updateUserState(memberId);
+        userGenreService.updateGenres(onboarding.performanceId(), memberId);
+        return ResponseEntity.ok().body(username);
     }
 
     // 포스터 이미지 반환
@@ -341,8 +345,8 @@ public class PerformanceController {
         genreService.saveGenre("천로역정", GenreType.DRAMA);
         genreService.saveGenre("천로역정", GenreType.RELIGION);
 
-        genreService.saveGenre("언제는 행복하지 않은 순간이 있었나요 (언행순) [서울]", GenreType.DRAMA);
-        genreService.saveGenre("언제는 행복하지 않은 순간이 있었나요 (언행순) [서울]", GenreType.ROMANCE);
+        genreService.saveGenre("언제는 행복하지 않은 순간이 있었나요 (언행순) [부산]", GenreType.DRAMA);
+        genreService.saveGenre("언제는 행복하지 않은 순간이 있었나요 (언행순) [부산]", GenreType.ROMANCE);
 
         genreService.saveGenre("빨강머리 토리: 토리의 수상한 가방 [수원]", GenreType.FAMILY);
         genreService.saveGenre("빨강머리 토리: 토리의 수상한 가방 [수원]", GenreType.CHILD);

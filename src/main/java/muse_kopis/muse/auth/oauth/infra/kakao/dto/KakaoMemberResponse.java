@@ -26,6 +26,7 @@ public record KakaoMemberResponse(
                 .profileImageUrl(kakaoAccount.profile.profileImageUrl)
                 .username(kakaoAccount.profile.nickname)
                 .tier(UserTier.NEWBIE)
+                .isNewUser(true)
                 .build();
     }
 

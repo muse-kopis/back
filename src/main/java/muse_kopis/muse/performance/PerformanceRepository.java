@@ -21,6 +21,7 @@ public interface PerformanceRepository extends JpaRepository<Performance, Long> 
     }
     List<Performance> findAllByPerformanceNameContains(String search);
     List<Performance> findByPerformanceName(String performanceName);
+    List<Performance> findAllByIdIn(List<Long> performanceIds);
     @Query("SELECT p FROM Performance p WHERE p.state = :state ORDER BY function('RAND')")
     List<Performance> findAllByState(String state);
     List<Performance> findAllByStateOrState(String currentPerformances, String upcomingPerformances);

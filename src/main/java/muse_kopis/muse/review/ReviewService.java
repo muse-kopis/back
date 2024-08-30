@@ -8,6 +8,7 @@ import muse_kopis.muse.auth.oauth.domain.OauthMember;
 import muse_kopis.muse.auth.oauth.domain.OauthMemberRepository;
 import muse_kopis.muse.performance.Performance;
 import muse_kopis.muse.performance.PerformanceRepository;
+import muse_kopis.muse.performance.castmember.CastMember;
 import muse_kopis.muse.review.dto.ReviewResponse;
 import org.springframework.stereotype.Service;
 
@@ -33,7 +34,8 @@ public class ReviewService {
         List<Review> reviews = reviewRepository.findAllByPerformance(performance).stream()
                 .filter(Review::isVisible)
                 .toList();
-        return reviews.stream().map(ReviewResponse::from).collect(Collectors.toList());
+        return reviews.stream().map(review -> ReviewResponse.from(review, performance.getCastMembers().stream().map(CastMember::toString)
+                .collect(Collectors.joining(", ")))).collect(Collectors.toList());
     }
 
     @Transactional
@@ -41,6 +43,7 @@ public class ReviewService {
         oauthMemberRepository.getByOauthMemberId(memberId);
         Performance performance = performanceRepository.getByPerformanceId(performanceId);
         List<Review> reviews = reviewRepository.findAllByPerformance(performance);
-        return reviews.stream().map(ReviewResponse::from).collect(Collectors.toList());
+        return reviews.stream().map(review -> ReviewResponse.from(review, performance.getCastMembers().stream().map(CastMember::toString).collect(
+                Collectors.joining(", ")))).collect(Collectors.toList());
     }
 }

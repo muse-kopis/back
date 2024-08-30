@@ -41,6 +41,7 @@ public class OauthMember {
     private UserTier tier;
     private String tierImageUrl;
     private String username; // 서비스 내부에서 보이는 사용자 이름
+    private Boolean isNewUser;
     public Long id() {
         return id;
     }
@@ -69,6 +70,9 @@ public class OauthMember {
         return tier;
     }
 
+    public Boolean isNewUser() {
+        return isNewUser;
+    }
     public void updateUserTier(UserTier tier, String url) {
         this.tier = tier;
         this.tierImageUrl = url;
@@ -76,5 +80,9 @@ public class OauthMember {
 
     public void updateUsername(String username) {
         this.username = username;
+    }
+
+    public void updateOldUser(Boolean isNewUser) {
+        this.isNewUser = isNewUser;
     }
 }

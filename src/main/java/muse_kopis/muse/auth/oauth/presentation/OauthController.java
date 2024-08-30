@@ -8,6 +8,7 @@ import muse_kopis.muse.auth.Auth;
 import muse_kopis.muse.auth.jwt.JwtService;
 import muse_kopis.muse.auth.oauth.application.OauthService;
 import muse_kopis.muse.auth.oauth.domain.OauthServerType;
+import muse_kopis.muse.auth.oauth.domain.dto.LoginDto;
 import muse_kopis.muse.auth.oauth.domain.dto.UserInfo;
 import muse_kopis.muse.member.dto.LoginResponse;
 import org.springframework.http.ResponseEntity;
@@ -37,6 +38,7 @@ public class OauthController {
         log.info(oauthServerType.name());
         String redirectUrl = oauthService.getAuthCodeRequestUrl(oauthServerType);
         response.sendRedirect(redirectUrl);
+        log.info(redirectUrl);
         return ResponseEntity.ok().build();
     }
 
@@ -45,9 +47,9 @@ public class OauthController {
             @PathVariable OauthServerType oauthServerType,
             @RequestParam("code") String code
     ) {
-        Long id = oauthService.login(oauthServerType, code);
-        String token = jwtService.createToken(id);
-        return ResponseEntity.ok().body(new LoginResponse(token));
+        LoginDto login = oauthService.login(oauthServerType, code);
+        String token = jwtService.createToken(login.id());
+        return ResponseEntity.ok().body(new LoginResponse(token, login.isNewUser()));
     }
 
     @PatchMapping("/username")

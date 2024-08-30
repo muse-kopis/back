@@ -9,6 +9,7 @@ import muse_kopis.muse.auth.oauth.domain.TierImageURL;
 import muse_kopis.muse.auth.oauth.domain.UserTier;
 import muse_kopis.muse.auth.oauth.domain.authcode.AuthCodeRequestUrlProviderComposite;
 import muse_kopis.muse.auth.oauth.domain.client.OauthMemberClientComposite;
+import muse_kopis.muse.auth.oauth.domain.dto.LoginDto;
 import muse_kopis.muse.auth.oauth.domain.dto.UserInfo;
 import muse_kopis.muse.performance.usergenre.UserGenreService;
 import org.springframework.stereotype.Service;
@@ -28,7 +29,7 @@ public class OauthService {
         return authCodeRequestUrlProviderComposite.provide(oauthServerType);
     }
 
-    public Long login(OauthServerType oauthServerType, String authCode) {
+    public LoginDto login(OauthServerType oauthServerType, String authCode) {
         OauthMember oauthMember = oauthMemberClientComposite.fetch(oauthServerType, authCode);
         OauthMember saved = oauthMemberRepository.findByOauthId(oauthMember.oauthId())
                 .orElseGet(() -> {
@@ -38,17 +39,24 @@ public class OauthService {
                         return save;
                     }
                 );
-        return saved.id();
+        return new LoginDto(saved.id(), saved.isNewUser());
     }
 
-    public void updateUsername(Long memberId, String newUsername) {
+    public String updateUsername(Long memberId, String newUsername) {
         OauthMember oauthMember = oauthMemberRepository.getByOauthMemberId(memberId);
         oauthMember.updateUsername(newUsername);
         oauthMemberRepository.save(oauthMember);
+        return newUsername;
     }
 
     public UserInfo getInfo(Long memberId) {
         OauthMember oauthMember = oauthMemberRepository.getByOauthMemberId(memberId);
         return new UserInfo(oauthMember.username(), oauthMember.userTier(), oauthMember.tierImageUrl());
+    }
+
+    public void updateUserState(Long memberId) {
+        OauthMember oauthMember = oauthMemberRepository.getByOauthMemberId(memberId);
+        oauthMember.updateOldUser(false);
+        oauthMemberRepository.save(oauthMember);
     }
 }

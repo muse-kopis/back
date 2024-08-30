@@ -1,6 +1,7 @@
 package muse_kopis.muse.performance.usergenre;
 
 import jakarta.transaction.Transactional;
+import java.util.Arrays;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import muse_kopis.muse.auth.oauth.domain.OauthMember;
@@ -44,9 +45,12 @@ public class UserGenreService {
 
     @Transactional
     public List<PerformanceResponse> showOnboarding() {
-        List<Genre> genres = genreRepository.findAll().stream().limit(50).toList();
-        List<Performance> performances = genres.stream()
-                .map(genre -> performanceRepository.getByPerformanceId(genre.getPerformance().getId())).toList();
+        List<Long> performanceIds = Arrays.asList(
+                38L, 103L, 118L, 124L, 134L, 139L, 170L, 177L, 181L, 194L,
+                202L, 243L, 252L, 255L, 260L, 280L, 300L, 305L, 324L, 395L,
+                436L, 460L, 463L, 481L, 722L, 884L, 924L, 1000L, 1161L, 1235L
+        );
+        List<Performance> performances = performanceRepository.findAllByIdIn(performanceIds);
         return performances.stream().map(PerformanceResponse::from).toList();
     }
 }

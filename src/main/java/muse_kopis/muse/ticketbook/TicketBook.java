@@ -44,7 +44,7 @@ public class TicketBook {
     private OauthMember oauthMember;
     @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Photo> photos;
-
+    private String identifier;
     public static TicketBook from(
             OauthMember oauthMember,
             LocalDateTime viewDate,
@@ -70,11 +70,20 @@ public class TicketBook {
     public void update(LocalDateTime viewDate, ReviewResponse request) {
         this.viewDate = viewDate;
         this.review = review.update(request.content(), request.star(), request.visible());
+        this.castMembers = request.castMembers();
     }
 
     public void validate(OauthMember oauthMember) {
         if (!this.oauthMember.equals(oauthMember)){
             throw new UnAuthorizationException("티켓북 삭제 권한이 없습니다.");
         }
+    }
+
+    public void share(String shareableLink) {
+        this.identifier = shareableLink;
+    }
+
+    public Boolean shareValidate() {
+        return this.identifier == null || identifier.isEmpty();
     }
 }

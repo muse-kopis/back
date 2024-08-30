@@ -25,6 +25,10 @@ public class AuthConfig implements WebMvcConfigurer {
     public void addCorsMappings(CorsRegistry registry) {
         registry.addMapping("/**")
                 .allowedOrigins("http://localhost:3000",
+                        "https://musee-kopis.netlify.app",
+                        "https://musee-kopis.netlify.app:3000",
+                        "https://main--musee-kopis.netlify.app",
+                        "https://main--musee-kopis.netlify.app:3000",
                         "https://musee-app-55c26600f777.herokuapp.com:3000,",
                         "https://musee-app-55c26600f777.herokuapp.com")
                 .allowedMethods(
