@@ -12,6 +12,7 @@ import muse_kopis.muse.auth.oauth.domain.dto.LoginDto;
 import muse_kopis.muse.auth.oauth.domain.dto.UserInfo;
 import muse_kopis.muse.member.dto.LoginResponse;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -61,5 +62,17 @@ public class OauthController {
     @GetMapping("/mypage")
     public ResponseEntity<UserInfo> userInfo(@Auth Long memberId) {
         return ResponseEntity.ok().body(oauthService.getInfo(memberId));
+    }
+
+    @DeleteMapping("/user")
+    public ResponseEntity<Void> deleteUser(@Auth Long memberId) {
+        oauthService.deleteUser(memberId);
+        return ResponseEntity.ok().build();
+    }
+
+    @DeleteMapping("/user/{memberId}")
+    public ResponseEntity<Void> delete(@PathVariable Long memberId) {
+        oauthService.deleteUser(memberId);
+        return ResponseEntity.ok().build();
     }
 }
