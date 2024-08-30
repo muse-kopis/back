@@ -3,10 +3,15 @@ package muse_kopis.muse.performance;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.dataformat.xml.XmlMapper;
 import jakarta.transaction.Transactional;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
+import java.util.Random;
+import java.util.Set;
 import java.util.stream.Collectors;
 import lombok.extern.slf4j.Slf4j;
 import muse_kopis.muse.auth.oauth.domain.OauthMember;
@@ -22,12 +27,15 @@ import muse_kopis.muse.performance.dto.KOPISPerformanceResponse;
 import muse_kopis.muse.performance.dto.KOPISPerformanceResponse.DB;
 import muse_kopis.muse.performance.dto.KOPISPerformanceDetailResponse;
 import muse_kopis.muse.performance.dto.PerformanceResponse;
+import muse_kopis.muse.performance.genre.Genre;
 import muse_kopis.muse.performance.genre.GenreRepository;
 import muse_kopis.muse.performance.genre.GenreType;
 import muse_kopis.muse.performance.usergenre.UserGenre;
 import muse_kopis.muse.performance.usergenre.UserGenreRepository;
 import org.apache.commons.text.similarity.LevenshteinDistance;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.io.ByteArrayResource;
+import org.springframework.http.HttpHeaders;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
@@ -48,6 +56,8 @@ public class PerformanceService {
     private final XmlMapper xmlMapper;
     private final static String CURRENT = "공연중";
     private final static String UPCOMING = "공연예정";
+    private final static String TYPE = "week";
+    private final static String GENRE = "GGGA";
     private final static String BLANK_OR_COMMA = "[,\\s]+";
     public static final String BLANK_OR_PARENTHESIS = "[\\s()]";
 
@@ -73,10 +83,11 @@ public class PerformanceService {
     }
 
     @Transactional
-    public List<PerformanceResponse> findAllPerformance(String state){
-        return performanceRepository.findAllByState(state)
+    public List<PerformanceResponse> findAllPerformance(){
+        return performanceRepository.findAllByState(CURRENT)
                 .stream()
                 .map(PerformanceResponse::from)
+                .limit(7)
                 .collect(Collectors.toList());
     }
 
@@ -126,14 +137,16 @@ public class PerformanceService {
     }
 
     @Transactional
-    public List<PerformanceResponse> fetchPopularPerformance(String type, String date, String genre) {
-        String url = API_URL_BOX_OFFICE + "?service=" + kopisKey + "&ststype=" + type + "&date=" + date + "&catecode=" + genre;
+    public List<PerformanceResponse> fetchPopularPerformance() {
+        String url = API_URL_BOX_OFFICE + "?service=" + kopisKey + "&ststype=" + TYPE + "&date=" + LocalDate.now()
+                .format(DateTimeFormatter.ofPattern("yyyyMMdd")) + "&catecode=" + GENRE;
         String response = restTemplate.getForObject(url, String.class);
+        log.info("{}", LocalDate.now());
         try {
             Boxofs boxofs = xmlMapper.readValue(response, Boxofs.class);
             List<Boxof> boxofList = boxofs.boxof()
                     .stream()
-                    .limit(6)
+                    .limit(7)
                     .toList();
             LevenshteinDistance levenshtein = new LevenshteinDistance();
             List<Performance> collect = boxofList.stream().map(it -> performanceRepository.findAllByStateOrState(CURRENT, UPCOMING).stream()
@@ -155,13 +168,58 @@ public class PerformanceService {
         return xmlMapper.readValue(response, KOPISPerformanceDetailResponse.class);
     }
 
+    @Transactional
     public List<PerformanceResponse> recommendPerformance(Long memberId) {
         OauthMember oauthMember = oauthMemberRepository.getByOauthMemberId(memberId);
         UserGenre userGenre = userGenreRepository.getUserGenreByOauthMember(oauthMember);
         GenreType favorite = userGenre.favorite();
-        return genreRepository.findAllByGenre(favorite)
-                .stream()
-                .map(genre -> PerformanceResponse.from(genre.getPerformance()))
+        GenreType second = userGenre.second();
+        GenreType third = userGenre.third();
+        List<Genre> result = genreRepository.findAllByGenre(favorite).stream()
+                .distinct()
+                .filter(genre -> genre.getPerformance().getState().equals(CURRENT))
                 .toList();
+        fillPerformanceList(result, second);
+        fillPerformanceList(result, third);
+        return result.stream()
+                .map(genre -> PerformanceResponse.from(genre.getPerformance()))
+                .limit(7)
+                .toList();
+    }
+
+    private void fillPerformanceList(List<Genre> result, GenreType genre) {
+        List<Genre> genres = genreRepository.findAllByGenre(genre);
+        if (result.size() < 7 && !genres.isEmpty()) {
+            result.addAll(genres.stream()
+                    .distinct()
+                    .filter(g -> g.getPerformance().getState().equals(CURRENT))
+                    .limit(7 - result.size())
+                    .toList());
+        }
+    }
+
+    @Transactional
+    public Set<PerformanceResponse> getRandomPerformance(Long memberId) {
+        oauthMemberRepository.getByOauthMemberId(memberId);
+        List<Performance> performances = performanceRepository.findAllByState(CURRENT);
+        Set<PerformanceResponse> responses = new HashSet<>();
+        while (responses.size() < 7){
+            if (!performances.isEmpty()) {
+                Random random = new Random();
+                responses.add(PerformanceResponse.from(performances.get(random.nextInt(performances.size()))));
+            }
+        }
+        return responses;
+    }
+
+    public ByteArrayResource getPosterImage(Long performanceId) {
+        Performance performance = performanceRepository.getByPerformanceId(performanceId);
+        String url = performance.getPoster();
+        try {
+            byte[] imageByte = restTemplate.getForObject(url, byte[].class);
+            return new ByteArrayResource(imageByte);
+        } catch (Exception e) {
+            throw new FetchFailException("이미지를 불러오지 못했습니다.");
+        }
     }
 }

@@ -10,22 +10,20 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import muse_kopis.muse.auth.oauth.domain.OauthMember;
 import muse_kopis.muse.common.UnAuthorizationException;
 import muse_kopis.muse.performance.Performance;
-import muse_kopis.muse.performance.castmember.CastMember;
-import muse_kopis.muse.performance.castmember.dto.CastMemberDto;
 import muse_kopis.muse.review.Review;
 import muse_kopis.muse.review.dto.ReviewResponse;
 import muse_kopis.muse.ticketbook.photo.Photo;
 
+@Slf4j
 @Entity
 @Getter
 @Builder
@@ -38,8 +36,7 @@ public class TicketBook {
     private Long id;
     private LocalDateTime viewDate;
     private String venue;
-    @OneToMany(cascade = CascadeType.PERSIST)
-    private List<CastMember> castMembers;
+    private String castMembers;
     @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @JoinColumn(name = "review_id")
     private Review review;
@@ -47,23 +44,19 @@ public class TicketBook {
     private OauthMember oauthMember;
     @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Photo> photos;
-
+    private String identifier;
     public static TicketBook from(
             OauthMember oauthMember,
             LocalDateTime viewDate,
             ReviewResponse review,
-            Performance performance
+            Performance performance,
+            String castMembers
     ) {
-        List<CastMemberDto> castMemberDtos = review.castMembers();
-        if (castMemberDtos == null) {
-            castMemberDtos = new ArrayList<>();
-        }
         return TicketBook.builder()
                 .oauthMember(oauthMember)
                 .viewDate(viewDate)
                 .venue(performance.getVenue())
-                .castMembers(castMemberDtos.stream().map(cast -> new CastMember(cast.name(), performance))
-                        .collect(Collectors.toList()))
+                .castMembers(castMembers)
                 .review(Review.builder()
                         .star(review.star())
                         .content(review.content())
@@ -77,11 +70,20 @@ public class TicketBook {
     public void update(LocalDateTime viewDate, ReviewResponse request) {
         this.viewDate = viewDate;
         this.review = review.update(request.content(), request.star(), request.visible());
+        this.castMembers = request.castMembers();
     }
 
     public void validate(OauthMember oauthMember) {
         if (!this.oauthMember.equals(oauthMember)){
             throw new UnAuthorizationException("티켓북 삭제 권한이 없습니다.");
         }
+    }
+
+    public void share(String shareableLink) {
+        this.identifier = shareableLink;
+    }
+
+    public Boolean shareValidate() {
+        return this.identifier == null || identifier.isEmpty();
     }
 }

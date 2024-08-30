@@ -1,8 +1,10 @@
 package muse_kopis.muse.auth.oauth.domain;
 
+import lombok.extern.slf4j.Slf4j;
+
+@Slf4j
 public enum UserTier {
-    NEWBIE, LOVER, MANIA
-    ;
+    MANIA, LOVER, NEWBIE;
 
     public static UserTier fromCount(long count) {
         if (count >= 20) {

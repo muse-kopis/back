@@ -5,10 +5,13 @@ import static muse_kopis.muse.auth.oauth.domain.OauthServerType.KAKAO;
 import com.fasterxml.jackson.databind.PropertyNamingStrategies.SnakeCaseStrategy;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
 import java.time.LocalDateTime;
+import lombok.extern.slf4j.Slf4j;
 import muse_kopis.muse.auth.oauth.domain.OauthId;
 import muse_kopis.muse.auth.oauth.domain.OauthMember;
 import muse_kopis.muse.auth.oauth.domain.UserTier;
+import org.springframework.beans.factory.annotation.Value;
 
+@Slf4j
 @JsonNaming(SnakeCaseStrategy.class)
 public record KakaoMemberResponse(
         Long id,
@@ -16,7 +19,6 @@ public record KakaoMemberResponse(
         LocalDateTime connectedAt,
         KakaoAccount kakaoAccount
 ) {
-
     public OauthMember toDomain() {
         return OauthMember.builder()
                 .oauthId(new OauthId(String.valueOf(id), KAKAO))
@@ -24,6 +26,7 @@ public record KakaoMemberResponse(
                 .profileImageUrl(kakaoAccount.profile.profileImageUrl)
                 .username(kakaoAccount.profile.nickname)
                 .tier(UserTier.NEWBIE)
+                .isNewUser(true)
                 .build();
     }
 

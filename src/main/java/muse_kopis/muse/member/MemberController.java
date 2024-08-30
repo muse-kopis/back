@@ -28,11 +28,4 @@ public class MemberController {
         );
         return ResponseEntity.ok().body(id);
     }
-
-    @PostMapping("/login")
-    public ResponseEntity<LoginResponse> login(@RequestBody LoginRequest loginRequest) {
-        Long id = memberService.login(loginRequest.username(), loginRequest.password());
-        String token = jwtService.createToken(id);
-        return ResponseEntity.ok().body(new LoginResponse(token));
-    }
 }

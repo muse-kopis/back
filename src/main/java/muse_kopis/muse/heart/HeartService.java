@@ -2,6 +2,7 @@ package muse_kopis.muse.heart;
 
 import jakarta.transaction.Transactional;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import muse_kopis.muse.auth.oauth.domain.OauthMember;
@@ -25,11 +26,9 @@ public class HeartService {
     private final UserGenreService userGenreService;
 
     @Transactional
-    public void like(Long memberId, String performanceName, String venue) {
-        OauthMember oauthMember = oauthMemberRepository.findById(memberId)
-                .orElseThrow(() -> new NotFoundHeartException("찾을 수 없는 회원입니다."));
-        Performance performance = performanceRepository.findByPerformanceNameAndVenue(performanceName, venue)
-                .orElseThrow(() -> new NotFoundPerformanceException("공연을 찾을 수 없습니다."));
+    public void like(Long memberId, Long performanceId) {
+        OauthMember oauthMember = oauthMemberRepository.getByOauthMemberId(memberId);
+        Performance performance = performanceRepository.getByPerformanceId(performanceId);
         if (heartRepository.existsByOauthMemberAndPerformance(oauthMember, performance)) {
             throw new HeartDuplicatedException("이미 좋아요를 눌렀습니다.");
         }
@@ -38,16 +37,15 @@ public class HeartService {
     }
 
     @Transactional
-    public void unlike(Long memberId, String performanceName, String venue) {
-        OauthMember oauthMember = oauthMemberRepository.findById(memberId)
-                .orElseThrow(() -> new NotFoundHeartException("찾을 수 없는 회원입니다."));
-        Performance performance = performanceRepository.findByPerformanceNameAndVenue(performanceName, venue)
-                .orElseThrow(() -> new NotFoundPerformanceException("공연을 찾을 수 없습니다."));
+    public void unlike(Long memberId, Long performanceId) {
+        OauthMember oauthMember = oauthMemberRepository.getByOauthMemberId(memberId);
+        Performance performance = performanceRepository.getByPerformanceId(performanceId);
         Heart heart = heartRepository.findByOauthMemberAndPerformance(oauthMember, performance)
                 .orElseThrow(() -> new NotFoundHeartException("좋아요 기록이 없습니다."));
         heartRepository.delete(heart);
     }
 
+    @Transactional
     public List<PerformanceResponse> getMembersLikePerformanceList(Long memberId) {
         OauthMember oauthMember = oauthMemberRepository.findById(memberId)
                 .orElseThrow(() -> new NotFoundHeartException("찾을 수 없는 회원입니다."));
@@ -55,5 +53,12 @@ public class HeartService {
         return hearts.stream()
                 .map(it -> PerformanceResponse.from(it.getPerformance()))
                 .collect(Collectors.toList());
+    }
+
+    @Transactional
+    public boolean getMemberIsLikePerformance(Long memberId, Long performanceId) {
+        OauthMember oauthMember = oauthMemberRepository.getByOauthMemberId(memberId);
+        Performance performance = performanceRepository.getByPerformanceId(performanceId);
+        return heartRepository.findByOauthMemberAndPerformance(oauthMember, performance).isPresent();
     }
 }

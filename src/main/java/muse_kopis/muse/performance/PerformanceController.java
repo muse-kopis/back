@@ -3,19 +3,23 @@ package muse_kopis.muse.performance;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import jakarta.annotation.PostConstruct;
 import java.util.List;
+import java.util.Set;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import muse_kopis.muse.auth.Auth;
-import muse_kopis.muse.performance.dto.PerformanceIds;
+import muse_kopis.muse.auth.oauth.application.OauthService;
+import muse_kopis.muse.performance.dto.Onboarding;
 import muse_kopis.muse.performance.dto.PerformanceRequest;
 import muse_kopis.muse.performance.dto.PerformanceResponse;
-import muse_kopis.muse.performance.dto.PopularPerformanceRequest;
 import muse_kopis.muse.performance.genre.GenreService;
 import muse_kopis.muse.performance.genre.GenreType;
 import muse_kopis.muse.performance.usergenre.UserGenreService;
+import org.springframework.core.io.ByteArrayResource;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
@@ -35,15 +39,7 @@ public class PerformanceController {
     private final PerformanceService performanceService;
     private final GenreService genreService;
     private final UserGenreService userGenreService;
-
-    // KOPIS 전체 공연 목록 저장
-    @GetMapping("/kopis")
-    public ResponseEntity<Void> getPerformances(@ModelAttribute PerformanceRequest performanceRequest)
-            throws JsonProcessingException {
-        performanceService.fetchPerformances(performanceRequest.startDate(), performanceRequest.endDate(), performanceRequest.currentPage(),
-                performanceRequest.rows(), performanceRequest.state(), performanceRequest.genre());
-        return ResponseEntity.ok().build();
-    }
+    private final OauthService oauthService;
 
     // 검색어를 통한 공연 목록
     @GetMapping("/search")
@@ -53,15 +49,14 @@ public class PerformanceController {
 
     // 상태에 따른 공연 목록
     @GetMapping("/state")
-    public ResponseEntity<List<PerformanceResponse>> getPerformances(@RequestParam String state) {
-        return ResponseEntity.ok().body(performanceService.findAllPerformance(state));
+    public ResponseEntity<List<PerformanceResponse>> getPerformances() {
+        return ResponseEntity.ok().body(performanceService.findAllPerformance());
     }
 
     // 인기있는 공연 목록
     @GetMapping("/popular")
-    public ResponseEntity<List<PerformanceResponse>> getPerformancePopular(@ModelAttribute PopularPerformanceRequest popularPerformanceRequest) {
-        return ResponseEntity.ok().body(performanceService.fetchPopularPerformance(popularPerformanceRequest.type(), popularPerformanceRequest.date(),
-                popularPerformanceRequest.genre()));
+    public ResponseEntity<List<PerformanceResponse>> getPerformancePopular() {
+        return ResponseEntity.ok().body(performanceService.fetchPopularPerformance());
     }
 
     // 특정 공연
@@ -69,10 +64,15 @@ public class PerformanceController {
     public ResponseEntity<PerformanceResponse> getPerformance(@PathVariable Long performanceId) {
         return ResponseEntity.ok().body(performanceService.findById(performanceId));
     }
-
+    
     @GetMapping("/recommend")
     public ResponseEntity<List<PerformanceResponse>> recommendPerformance(@Auth Long memberId){
         return ResponseEntity.ok().body(performanceService.recommendPerformance(memberId));
+    }
+
+    @GetMapping("/random")
+    public ResponseEntity<Set<PerformanceResponse>> randomPerformance(@Auth Long memberId) {
+        return ResponseEntity.ok().body(performanceService.getRandomPerformance(memberId));
     }
 
     @GetMapping("/onboarding")
@@ -81,9 +81,20 @@ public class PerformanceController {
     }
 
     @PostMapping("/onboarding")
-    public ResponseEntity<Void> updateUserGenre(@Auth Long memberId, @RequestBody PerformanceIds performanceIds) {
-        userGenreService.updateGenres(performanceIds.ids(), memberId);
-        return ResponseEntity.ok().build();
+    public ResponseEntity<String> updateUserGenre(@Auth Long memberId, @RequestBody Onboarding onboarding) {
+        String username = oauthService.updateUsername(memberId, onboarding.username());
+        oauthService.updateUserState(memberId);
+        userGenreService.updateGenres(onboarding.performanceId(), memberId);
+        return ResponseEntity.ok().body(username);
+    }
+
+    // 포스터 이미지 반환
+    @GetMapping("/poster/{performanceId}")
+    public ResponseEntity<ByteArrayResource> getPosterImage(@PathVariable Long performanceId) {
+        ByteArrayResource image = performanceService.getPosterImage(performanceId);
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.valueOf("image/gif"));
+        return ResponseEntity.ok().headers(headers).body(image);
     }
 
 //    @PostConstruct
@@ -289,5 +300,328 @@ public class PerformanceController {
         genreService.saveGenre("스텝: 춤추는 발자국", GenreType.FAMILY);
         genreService.saveGenre("스텝: 춤추는 발자국", GenreType.FANTASY);
         genreService.saveGenre("스텝: 춤추는 발자국", GenreType.HEALING);
+
+        genreService.saveGenre("난타 [명동]", GenreType.NON_VERBAL);
+        genreService.saveGenre("난타 [명동]", GenreType.COMEDY);
+        genreService.saveGenre("난타 [명동]", GenreType.PERFORMANCE);
+
+        genreService.saveGenre("아기 돼지 삼형제 [창원]", GenreType.FAIRY_TALE);
+        genreService.saveGenre("아기 돼지 삼형제 [창원]", GenreType.CHILD);
+
+        genreService.saveGenre("더 맨 얼라이브, 초이스", GenreType.FEMALE_ONLY);
+        genreService.saveGenre("더 맨 얼라이브, 초이스", GenreType.PERFORMANCE);
+
+        genreService.saveGenre("우연히 봄을 만나다", GenreType.BAND_MUSICAL);
+        genreService.saveGenre("우연히 봄을 만나다", GenreType.HEALING);
+
+        genreService.saveGenre("인사이드 미", GenreType.DRAMA);
+        genreService.saveGenre("인사이드 미", GenreType.ROMANCE);
+        genreService.saveGenre("인사이드 미", GenreType.HEALING);
+
+        genreService.saveGenre("최고다 호기심딱지 시즌2: 빵빵 이야기 속으로 [안성]", GenreType.FAMILY);
+        genreService.saveGenre("최고다 호기심딱지 시즌2: 빵빵 이야기 속으로 [안성]", GenreType.FAIRY_TALE);
+        genreService.saveGenre("최고다 호기심딱지 시즌2: 빵빵 이야기 속으로 [안성]", GenreType.CHILD);
+
+        genreService.saveGenre("ABBA: 아바", GenreType.DRAMA);
+        genreService.saveGenre("ABBA: 아바", GenreType.RELIGION);
+        genreService.saveGenre("ABBA: 아바", GenreType.COMEDY);
+        genreService.saveGenre("ABBA: 아바", GenreType.FANTASY);
+
+        genreService.saveGenre("ACC 공동기획 렛츠플레이, 삼양동화", GenreType.FAIRY_TALE);
+        genreService.saveGenre("ACC 공동기획 렛츠플레이, 삼양동화", GenreType.CHILD);
+        genreService.saveGenre("ACC 공동기획 렛츠플레이, 삼양동화", GenreType.FANTASY);
+
+        genreService.saveGenre("베어만: 마지막잎새", GenreType.DRAMA);
+
+        genreService.saveGenre("이쇼 with 연남장 캬바레", GenreType.INTERACTIVE);
+        genreService.saveGenre("이쇼 with 연남장 캬바레", GenreType.CABARET);
+
+        genreService.saveGenre("알라딘과 요술램프 [과천]", GenreType.FAIRY_TALE);
+        genreService.saveGenre("알라딘과 요술램프 [과천]", GenreType.FANTASY);
+
+        genreService.saveGenre("반짝반짝 백설공주", GenreType.FAIRY_TALE);
+        genreService.saveGenre("반짝반짝 백설공주", GenreType.FANTASY);
+
+        genreService.saveGenre("천로역정", GenreType.DRAMA);
+        genreService.saveGenre("천로역정", GenreType.RELIGION);
+
+        genreService.saveGenre("언제는 행복하지 않은 순간이 있었나요 (언행순) [부산]", GenreType.DRAMA);
+        genreService.saveGenre("언제는 행복하지 않은 순간이 있었나요 (언행순) [부산]", GenreType.ROMANCE);
+
+        genreService.saveGenre("빨강머리 토리: 토리의 수상한 가방 [수원]", GenreType.FAMILY);
+        genreService.saveGenre("빨강머리 토리: 토리의 수상한 가방 [수원]", GenreType.CHILD);
+        genreService.saveGenre("빨강머리 토리: 토리의 수상한 가방 [수원]", GenreType.FANTASY);
+
+        genreService.saveGenre("흔해빠진 일", GenreType.EMOTION);
+        genreService.saveGenre("흔해빠진 일", GenreType.DRAMA);
+
+        genreService.saveGenre("셰프 [서울]", GenreType.DRAMA);
+        genreService.saveGenre("셰프 [서울]", GenreType.COMEDY);
+
+        genreService.saveGenre("넌 특별하단다 [서울]", GenreType.FAMILY);
+        genreService.saveGenre("넌 특별하단다 [서울]", GenreType.EMOTION);
+        genreService.saveGenre("넌 특별하단다 [서울]", GenreType.CHILD);
+
+        genreService.saveGenre("햇님이 달님이", GenreType.FAMILY);
+        genreService.saveGenre("햇님이 달님이", GenreType.FAIRY_TALE);
+
+        genreService.saveGenre("홍련", GenreType.CLASSIC_NOVEL);
+        genreService.saveGenre("홍련", GenreType.FANTASY);
+
+        genreService.saveGenre("신데렐라 [동두천]", GenreType.FAIRY_TALE);
+        genreService.saveGenre("신데렐라 [동두천]", GenreType.ROMANCE);
+        genreService.saveGenre("신데렐라 [동두천]", GenreType.FANTASY);
+
+        genreService.saveGenre("김종욱 찾기", GenreType.EMOTION);
+        genreService.saveGenre("김종욱 찾기", GenreType.ROMANCE);
+        genreService.saveGenre("김종욱 찾기", GenreType.COMEDY);
+
+        genreService.saveGenre("앤서니 브라운의 난 책이 좋아요", GenreType.ADVENTURE);
+        genreService.saveGenre("앤서니 브라운의 난 책이 좋아요", GenreType.CHILD);
+        genreService.saveGenre("앤서니 브라운의 난 책이 좋아요", GenreType.FANTASY);
+        genreService.saveGenre("앤서니 브라운의 난 책이 좋아요", GenreType.HEALING);
+
+        genreService.saveGenre("아기돼지야 준비해!", GenreType.FAIRY_TALE);
+        genreService.saveGenre("아기돼지야 준비해!", GenreType.CHILD);
+
+        genreService.saveGenre("빨간모자소녀와 늑대 [천안]", GenreType.FAIRY_TALE);
+        genreService.saveGenre("빨간모자소녀와 늑대 [천안]", GenreType.CHILD);
+
+        genreService.saveGenre("써니텐", GenreType.ROMANCE);
+        genreService.saveGenre("써니텐", GenreType.COMEDY);
+
+        genreService.saveGenre("비밀의 화원", GenreType.EMOTION);
+        genreService.saveGenre("비밀의 화원", GenreType.HEALING);
+
+        genreService.saveGenre("스파이", GenreType.DRAMA);
+        genreService.saveGenre("스파이", GenreType.HISTORY);
+        genreService.saveGenre("스파이", GenreType.ACTION);
+
+        genreService.saveGenre("두들팝 [서울]", GenreType.FAMILY);
+        genreService.saveGenre("두들팝 [서울]", GenreType.FANTASY);
+
+        genreService.saveGenre("스크루테이프의 편지", GenreType.COMEDY);
+        genreService.saveGenre("스크루테이프의 편지", GenreType.PARODY);
+
+        genreService.saveGenre("예수 그리스도, 더바이블 Ⅱ", GenreType.RELIGION);
+
+        genreService.saveGenre("접변 [대학로]", GenreType.CRIME);
+        genreService.saveGenre("접변 [대학로]", GenreType.HISTORY);
+        genreService.saveGenre("접변 [대학로]", GenreType.JAZZ);
+
+        genreService.saveGenre("장수탕 선녀님 [서울숲]", GenreType.FANTASY);
+        genreService.saveGenre("장수탕 선녀님 [서울숲]", GenreType.HEALING);
+
+        genreService.saveGenre("트루스토리 [대학로]", GenreType.BAND_MUSICAL);
+
+        genreService.saveGenre("반짝반짝 인어공주", GenreType.FAMILY);
+        genreService.saveGenre("반짝반짝 인어공주", GenreType.FAIRY_TALE);
+        genreService.saveGenre("반짝반짝 인어공주", GenreType.CHILD);
+        genreService.saveGenre("반짝반짝 인어공주", GenreType.FANTASY);
+
+        genreService.saveGenre("종로 가족공연축제, 달님이 주신 아이", GenreType.FAMILY);
+        genreService.saveGenre("종로 가족공연축제, 달님이 주신 아이", GenreType.ADVENTURE);
+        genreService.saveGenre("종로 가족공연축제, 달님이 주신 아이", GenreType.FANTASY);
+
+        genreService.saveGenre("알라딘 [인천]", GenreType.FAIRY_TALE);
+        genreService.saveGenre("알라딘 [인천]", GenreType.FANTASY);
+
+        genreService.saveGenre("프리즌 [H씨어터]", GenreType.FAMILY);
+        genreService.saveGenre("프리즌 [H씨어터]", GenreType.BAND_MUSICAL);
+        genreService.saveGenre("프리즌 [H씨어터]", GenreType.COMEDY);
+
+        genreService.saveGenre("라푼젤 [검단]", GenreType.FAIRY_TALE);
+        genreService.saveGenre("라푼젤 [검단]", GenreType.FANTASY);
+
+        genreService.saveGenre("빌의 구둣방", GenreType.HISTORY);
+        genreService.saveGenre("빌의 구둣방", GenreType.HUMOR);
+        genreService.saveGenre("빌의 구둣방", GenreType.HEALING);
+
+        genreService.saveGenre("내가 아빠고 아빠가 나라면 [대구]", GenreType.FAMILY);
+        genreService.saveGenre("내가 아빠고 아빠가 나라면 [대구]", GenreType.CHILD);
+        genreService.saveGenre("내가 아빠고 아빠가 나라면 [대구]", GenreType.HEALING);
+
+        genreService.saveGenre("세례요한", GenreType.RELIGION);
+
+        genreService.saveGenre("라면에 파송송", GenreType.COMEDY);
+        genreService.saveGenre("라면에 파송송", GenreType.HEALING);
+
+        genreService.saveGenre("유진과 유진 [대학로]", GenreType.EMOTION);
+        genreService.saveGenre("유진과 유진 [대학로]", GenreType.HEALING);
+
+        genreService.saveGenre("빨간모자야 조심해! [청주, 세종]", GenreType.FAMILY);
+        genreService.saveGenre("빨간모자야 조심해! [청주, 세종]", GenreType.FAIRY_TALE);
+        genreService.saveGenre("빨간모자야 조심해! [청주, 세종]", GenreType.CHILD);
+
+        genreService.saveGenre("캐치! 티니핑: 두근두근 싱어롱 콘서트! [서울 (앵콜)]", GenreType.FAMILY);
+        genreService.saveGenre("캐치! 티니핑: 두근두근 싱어롱 콘서트! [서울 (앵콜)]", GenreType.CHILD);
+
+        genreService.saveGenre("반짝반짝 라푼젤", GenreType.FAIRY_TALE);
+        genreService.saveGenre("반짝반짝 라푼젤", GenreType.FANTASY);
+
+        genreService.saveGenre("인피니티 플라잉 (INFINITY FLYING) [경주]", GenreType.NON_VERBAL);
+        genreService.saveGenre("인피니티 플라잉 (INFINITY FLYING) [경주]", GenreType.ACTION);
+        genreService.saveGenre("인피니티 플라잉 (INFINITY FLYING) [경주]", GenreType.FANTASY);
+
+        genreService.saveGenre("고고다이노: 해양구조대 [과천]", GenreType.FAMILY);
+        genreService.saveGenre("고고다이노: 해양구조대 [과천]", GenreType.ADVENTURE);
+        genreService.saveGenre("고고다이노: 해양구조대 [과천]", GenreType.CHILD);
+
+        genreService.saveGenre("시데레우스", GenreType.HISTORY);
+        genreService.saveGenre("시데레우스", GenreType.PHILOSOPHY);
+
+        genreService.saveGenre("구름빵 [서울 광진구]", GenreType.FAMILY);
+        genreService.saveGenre("구름빵 [서울 광진구]", GenreType.INTERACTIVE);
+        genreService.saveGenre("구름빵 [서울 광진구]", GenreType.HEALING);
+
+        genreService.saveGenre("종이아빠 [대학로]", GenreType.ADVENTURE);
+        genreService.saveGenre("종이아빠 [대학로]", GenreType.CHILD);
+        genreService.saveGenre("종이아빠 [대학로]", GenreType.FANTASY);
+
+        genreService.saveGenre("투가이즈쇼 #2. GENERATION", GenreType.HISTORY);
+        genreService.saveGenre("투가이즈쇼 #2. GENERATION", GenreType.TALK_CONCERT);
+
+        genreService.saveGenre("겨울왕국: 겨울이야기 [서울 서대문]", GenreType.FAIRY_TALE);
+        genreService.saveGenre("겨울왕국: 겨울이야기 [서울 서대문]", GenreType.CHILD);
+        genreService.saveGenre("겨울왕국: 겨울이야기 [서울 서대문]", GenreType.FANTASY);
+        genreService.saveGenre("겨울왕국: 겨울이야기 [서울 서대문]", GenreType.PERFORMANCE);
+
+        genreService.saveGenre("콩쥐팥쥐 [광명]", GenreType.FAIRY_TALE);
+        genreService.saveGenre("콩쥐팥쥐 [광명]", GenreType.CHILD);
+
+        genreService.saveGenre("고릴라 [김포]", GenreType.FANTASY);
+        genreService.saveGenre("고릴라 [김포]", GenreType.HEALING);
+
+        genreService.saveGenre("페인터즈 [서대문전용관]", GenreType.NON_VERBAL);
+        genreService.saveGenre("페인터즈 [서대문전용관]", GenreType.ART);
+        genreService.saveGenre("페인터즈 [서대문전용관]", GenreType.PERFORMANCE);
+
+        genreService.saveGenre("엄마까투리는 슈퍼맘 [천안]", GenreType.CHILD);
+
+        genreService.saveGenre("아이위시 [서울]", GenreType.INTERACTIVE);
+        genreService.saveGenre("아이위시 [서울]", GenreType.CABARET);
+
+        genreService.saveGenre("연남장 캬바레, 오늘 처음 만드는 뮤지컬 [서울]", GenreType.INTERACTIVE);
+        genreService.saveGenre("연남장 캬바레, 오늘 처음 만드는 뮤지컬 [서울]", GenreType.CABARET);
+
+        genreService.saveGenre("사의찬미 [대학로]", GenreType.DRAMA);
+        genreService.saveGenre("사의찬미 [대학로]", GenreType.HISTORY);
+
+        genreService.saveGenre("박열 [대학로]", GenreType.DRAMA);
+        genreService.saveGenre("박열 [대학로]", GenreType.HISTORY);
+
+        genreService.saveGenre("로보카폴리: 잡아라! 황금트로피! [대구]", GenreType.CHILD);
+
+        genreService.saveGenre("조선 이야기꾼 전기수", GenreType.CLASSIC_NOVEL);
+
+        genreService.saveGenre("헬로카봇 시즌8, 미래연구소를 지켜라!", GenreType.CHILD);
+
+        genreService.saveGenre("베르사유의 장미", GenreType.DRAMA);
+        genreService.saveGenre("베르사유의 장미", GenreType.ROMANCE);
+        genreService.saveGenre("베르사유의 장미", GenreType.HISTORY);
+
+        genreService.saveGenre("엄마는 안 가르쳐 줘", GenreType.CHILD);
+
+        genreService.saveGenre("또봇: 대도시의 영웅들 [부천]", GenreType.ADVENTURE);
+        genreService.saveGenre("또봇: 대도시의 영웅들 [부천]", GenreType.CHILD);
+
+        genreService.saveGenre("두들팝 [대전]", GenreType.FAMILY);
+        genreService.saveGenre("두들팝 [대전]", GenreType.FANTASY);
+
+        genreService.saveGenre("인어공주 [서울 목동]", GenreType.FAIRY_TALE);
+        genreService.saveGenre("인어공주 [서울 목동]", GenreType.FANTASY);
+
+        genreService.saveGenre("바다 100층짜리 집", GenreType.ADVENTURE);
+        genreService.saveGenre("바다 100층짜리 집", GenreType.CHILD);
+
+        genreService.saveGenre("한글용사 아이야: 사라진 한글을 찾아라! [서울 (앵콜)]", GenreType.ADVENTURE);
+        genreService.saveGenre("한글용사 아이야: 사라진 한글을 찾아라! [서울 (앵콜)]", GenreType.CHILD);
+
+        genreService.saveGenre("젠틀맨스 가이드: 사랑과 살인편", GenreType.DRAMA);
+        genreService.saveGenre("젠틀맨스 가이드: 사랑과 살인편", GenreType.HISTORY);
+
+        genreService.saveGenre("설민석의 한국사 대모험: 영웅의 시간", GenreType.CHILD);
+        genreService.saveGenre("설민석의 한국사 대모험: 영웅의 시간", GenreType.HISTORY);
+
+        genreService.saveGenre("앤서니 브라운의 우리가족 [서울]", GenreType.FAMILY);
+        genreService.saveGenre("앤서니 브라운의 우리가족 [서울]", GenreType.HEALING);
+
+        genreService.saveGenre("살리에르", GenreType.DRAMA);
+        genreService.saveGenre("살리에르", GenreType.CRIME);
+        genreService.saveGenre("살리에르", GenreType.HISTORY);
+
+        genreService.saveGenre("조선셰프 한상궁 [전주]", GenreType.PERFORMANCE);
+
+        genreService.saveGenre("4월은 너의 거짓말", GenreType.ROMANCE);
+        genreService.saveGenre("4월은 너의 거짓말", GenreType.YOUTHFUL_GROWTH);
+
+        genreService.saveGenre("매직 판타지아, 도로시 리턴즈", GenreType.FAIRY_TALE);
+        genreService.saveGenre("매직 판타지아, 도로시 리턴즈", GenreType.FANTASY);
+
+        genreService.saveGenre("하데스타운 [서울]", GenreType.ROMANCE);
+        genreService.saveGenre("하데스타운 [서울]", GenreType.RELIGION);
+        genreService.saveGenre("하데스타운 [서울]", GenreType.PHILOSOPHY);
+        genreService.saveGenre("하데스타운 [서울]", GenreType.HEALING);
+
+        genreService.saveGenre("카르밀라", GenreType.DRAMA);
+        genreService.saveGenre("카르밀라", GenreType.CRIME);
+
+        genreService.saveGenre("베베핀, 우당탕탕 패밀리 [과천]", GenreType.FAMILY);
+        genreService.saveGenre("베베핀, 우당탕탕 패밀리 [과천]", GenreType.CHILD);
+        genreService.saveGenre("베베핀, 우당탕탕 패밀리 [과천]", GenreType.PERFORMANCE);
+
+        genreService.saveGenre("등등곡", GenreType.HISTORY);
+        genreService.saveGenre("등등곡", GenreType.HISTORY);
+
+        genreService.saveGenre("어쩌면 해피엔딩 [대학로]", GenreType.EMOTION);
+        genreService.saveGenre("어쩌면 해피엔딩 [대학로]", GenreType.ROMANCE);
+        genreService.saveGenre("어쩌면 해피엔딩 [대학로]", GenreType.HEALING);
+
+        genreService.saveGenre("빨래 [대학로]", GenreType.EMOTION);
+        genreService.saveGenre("빨래 [대학로]", GenreType.HEALING);
+
+        genreService.saveGenre("이블데드", GenreType.BAND_MUSICAL);
+        genreService.saveGenre("이블데드", GenreType.THRILLER);
+        genreService.saveGenre("이블데드", GenreType.INTERACTIVE);
+
+        genreService.saveGenre("메노포즈", GenreType.FEMALE_ONLY);
+        genreService.saveGenre("메노포즈", GenreType.COMEDY);
+
+        genreService.saveGenre("프리즌 [대전 평송]", GenreType.FAMILY);
+        genreService.saveGenre("프리즌 [대전 평송]", GenreType.BAND_MUSICAL);
+        genreService.saveGenre("프리즌 [대전 평송]", GenreType.COMEDY);
+
+        genreService.saveGenre("클럽 드바이", GenreType.ROCK);
+
+        genreService.saveGenre("새벽의 입구에서", GenreType.HISTORY);
+        genreService.saveGenre("새벽의 입구에서", GenreType.ART);
+
+        genreService.saveGenre("에밀 [대학로]", GenreType.DRAMA);
+        genreService.saveGenre("에밀 [대학로]", GenreType.CRIME);
+        genreService.saveGenre("에밀 [대학로]", GenreType.HISTORY);
+
+        genreService.saveGenre("오만방자 전라감사 길들이기 [전주]", GenreType.HISTORY);
+
+        genreService.saveGenre("두들팝 VER.3, 하이팝", GenreType.FAMILY);
+        genreService.saveGenre("두들팝 VER.3, 하이팝", GenreType.FANTASY);
+
+        genreService.saveGenre("수박수영장 [서울]", GenreType.FAMILY);
+        genreService.saveGenre("수박수영장 [서울]", GenreType.HEALING);
+
+        genreService.saveGenre("프랑켄슈타인", GenreType.HISTORY);
+        genreService.saveGenre("프랑켄슈타인", GenreType.DRAMA);
+
+        genreService.saveGenre("미오 프라텔로 [대학로]", GenreType.DRAMA);
+        genreService.saveGenre("미오 프라텔로 [대학로]", GenreType.ROMANCE);
+        genreService.saveGenre("미오 프라텔로 [대학로]", GenreType.CRIME);
+    }
+
+    // KOPIS 전체 공연 목록 저장
+//    @GetMapping("/kopis")
+    public ResponseEntity<Void> getPerformances(@ModelAttribute PerformanceRequest performanceRequest)
+            throws JsonProcessingException {
+        performanceService.fetchPerformances(performanceRequest.startDate(), performanceRequest.endDate(), performanceRequest.currentPage(),
+                performanceRequest.rows(), performanceRequest.state(), performanceRequest.genre());
+        return ResponseEntity.ok().build();
     }
 }

@@ -13,8 +13,6 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import muse_kopis.muse.auth.oauth.domain.OauthMember;
 import muse_kopis.muse.performance.Performance;
-import muse_kopis.muse.review.dto.ReviewRequest;
-import muse_kopis.muse.review.dto.ReviewResponse;
 
 @Entity
 @Getter

@@ -4,10 +4,15 @@ import io.swagger.v3.oas.annotations.Operation;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import muse_kopis.muse.auth.Auth;
+import muse_kopis.muse.ticketbook.config.FrontURLConfig;
 import muse_kopis.muse.ticketbook.dto.MonthDto;
+import muse_kopis.muse.ticketbook.dto.ShareablePage;
+import muse_kopis.muse.ticketbook.dto.TicketBookCalender;
+import muse_kopis.muse.ticketbook.dto.TicketBookEditRequest;
 import muse_kopis.muse.ticketbook.dto.TicketBookRequest;
 import muse_kopis.muse.ticketbook.dto.TicketBookResponse;
 import muse_kopis.muse.ticketbook.photo.PhotoService;
@@ -29,8 +34,19 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/ticketBooks")
 public class TicketBookController {
 
+    private final FrontURLConfig frontURLConfig;
     private final TicketBookService ticketBookService;
     private final PhotoService photoService;
+
+    @GetMapping("/share/{identifier}")
+    public ResponseEntity<ShareablePage> getSharedTicketBooks(@PathVariable String identifier) {
+        return ResponseEntity.ok().body(ticketBookService.findByIdentifier(identifier));
+    }
+
+    @GetMapping("/share/detail/{identifier}")
+    public ResponseEntity<TicketBookResponse> getSharedTicketBook(@PathVariable String identifier) {
+        return ResponseEntity.ok().body(ticketBookService.sharedTicketBook(identifier));
+    }
 
     @GetMapping
     public ResponseEntity<List<TicketBookResponse>> ticketBooks(@Auth Long memberId) {
@@ -38,18 +54,23 @@ public class TicketBookController {
     }
 
     @GetMapping("/{ticketBookId}")
-    public ResponseEntity<TicketBookResponse> ticketBook(@Auth Long memberId, @PathVariable Long ticketBookId) {
-        return ResponseEntity.ok().body(ticketBookService.ticketBook(memberId, ticketBookId));
+    public ResponseEntity<TicketBookResponse> ticketBook(@PathVariable Long ticketBookId) {
+        return ResponseEntity.ok().body(ticketBookService.ticketBook(ticketBookId));
     }
 
     @GetMapping("/date")
-    public ResponseEntity<TicketBookResponse> ticketBookInDate(@Auth Long memberId, @RequestParam LocalDate localDate) {
+    public ResponseEntity<List<TicketBookResponse>> ticketBookInDate(@Auth Long memberId, @RequestParam LocalDate localDate) {
         return ResponseEntity.ok().body(ticketBookService.ticketBookInDate(memberId, localDate));
     }
 
     @GetMapping("/month")
-    public ResponseEntity<List<TicketBookResponse>> ticketBooksByMonth(@Auth Long memberId, @ModelAttribute MonthDto monthDto) {
+    public ResponseEntity<Map<LocalDate, List<TicketBookCalender>>> ticketBooksByMonth(@Auth Long memberId, @ModelAttribute MonthDto monthDto) {
         return ResponseEntity.ok().body(ticketBookService.ticketBooksForMonth(memberId, monthDto.year(), monthDto.month()));
+    }
+
+    @PostMapping("/share")
+    public ResponseEntity<String> generateSharedTicketBookLink(@Auth Long memberId) {
+        return ResponseEntity.ok().body(frontURLConfig.url()+"ticketBooks/share/"+ticketBookService.generateLink(memberId));
     }
 
     @Operation(summary = "TicketBookRequest 스키마 참조",
@@ -81,20 +102,18 @@ public class TicketBookController {
         return ResponseEntity.ok().body(ticketBookService.deleteTicketBook(memberId, ticketBookId));
     }
 
-    @PatchMapping("/{ticketBookId}")
-    public ResponseEntity<Long> updateTicketBook(@Auth Long memberId, @PathVariable Long ticketBookId, @ModelAttribute TicketBookRequest ticketBookRequest) {
-        List<String> urls = photoService.updateTicketBookImage(ticketBookId, ticketBookRequest.photos());
+    @PatchMapping(value = "/{ticketBookId}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<Long> updateTicketBook(@Auth Long memberId, @PathVariable Long ticketBookId, @ModelAttribute TicketBookEditRequest ticketBookEditRequest) {
         return ResponseEntity.ok()
                 .body(
                         ticketBookService.updateTicketBook(
                                 memberId,
                                 ticketBookId,
-                                ticketBookRequest.viewDate(),
-                                urls,
-                                ticketBookRequest.star(),
-                                ticketBookRequest.content(),
-                                ticketBookRequest.visible(),
-                                ticketBookRequest.castMembers()
+                                ticketBookEditRequest.viewDate(),
+                                ticketBookEditRequest.star(),
+                                ticketBookEditRequest.content(),
+                                ticketBookEditRequest.visible(),
+                                ticketBookEditRequest.castMembers()
                         )
                 );
     }

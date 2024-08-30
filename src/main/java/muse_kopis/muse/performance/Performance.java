@@ -8,6 +8,7 @@ import jakarta.persistence.OneToMany;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
+import java.util.stream.Collectors;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -52,5 +53,12 @@ public class Performance {
                 .entertainment(performanceDetail.entertainment())
                 .state(performanceDetail.state())
                 .build();
+    }
+
+    @Override
+    public String toString() {
+        return castMembers.stream()
+                .map(CastMember::toString)
+                .collect(Collectors.joining(", "));
     }
 }

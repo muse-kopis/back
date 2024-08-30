@@ -5,37 +5,45 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.YearMonth;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.UUID;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import muse_kopis.muse.auth.oauth.domain.OauthMember;
 import muse_kopis.muse.auth.oauth.domain.OauthMemberRepository;
+import muse_kopis.muse.auth.oauth.domain.TierImageURL;
 import muse_kopis.muse.auth.oauth.domain.UserTier;
 import muse_kopis.muse.common.InvalidLocalDateException;
 import muse_kopis.muse.common.NotFoundTicketBookException;
 import muse_kopis.muse.performance.Performance;
 import muse_kopis.muse.performance.PerformanceRepository;
 import muse_kopis.muse.performance.usergenre.UserGenreService;
+import muse_kopis.muse.review.ReviewRepository;
 import muse_kopis.muse.review.dto.ReviewResponse;
+import muse_kopis.muse.ticketbook.dto.ShareablePage;
+import muse_kopis.muse.ticketbook.dto.TicketBookCalender;
 import muse_kopis.muse.ticketbook.dto.TicketBookResponse;
 import muse_kopis.muse.ticketbook.photo.Photo;
 import muse_kopis.muse.ticketbook.photo.PhotoRepository;
 import muse_kopis.muse.ticketbook.photo.PhotoService;
 import org.springframework.stereotype.Service;
-import org.springframework.web.multipart.MultipartFile;
 
 @Slf4j
 @Service
 @RequiredArgsConstructor
 public class TicketBookService {
 
+    private final TierImageURL tierImageURL;
     private final OauthMemberRepository oauthMemberRepository;
     private final TicketBookRepository ticketBookRepository;
     private final PerformanceRepository performanceRepository;
     private final PhotoRepository photoRepository;
     private final UserGenreService userGenreService;
     private final PhotoService photoService;
+    private final ReviewRepository reviewRepository;
 
     @Transactional
     public List<TicketBookResponse> ticketBooks(Long memberId) {
@@ -63,9 +71,12 @@ public class TicketBookService {
     ) {
         OauthMember oauthMember = oauthMemberRepository.getByOauthMemberId(memberId);
         Performance performance = performanceRepository.getByPerformanceId(performanceId);
-        ReviewResponse reviewResponse = ReviewResponse.from(oauthMember, performance, star, content, visible, castMembers);
-        TicketBook ticketBook = ticketBookRepository.save(TicketBook.from(oauthMember, viewDate, reviewResponse, performance));
-        photoRepository.saveAll(validPhotos(urls, ticketBook));
+        ReviewResponse reviewResponse = ReviewResponse.from(oauthMember, star, content, visible, castMembers);
+        TicketBook ticketBook = ticketBookRepository.save(TicketBook.from(oauthMember, viewDate, reviewResponse, performance, castMembers));
+        List<Photo> photos = validPhotos(urls, ticketBook);
+        if (!photos.isEmpty()) {
+            photoRepository.saveAll(photos);
+        }
         userGenreService.updateGenre(performance, oauthMember);
         tierUpdate(oauthMember);
         return ticketBook.getId();
@@ -73,13 +84,17 @@ public class TicketBookService {
 
     private void tierUpdate(OauthMember oauthMember) {
         long counted = ticketBookRepository.countTicketBookByOauthMember(oauthMember);
-        oauthMember.updateUserTier(UserTier.fromCount(counted));
+        UserTier tier = UserTier.fromCount(counted);
+        switch (tier) {
+            case MANIA -> oauthMember.updateUserTier(tier, tierImageURL.getMania());
+            case LOVER -> oauthMember.updateUserTier(tier, tierImageURL.getLover());
+            case NEWBIE -> oauthMember.updateUserTier(tier, tierImageURL.getNewbie());
+        }
         oauthMemberRepository.save(oauthMember);
     }
 
     @Transactional
-    public TicketBookResponse ticketBook(Long memberId, Long ticketBookId) {
-        oauthMemberRepository.getByOauthMemberId(memberId);
+    public TicketBookResponse ticketBook(Long ticketBookId) {
         TicketBook ticketBook = ticketBookRepository.getByTicketBookId(ticketBookId);
         List<Photo> photos = photoRepository.findAllByTicketBook(ticketBook);
         return TicketBookResponse.from(ticketBook, photos);
@@ -92,36 +107,38 @@ public class TicketBookService {
         ticketBook.validate(oauthMember);
         photoRepository.findAllByTicketBook(ticketBook).forEach(photo -> photoService.deleteImageFromS3(photo.getUrl()));
         photoRepository.deleteAll(photoRepository.findAllByTicketBook(ticketBook));
+        reviewRepository.delete(ticketBook.getReview());
         ticketBookRepository.delete(ticketBook);
+        tierUpdate(oauthMember);
         return ticketBookId;
     }
 
     @Transactional
-    public TicketBookResponse ticketBookInDate(Long memberId, LocalDate localDate) {
+    public List<TicketBookResponse> ticketBookInDate(Long memberId, LocalDate localDate) {
         OauthMember oauthMember = oauthMemberRepository.getByOauthMemberId(memberId);
         LocalDateTime startDateTime = localDate.atStartOfDay();
         LocalDateTime endDateTime = localDate.plusDays(1).atStartOfDay();
-        TicketBook ticketBook = ticketBookRepository.findByOauthMemberAndViewDate(memberId, startDateTime, endDateTime)
-                .orElseThrow(() -> new NotFoundTicketBookException("티켓북이 존재하지 않습니다."));
-        List<Photo> photos = photoRepository.findAllByTicketBook(ticketBook);
-        return TicketBookResponse.from(ticketBook, photos);
+        List<TicketBook> ticketBook = ticketBookRepository.findByOauthMemberAndViewDate(memberId, startDateTime, endDateTime);
+        return ticketBook.stream().map(ticket ->
+            TicketBookResponse.from(ticket, photoRepository.findAllByTicketBook(ticket))).toList();
     }
 
     @Transactional
-    public List<TicketBookResponse> ticketBooksForMonth(Long memberId, Integer year, Integer month) {
+    public Map<LocalDate, List<TicketBookCalender>> ticketBooksForMonth(Long memberId, Integer year, Integer month) {
         if (year == null || month == null) {
            throw new InvalidLocalDateException("년도 또는 달이 입력되지 않았습니다.");
         }
         YearMonth yearMonth = YearMonth.of(year, month);
         LocalDateTime startDate = yearMonth.atDay(1).atTime(0,0,0);
         LocalDateTime endDate = yearMonth.atEndOfMonth().plusDays(1).atStartOfDay();
-        List<TicketBook> ticketBooks = ticketBookRepository.findAllByOauthMemberAndViewDateBetween(memberId, startDate, endDate);
-        return ticketBooks.stream()
-                .map(ticketBook -> {
-                            List<Photo> photos = photoRepository.findAllByTicketBook(ticketBook);
-                            return TicketBookResponse.from(ticketBook, photos);
-                        })
-                .collect(Collectors.toList());
+        log.info("start {}", startDate);
+        log.info("end {}", endDate);
+        List<TicketBook> ticketBooks = ticketBookRepository.findByOauthMemberAndViewDate(memberId, startDate, endDate);
+        Map<LocalDate, List<TicketBookCalender>> map = new HashMap<>();
+        ticketBooks.forEach(ticketBook -> map
+                .computeIfAbsent(ticketBook.getViewDate().toLocalDate(), k -> new ArrayList<>())
+                        .add(TicketBookCalender.from(ticketBook)));
+        return map;
     }
 
     @Transactional
@@ -129,7 +146,6 @@ public class TicketBookService {
             Long memberId,
             Long ticketBookId,
             LocalDateTime viewDate,
-            List<String> urls,
             Integer star,
             String content,
             Boolean visible,
@@ -138,10 +154,7 @@ public class TicketBookService {
         TicketBook ticketBook = ticketBookRepository.getByTicketBookId(ticketBookId);
         OauthMember oauthMember = oauthMemberRepository.getByOauthMemberId(memberId);
         ticketBook.validate(oauthMember);
-        List<Photo> list = validPhotos(urls, ticketBook);
-        ReviewResponse review = ReviewResponse.from(oauthMember, ticketBook.getReview().getPerformance(), star,
-                content, visible, castMembers);
-        photoRepository.saveAll(list);
+        ReviewResponse review = ReviewResponse.from(oauthMember, star, content, visible, castMembers);
         ticketBook.update(viewDate, review);
         return ticketBookRepository.save(ticketBook).getId();
     }
@@ -151,5 +164,41 @@ public class TicketBookService {
             urls = new ArrayList<>();
         }
         return urls.stream().map(url -> new Photo(url, ticketBook)).toList();
+    }
+
+    @Transactional
+    public ShareablePage findByIdentifier(String identifier) {
+        List<TicketBookResponse> ticketBooks = ticketBookRepository.findAllByIdentifier(identifier).stream()
+                .map(ticketBook -> {
+                    List<Photo> photos = photoRepository.findAllByTicketBook(ticketBook);
+                    return TicketBookResponse.from(ticketBook, photos);
+                }).toList();
+        if (ticketBooks.isEmpty()) {
+            throw new NotFoundTicketBookException("티켓북을 찾을 수 없습니다.");
+        }
+        String username = ticketBooks.getFirst().reviewResponse().username();
+        return new ShareablePage(ticketBooks, username);
+    }
+
+    @Transactional
+    public String generateLink(Long memberId) {
+        OauthMember oauthMember = oauthMemberRepository.getByOauthMemberId(memberId);
+        List<TicketBook> ticketBooks = ticketBookRepository.findAllByOauthMember(oauthMember);
+        String link = ticketBooks.getFirst().shareValidate()? UUID.randomUUID().toString() : ticketBooks.getFirst().getIdentifier();
+        log.info(link);
+        ticketBooks.forEach(ticketBook -> {
+            if(ticketBook.getOauthMember().id().equals(oauthMember.id()) && ticketBook.shareValidate()) {
+                ticketBook.share(link);
+            }
+        });
+        ticketBookRepository.saveAll(ticketBooks);
+        return link;
+    }
+
+    @Transactional
+    public TicketBookResponse sharedTicketBook(String identifier) {
+        TicketBook ticketBook = ticketBookRepository.getByIdentifier(identifier);
+        List<Photo> photos = photoRepository.findAllByTicketBook(ticketBook);
+        return TicketBookResponse.from(ticketBook, photos);
     }
 }

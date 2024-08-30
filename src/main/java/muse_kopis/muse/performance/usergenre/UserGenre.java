@@ -5,13 +5,17 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.OneToOne;
-import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import lombok.NoArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import muse_kopis.muse.auth.oauth.domain.OauthMember;
 import muse_kopis.muse.performance.genre.GenreType;
 
+@Slf4j
 @Entity
 @NoArgsConstructor
 public class UserGenre {
@@ -20,6 +24,8 @@ public class UserGenre {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private GenreType favorite;
+    private GenreType second;
+    private GenreType third;
     @OneToOne
     private OauthMember oauthMember;
     private Integer crime;
@@ -48,6 +54,11 @@ public class UserGenre {
     private Integer emotion;
     private Integer youthfulGrowth;
     private Integer cabaret;
+    private Integer female;
+    private Integer band;
+    private Integer religion;
+    private Integer classicNovel;
+    private Integer talkConcert;
 
     public UserGenre(OauthMember oauthMember) {
         this.oauthMember = oauthMember;
@@ -77,6 +88,11 @@ public class UserGenre {
         this.emotion = 0;
         this.youthfulGrowth = 0;
         this.cabaret = 0;
+        this.female = 0;
+        this.band = 0;
+        this.religion = 0;
+        this.classicNovel = 0;
+        this.talkConcert = 0;
     }
 
     public void incrementGenreWeight(GenreType genreType) {
@@ -107,6 +123,11 @@ public class UserGenre {
             case EMOTION -> emotion++;
             case YOUTHFUL_GROWTH -> youthfulGrowth++;
             case CABARET -> cabaret++;
+            case FEMALE_ONLY -> female++;
+            case BAND_MUSICAL -> band++;
+            case RELIGION -> religion++;
+            case CLASSIC_NOVEL -> classicNovel++;
+            case TALK_CONCERT -> talkConcert++;
         }
         updateFavoriteGenre();
     }
@@ -139,11 +160,29 @@ public class UserGenre {
         genreWeights.put(GenreType.EMOTION, emotion);
         genreWeights.put(GenreType.YOUTHFUL_GROWTH, youthfulGrowth);
         genreWeights.put(GenreType.CABARET, cabaret);
-
-        favorite = Collections.max(genreWeights.entrySet(), Map.Entry.comparingByValue()).getKey();
+        genreWeights.put(GenreType.FEMALE_ONLY, female);
+        genreWeights.put(GenreType.BAND_MUSICAL, band);
+        genreWeights.put(GenreType.RELIGION, religion);
+        genreWeights.put(GenreType.CLASSIC_NOVEL, classicNovel);
+        genreWeights.put(GenreType.TALK_CONCERT, talkConcert);
+        List<Entry<GenreType, Integer>> collect = genreWeights.entrySet().stream()
+                .sorted(Entry.comparingByValue(Comparator.reverseOrder()))
+                .limit(3).toList();
+        log.info("{}", collect.getFirst());
+        favorite = collect.get(0).getKey();
+        second = collect.get(1).getKey();
+        third = collect.get(2).getKey();
     }
 
     public GenreType favorite() {
         return favorite;
+    }
+
+    public GenreType second() {
+        return second;
+    }
+
+    public GenreType third() {
+        return third;
     }
 }
