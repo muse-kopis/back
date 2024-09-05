@@ -1,10 +1,13 @@
 package muse_kopis.muse.performance;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import muse_kopis.muse.common.NotFoundPerformanceException;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 @Repository
@@ -26,4 +29,6 @@ public interface PerformanceRepository extends JpaRepository<Performance, Long> 
     List<Performance> findAllByState(String state);
     List<Performance> findAllByStateOrState(String currentPerformances, String upcomingPerformances);
     Optional<Performance> findByPerformanceNameAndVenue(String performanceName, String venue);
+    @Query("SELECT p FROM Performance p WHERE :today BETWEEN p.startDate AND p.endDate")
+    List<Performance> findPerformancesByDate(@Param("today") LocalDate today);
 }

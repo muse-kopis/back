@@ -84,7 +84,7 @@ public class PerformanceService {
 
     @Transactional
     public List<PerformanceResponse> findAllPerformance(){
-        return performanceRepository.findAllByState(CURRENT)
+        return performanceRepository.findPerformancesByDate(LocalDate.now())
                 .stream()
                 .map(PerformanceResponse::from)
                 .limit(7)
