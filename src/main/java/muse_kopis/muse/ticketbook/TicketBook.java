@@ -36,7 +36,6 @@ public class TicketBook {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    @Temporal(TemporalType.TIMESTAMP)
     private LocalDateTime viewDate;
     private String venue;
     private String castMembers;
