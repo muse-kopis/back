@@ -42,6 +42,7 @@ public class OauthMember {
     private String tierImageUrl;
     private String username; // 서비스 내부에서 보이는 사용자 이름
     private Boolean isNewUser;
+
     public Long id() {
         return id;
     }
