@@ -1,10 +1,8 @@
 package muse_kopis.muse.performance.genre;
 
 import java.util.List;
-import muse_kopis.muse.common.NotFoundPerformanceException;
 import muse_kopis.muse.performance.Performance;
 import muse_kopis.muse.performance.PerformanceRepository;
-import muse_kopis.muse.performance.dto.PerformanceResponse;
 import org.springframework.stereotype.Service;
 
 @Service
