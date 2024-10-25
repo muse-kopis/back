@@ -59,6 +59,13 @@ public class TicketBookService {
     }
 
     @Transactional
+    public TicketBookResponse ticketBook(Long ticketBookId) {
+        TicketBook ticketBook = ticketBookRepository.getByTicketBookId(ticketBookId);
+        List<Photo> photos = photoRepository.findAllByTicketBook(ticketBook);
+        return TicketBookResponse.from(ticketBook, photos);
+    }
+
+    @Transactional
     public Long writeTicketBook(
             Long memberId,
             Long performanceId,
@@ -91,13 +98,6 @@ public class TicketBookService {
             case NEWBIE -> oauthMember.updateUserTier(tier, tierImageURL.getNewbie());
         }
         oauthMemberRepository.save(oauthMember);
-    }
-
-    @Transactional
-    public TicketBookResponse ticketBook(Long ticketBookId) {
-        TicketBook ticketBook = ticketBookRepository.getByTicketBookId(ticketBookId);
-        List<Photo> photos = photoRepository.findAllByTicketBook(ticketBook);
-        return TicketBookResponse.from(ticketBook, photos);
     }
 
     @Transactional
@@ -149,13 +149,15 @@ public class TicketBookService {
             Integer star,
             String content,
             Boolean visible,
-            String castMembers
+            String castMembers,
+            List<String> urls
     ) {
         TicketBook ticketBook = ticketBookRepository.getByTicketBookId(ticketBookId);
         OauthMember oauthMember = oauthMemberRepository.getByOauthMemberId(memberId);
         ticketBook.validate(oauthMember);
         ReviewResponse review = ReviewResponse.from(oauthMember, star, content, visible, castMembers);
         ticketBook.update(viewDate, review);
+        photoService.updateTicketBookImage(ticketBook, urls);
         return ticketBookRepository.save(ticketBook).getId();
     }
 
@@ -163,6 +165,7 @@ public class TicketBookService {
         if (urls == null) {
             urls = new ArrayList<>();
         }
+        urls = urls.stream().filter(url -> !url.isBlank()).toList();
         return urls.stream().map(url -> new Photo(url, ticketBook)).toList();
     }
 

@@ -14,9 +14,12 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLDecoder;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
+import java.util.Set;
 import java.util.UUID;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import muse_kopis.muse.common.S3Exception;
@@ -101,12 +104,30 @@ public class PhotoService {
         }
     }
 
-    public List<String> updateTicketBookImage(Long ticketBookId, List<MultipartFile> photos) {
-        TicketBook ticketBook = ticketBookRepository.getByTicketBookId(ticketBookId);
-        photoRepository.findAllByTicketBook(ticketBook).forEach(photo -> deleteImageFromS3(photo.getUrl()));
-        if (photos == null) {
-            photos = new ArrayList<>();
+    public void updateTicketBookImage(TicketBook ticketBook, List<String> urls) {
+        List<Photo> photos = photoRepository.findAllByTicketBook(ticketBook);
+        Set<Photo> photosToDelete = new HashSet<>();
+        Set<String> urlsToAdd = new HashSet<>(urls);
+
+        photos.forEach(photo -> {
+            String url = photo.getUrl();
+            if(!urlsToAdd.contains(url)) {
+                photosToDelete.add(photo);
+            } else {
+                urlsToAdd.remove(url);
+            }
+        });
+
+        if(!photosToDelete.isEmpty()) {
+            photoRepository.deleteAll(photosToDelete);
         }
-        return photos.stream().map(this::upload).toList();
+
+        List<Photo> photosToAdd = urlsToAdd.stream().filter(url -> !url.isBlank())
+                .map(url -> new Photo(url, ticketBook))
+                .toList();
+
+        if(!photosToAdd.isEmpty()) {
+            photoRepository.saveAll(photosToAdd);
+        }
     }
 }

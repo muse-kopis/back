@@ -1,9 +1,12 @@
 package muse_kopis.muse.performance.usergenre;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -13,6 +16,7 @@ import java.util.Map.Entry;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import muse_kopis.muse.auth.oauth.domain.OauthMember;
+import muse_kopis.muse.performance.actor.FavoriteActor;
 import muse_kopis.muse.performance.genre.GenreType;
 
 @Slf4j
@@ -23,9 +27,14 @@ public class UserGenre {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+    @Enumerated
     private GenreType favorite;
+    @Enumerated
     private GenreType second;
+    @Enumerated
     private GenreType third;
+    @OneToMany(mappedBy = "userGenre", cascade = CascadeType.ALL)
+    private List<FavoriteActor> actors;
     @OneToOne
     private OauthMember oauthMember;
     private Integer crime;
@@ -184,5 +193,9 @@ public class UserGenre {
 
     public GenreType third() {
         return third;
+    }
+
+    public List<FavoriteActor> favoriteActors() {
+        return actors;
     }
 }

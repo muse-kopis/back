@@ -2,7 +2,6 @@ package muse_kopis.muse.ticketbook;
 
 import io.swagger.v3.oas.annotations.Operation;
 import java.time.LocalDate;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import lombok.RequiredArgsConstructor;
@@ -16,7 +15,6 @@ import muse_kopis.muse.ticketbook.dto.TicketBookEditRequest;
 import muse_kopis.muse.ticketbook.dto.TicketBookRequest;
 import muse_kopis.muse.ticketbook.dto.TicketBookResponse;
 import muse_kopis.muse.ticketbook.photo.PhotoService;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -76,19 +74,15 @@ public class TicketBookController {
     @Operation(summary = "TicketBookRequest 스키마 참조",
             description = "{\"performanceId\":Long,\n viewDate:\"2024-08-23\",\n "
                     + "review : { \"content\": \"string\", \"star\": \"int\", \"castMembers\": [{\"name\":\"string\"}], visible:\"boolean\"}}")
-    @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    @PostMapping
     public ResponseEntity<Long> writeTicketBooks(@Auth Long memberId, @ModelAttribute TicketBookRequest ticketBookRequest) {
-        List<String> urls = new ArrayList<>();
-        if (ticketBookRequest.photos() != null) {
-            urls = ticketBookRequest.photos().stream().map(photoService::upload).toList();
-        }
         return ResponseEntity.ok()
                 .body(
                         ticketBookService.writeTicketBook(
                                 memberId,
                                 ticketBookRequest.performanceId(),
                                 ticketBookRequest.viewDate(),
-                                urls,
+                                ticketBookRequest.photos(),
                                 ticketBookRequest.star(),
                                 ticketBookRequest.content(),
                                 ticketBookRequest.visible(),
@@ -102,7 +96,7 @@ public class TicketBookController {
         return ResponseEntity.ok().body(ticketBookService.deleteTicketBook(memberId, ticketBookId));
     }
 
-    @PatchMapping(value = "/{ticketBookId}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    @PatchMapping(value = "/{ticketBookId}")
     public ResponseEntity<Long> updateTicketBook(@Auth Long memberId, @PathVariable Long ticketBookId, @ModelAttribute TicketBookEditRequest ticketBookEditRequest) {
         return ResponseEntity.ok()
                 .body(
@@ -113,7 +107,8 @@ public class TicketBookController {
                                 ticketBookEditRequest.star(),
                                 ticketBookEditRequest.content(),
                                 ticketBookEditRequest.visible(),
-                                ticketBookEditRequest.castMembers()
+                                ticketBookEditRequest.castMembers(),
+                                ticketBookEditRequest.photos()
                         )
                 );
     }
