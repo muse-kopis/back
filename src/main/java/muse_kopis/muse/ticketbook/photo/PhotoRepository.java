@@ -9,4 +9,5 @@ import org.springframework.stereotype.Repository;
 public interface PhotoRepository extends JpaRepository<Photo, Long> {
 
     List<Photo> findAllByTicketBook(TicketBook ticketBook);
+    Photo findByUrl(String url);
 }

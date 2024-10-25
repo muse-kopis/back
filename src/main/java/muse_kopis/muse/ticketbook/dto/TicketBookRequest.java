@@ -13,6 +13,6 @@ public record TicketBookRequest(
         String content,
         Integer star,
         Boolean visible,
-        List<MultipartFile> photos
+        List<String> photos
 ) {
 }
