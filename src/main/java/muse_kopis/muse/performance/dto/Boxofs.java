@@ -7,6 +7,7 @@ import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlRootElement;
 import java.util.List;
 
 @JacksonXmlRootElement(localName = "boxofs")
+@JsonIgnoreProperties(ignoreUnknown = true)
 public record Boxofs(
         @JacksonXmlElementWrapper(useWrapping = false)
         @JacksonXmlProperty(localName = "boxof")

@@ -42,8 +42,17 @@ public class TicketBookController {
     }
 
     @GetMapping("/share/detail/{identifier}")
+    @Operation(summary = "티켓북 공유",
+            description = "url을 가지고 공유한 티켓북의 상세 내용을 조회합니다.")
     public ResponseEntity<TicketBookResponse> getSharedTicketBook(@PathVariable String identifier) {
         return ResponseEntity.ok().body(ticketBookService.sharedTicketBook(identifier));
+    }
+
+    @Operation(summary = "티켓북 공유",
+            description = "memberId를 이용하여 공유할 티켓북 페이지 url을 만듭니다.")
+    @PostMapping("/share")
+    public ResponseEntity<String> generateSharedTicketBookLink(@Auth Long memberId) {
+        return ResponseEntity.ok().body(frontURLConfig.url()+"ticketBooks/share/"+ticketBookService.generateLink(memberId));
     }
 
     @GetMapping
@@ -57,23 +66,20 @@ public class TicketBookController {
     }
 
     @GetMapping("/date")
+    @Operation(summary = "")
     public ResponseEntity<List<TicketBookResponse>> ticketBookInDate(@Auth Long memberId, @RequestParam LocalDate localDate) {
         return ResponseEntity.ok().body(ticketBookService.ticketBookInDate(memberId, localDate));
     }
 
     @GetMapping("/month")
+    @Operation(summary = "포토캘린더 조회",
+            description = "등록한 티켓북을 달별로 조회합니다.")
     public ResponseEntity<Map<LocalDate, List<TicketBookCalender>>> ticketBooksByMonth(@Auth Long memberId, @ModelAttribute MonthDto monthDto) {
         return ResponseEntity.ok().body(ticketBookService.ticketBooksForMonth(memberId, monthDto.year(), monthDto.month()));
     }
 
-    @PostMapping("/share")
-    public ResponseEntity<String> generateSharedTicketBookLink(@Auth Long memberId) {
-        return ResponseEntity.ok().body(frontURLConfig.url()+"ticketBooks/share/"+ticketBookService.generateLink(memberId));
-    }
-
-    @Operation(summary = "TicketBookRequest 스키마 참조",
-            description = "{\"performanceId\":Long,\n viewDate:\"2024-08-23\",\n "
-                    + "review : { \"content\": \"string\", \"star\": \"int\", \"castMembers\": [{\"name\":\"string\"}], visible:\"boolean\"}}")
+    @Operation(summary = "티켓북 등록",
+            description = "photos는 url을 보내면 됩니다.(List<String>타입으로 되어있습니다.)")
     @PostMapping
     public ResponseEntity<Long> writeTicketBooks(@Auth Long memberId, @ModelAttribute TicketBookRequest ticketBookRequest) {
         return ResponseEntity.ok()
@@ -96,7 +102,8 @@ public class TicketBookController {
         return ResponseEntity.ok().body(ticketBookService.deleteTicketBook(memberId, ticketBookId));
     }
 
-    @PatchMapping(value = "/{ticketBookId}")
+    @PatchMapping("/{ticketBookId}")
+    @Operation(description = "photos는 url을 보내면 됩니다.(List<String>타입으로 되어있습니다.)")
     public ResponseEntity<Long> updateTicketBook(@Auth Long memberId, @PathVariable Long ticketBookId, @ModelAttribute TicketBookEditRequest ticketBookEditRequest) {
         return ResponseEntity.ok()
                 .body(

@@ -140,6 +140,7 @@ public class PerformanceService {
     public List<PerformanceResponse> fetchPopularPerformance() {
         String url = API_URL_BOX_OFFICE + "?service=" + kopisKey + "&ststype=" + TYPE + "&date=" + LocalDate.now()
                 .format(DateTimeFormatter.ofPattern("yyyyMMdd")) + "&catecode=" + GENRE;
+        log.info("url = {}", url);
         String response = restTemplate.getForObject(url, String.class);
         log.info("{}", LocalDate.now());
         try {
@@ -156,6 +157,8 @@ public class PerformanceService {
                     .filter(Optional::isPresent)
                     .map(Optional::get)
                     .toList();
+
+            log.info("{}", collect.size());
             return collect.stream().map(PerformanceResponse::from).collect(Collectors.toList());
         } catch (Exception e) {
             throw new NotFoundPerformanceException("공연을 찾을 수 없습니다.");
