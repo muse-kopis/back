@@ -42,7 +42,7 @@ public class TicketBook {
     private Review review;
     @ManyToOne(fetch = FetchType.LAZY)
     private OauthMember oauthMember;
-    @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true, mappedBy = "ticketBook")
     private List<Photo> photos;
     private String identifier;
 
