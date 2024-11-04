@@ -22,6 +22,7 @@ public class ReviewController {
     private final ReviewService reviewService;
 
     @PostMapping
+    @Operation(summary = "리뷰 작성", description = "리뷰를 작성합니다.(해당 기능은 티켓북에서 쓰여서 따로 쓰이지 않습니다.)")
     public ResponseEntity<Long> writeReview(@Auth Long memberId, @RequestBody ReviewRequest reviewRequest) {
         Review review = reviewService.writeReview(
                 memberId,
@@ -34,14 +35,16 @@ public class ReviewController {
         return ResponseEntity.ok().body(review.getId());
     }
 
-    @Operation(description = "공연상세 페이지 후기란에서 확인 할 수 있는 리뷰")
     @GetMapping("/public/{performanceId}")
+    @Operation(summary = "공연 리뷰",
+            description = "공연상세 페이지 후기란에서 확인 할 수 있는 리뷰")
     public ResponseEntity<List<ReviewResponse>> getPublicReviews(@Auth Long memberId, @PathVariable Long performanceId) {
         return ResponseEntity.ok().body(reviewService.getPublicReviews(memberId, performanceId));
     }
 
-    @Operation(description = "사용자가 작성한 리뷰 전체")
     @GetMapping("/private/{performanceId}")
+    @Operation(summary = "공연 리뷰(비공개 포함)",
+            description = "사용자가 작성한 리뷰 전체")
     public ResponseEntity<List<ReviewResponse>> getPrivateReviews(@Auth Long memberId, @PathVariable Long performanceId) {
         return ResponseEntity.ok().body(reviewService.getPrivateReview(memberId, performanceId));
     }

@@ -56,6 +56,8 @@ public class TicketBookController {
     }
 
     @GetMapping
+    @Operation(summary = "티켓북 조회",
+            description = "사용자가 저장한 티켓북을 조회합니다.")
     public ResponseEntity<List<TicketBookResponse>> ticketBooks(@Auth Long memberId) {
         return ResponseEntity.ok().body(ticketBookService.ticketBooks(memberId));
     }
@@ -66,7 +68,8 @@ public class TicketBookController {
     }
 
     @GetMapping("/date")
-    @Operation(summary = "")
+    @Operation(summary = "포토캘린더 특정 날짜 조회",
+            description = "해당일에 기록해둔 티켓북들을 모두 조회합니다.")
     public ResponseEntity<List<TicketBookResponse>> ticketBookInDate(@Auth Long memberId, @RequestParam LocalDate localDate) {
         return ResponseEntity.ok().body(ticketBookService.ticketBookInDate(memberId, localDate));
     }

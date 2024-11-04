@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
 @RestController
-@RequestMapping("/images")
+@RequestMapping("/photos")
 @RequiredArgsConstructor
 public class PhotoController {
 
@@ -21,9 +21,9 @@ public class PhotoController {
 
     @PostMapping
     @Operation(description = "사진 여러장을 form data로 보내면 됩니다.(List<MultipartFile>타입으로 되어있습니다.")
-    public ResponseEntity<List<String>> uploadImage(@RequestBody List<MultipartFile> images) {
+    public ResponseEntity<List<String>> uploadImage(@RequestBody List<MultipartFile> photos) {
         List<String> urls = new ArrayList<>();
-        for (MultipartFile image : images) {
+        for (MultipartFile image : photos) {
             urls.add(photoService.upload(image));
         }
         return ResponseEntity.ok().body(urls);
@@ -31,8 +31,8 @@ public class PhotoController {
 
     @DeleteMapping
     @Operation(description = "사진 여러장을 한번에 지울 수 있습니다.(List<String>타입으로 되어있습니다.")
-    public ResponseEntity<Void> deleteImage(@RequestBody List<String> images) {
-        images.forEach(photoService::deleteImageFromS3);
+    public ResponseEntity<Void> deleteImage(@RequestBody List<String> photos) {
+        photos.forEach(photoService::deleteImageFromS3);
         return ResponseEntity.ok().build();
     }
 }
