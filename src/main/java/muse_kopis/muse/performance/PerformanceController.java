@@ -42,33 +42,29 @@ public class PerformanceController {
     private final UserGenreService userGenreService;
     private final OauthService oauthService;
 
-    // 검색어를 통한 공연 목록
-    @GetMapping("/search")
     @Operation(summary = "검색",
             description = "검색어를 통해 공연을 조회합니다.")
+    @GetMapping("/search")
     public ResponseEntity<List<PerformanceResponse>> searchPerformance(@RequestParam String search) {
         return ResponseEntity.ok().body(performanceService.findAllPerformanceBySearch(search));
     }
 
-    // 상태에 따른 공연 목록
-    @GetMapping("/state")
     @Operation(summary = "공연중", description = "현재 진행중인 공연을 보여줍니다.")
+    @GetMapping("/state")
     public ResponseEntity<List<PerformanceResponse>> getPerformances() {
         return ResponseEntity.ok().body(performanceService.findAllPerformance());
     }
 
-    // 인기있는 공연 목록
-    @GetMapping("/popular")
     @Operation(summary = "인기 작품 6편",
             description = "최근 예매율이 높은 6편의 공연을 보여줍니다.")
+    @GetMapping("/popular")
     public ResponseEntity<List<PerformanceResponse>> getPerformancePopular() {
         return ResponseEntity.ok().body(performanceService.fetchPopularPerformance());
     }
 
-    // 특정 공연
-    @GetMapping("/{performanceId}")
     @Operation(summary = "공연 상세",
             description = "특정 공연의 정보를 보여줍니다.")
+    @GetMapping("/{performanceId}")
     public ResponseEntity<PerformanceResponse> getPerformance(@PathVariable Long performanceId) {
         return ResponseEntity.ok().body(performanceService.findById(performanceId));
     }
@@ -80,23 +76,23 @@ public class PerformanceController {
         return ResponseEntity.ok().body(performanceService.recommendPerformance(memberId));
     }
 
-    @GetMapping("/random")
     @Operation(summary = "무작위 추천",
             description = "무작위로 공연을 추천합니다.")
+    @GetMapping("/random")
     public ResponseEntity<Set<PerformanceResponse>> randomPerformance(@Auth Long memberId) {
         return ResponseEntity.ok().body(performanceService.getRandomPerformance(memberId));
     }
 
-    @GetMapping("/onboarding")
     @Operation(summary = "온보딩",
             description = "온보딩 화면을 보여줍니다.")
+    @GetMapping("/onboarding")
     public ResponseEntity<List<PerformanceResponse>> showOnboarding() {
         return ResponseEntity.ok().body(userGenreService.showOnboarding());
     }
 
-    @PostMapping("/onboarding")
     @Operation(summary = "온보딩",
             description = "온보딩 내용을 등록합니다., 공연 아이디를 받아옵니다.")
+    @PostMapping("/onboarding")
     public ResponseEntity<String> updateUserGenre(@Auth Long memberId, @RequestBody Onboarding onboarding) {
         String username = oauthService.updateUsername(memberId, onboarding.username());
         oauthService.updateUserState(memberId);
@@ -104,7 +100,6 @@ public class PerformanceController {
         return ResponseEntity.ok().body(username);
     }
 
-    // 포스터 이미지 반환
     @GetMapping("/poster/{performanceId}")
     public ResponseEntity<ByteArrayResource> getPosterImage(@PathVariable Long performanceId) {
         ByteArrayResource image = performanceService.getPosterImage(performanceId);
