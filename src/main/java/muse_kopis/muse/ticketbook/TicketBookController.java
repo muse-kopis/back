@@ -22,6 +22,7 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -34,16 +35,15 @@ public class TicketBookController {
 
     private final FrontURLConfig frontURLConfig;
     private final TicketBookService ticketBookService;
-    private final PhotoService photoService;
 
     @GetMapping("/share/{identifier}")
     public ResponseEntity<ShareablePage> getSharedTicketBooks(@PathVariable String identifier) {
         return ResponseEntity.ok().body(ticketBookService.findByIdentifier(identifier));
     }
 
-    @GetMapping("/share/detail/{identifier}")
     @Operation(summary = "티켓북 공유",
             description = "url을 가지고 공유한 티켓북의 상세 내용을 조회합니다.")
+    @GetMapping("/share/detail/{identifier}")
     public ResponseEntity<TicketBookResponse> getSharedTicketBook(@PathVariable String identifier) {
         return ResponseEntity.ok().body(ticketBookService.sharedTicketBook(identifier));
     }
@@ -55,9 +55,9 @@ public class TicketBookController {
         return ResponseEntity.ok().body(frontURLConfig.url()+"ticketBooks/share/"+ticketBookService.generateLink(memberId));
     }
 
-    @GetMapping
     @Operation(summary = "티켓북 조회",
             description = "사용자가 저장한 티켓북을 조회합니다.")
+    @GetMapping
     public ResponseEntity<List<TicketBookResponse>> ticketBooks(@Auth Long memberId) {
         return ResponseEntity.ok().body(ticketBookService.ticketBooks(memberId));
     }
@@ -67,16 +67,16 @@ public class TicketBookController {
         return ResponseEntity.ok().body(ticketBookService.ticketBook(ticketBookId));
     }
 
-    @GetMapping("/date")
     @Operation(summary = "포토캘린더 특정 날짜 조회",
             description = "해당일에 기록해둔 티켓북들을 모두 조회합니다.")
+    @GetMapping("/date")
     public ResponseEntity<List<TicketBookResponse>> ticketBookInDate(@Auth Long memberId, @RequestParam LocalDate localDate) {
         return ResponseEntity.ok().body(ticketBookService.ticketBookInDate(memberId, localDate));
     }
 
-    @GetMapping("/month")
     @Operation(summary = "포토캘린더 조회",
             description = "등록한 티켓북을 달별로 조회합니다.")
+    @GetMapping("/month")
     public ResponseEntity<Map<LocalDate, List<TicketBookCalender>>> ticketBooksByMonth(@Auth Long memberId, @ModelAttribute MonthDto monthDto) {
         return ResponseEntity.ok().body(ticketBookService.ticketBooksForMonth(memberId, monthDto.year(), monthDto.month()));
     }
@@ -84,7 +84,7 @@ public class TicketBookController {
     @Operation(summary = "티켓북 등록",
             description = "photos는 url을 보내면 됩니다.(List<String>타입으로 되어있습니다.)")
     @PostMapping
-    public ResponseEntity<Long> writeTicketBooks(@Auth Long memberId, @ModelAttribute TicketBookRequest ticketBookRequest) {
+    public ResponseEntity<Long> writeTicketBooks(@Auth Long memberId, @RequestBody TicketBookRequest ticketBookRequest) {
         return ResponseEntity.ok()
                 .body(
                         ticketBookService.writeTicketBook(
@@ -105,8 +105,8 @@ public class TicketBookController {
         return ResponseEntity.ok().body(ticketBookService.deleteTicketBook(memberId, ticketBookId));
     }
 
-    @PatchMapping("/{ticketBookId}")
     @Operation(description = "photos는 url을 보내면 됩니다.(List<String>타입으로 되어있습니다.)")
+    @PatchMapping("/{ticketBookId}")
     public ResponseEntity<Long> updateTicketBook(@Auth Long memberId, @PathVariable Long ticketBookId, @ModelAttribute TicketBookEditRequest ticketBookEditRequest) {
         return ResponseEntity.ok()
                 .body(

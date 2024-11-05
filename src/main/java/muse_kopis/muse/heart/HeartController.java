@@ -45,5 +45,4 @@ public class HeartController {
     public ResponseEntity<Boolean> getPerformance(@Auth Long memberId, @PathVariable Long performanceId) {
         return ResponseEntity.ok().body(heartService.getMemberIsLikePerformance(memberId, performanceId));
     }
-
 }
