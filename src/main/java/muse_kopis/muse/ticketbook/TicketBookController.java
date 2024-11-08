@@ -107,7 +107,7 @@ public class TicketBookController {
 
     @Operation(description = "photos는 url을 보내면 됩니다.(List<String>타입으로 되어있습니다.)")
     @PatchMapping("/{ticketBookId}")
-    public ResponseEntity<Long> updateTicketBook(@Auth Long memberId, @PathVariable Long ticketBookId, @ModelAttribute TicketBookEditRequest ticketBookEditRequest) {
+    public ResponseEntity<Long> updateTicketBook(@Auth Long memberId, @PathVariable Long ticketBookId, @RequestBody TicketBookEditRequest ticketBookEditRequest) {
         return ResponseEntity.ok()
                 .body(
                         ticketBookService.updateTicketBook(
