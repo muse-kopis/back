@@ -8,6 +8,8 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import muse_kopis.muse.auth.Auth;
 import muse_kopis.muse.ticketbook.application.TicketBookService;
+import muse_kopis.muse.ticketbook.application.TicketBookServiceImpl;
+import muse_kopis.muse.ticketbook.domain.photo.application.PhotoService;
 import muse_kopis.muse.ticketbook.infra.config.FrontURLConfig;
 import muse_kopis.muse.ticketbook.domain.dto.MonthDto;
 import muse_kopis.muse.ticketbook.domain.dto.ShareablePage;
@@ -35,6 +37,7 @@ public class TicketBookController {
 
     private final FrontURLConfig frontURLConfig;
     private final TicketBookService ticketBookService;
+    private final PhotoService photoService;
 
     /**
      * @apiNote Shared TicketBook
@@ -57,7 +60,7 @@ public class TicketBookController {
             description = "url을 가지고 공유한 티켓북의 상세 내용을 조회합니다.")
     @GetMapping("/share/detail/{identifier}")
     public ResponseEntity<TicketBookResponse> getSharedTicketBook(@PathVariable String identifier) {
-        return ResponseEntity.ok().body(ticketBookService.sharedTicketBook(identifier));
+        return ResponseEntity.ok().body(ticketBookService.getSharedTicketBook(identifier));
     }
 
     /**
@@ -81,7 +84,7 @@ public class TicketBookController {
             description = "사용자가 저장한 티켓북들을 조회합니다.")
     @GetMapping
     public ResponseEntity<List<TicketBookResponse>> ticketBooks(@Auth Long memberId) {
-        return ResponseEntity.ok().body(ticketBookService.ticketBooks(memberId));
+        return ResponseEntity.ok().body(ticketBookService.getTicketBooks(memberId));
     }
 
     /**
@@ -93,7 +96,7 @@ public class TicketBookController {
             description = "사용자가 저장한 티켓북을 상세 조회합니다.")
     @GetMapping("/{ticketBookId}")
     public ResponseEntity<TicketBookResponse> ticketBook(@PathVariable Long ticketBookId) {
-        return ResponseEntity.ok().body(ticketBookService.ticketBook(ticketBookId));
+        return ResponseEntity.ok().body(ticketBookService.getTicketBook(ticketBookId));
     }
 
     /**
@@ -156,6 +159,7 @@ public class TicketBookController {
     @Operation(summary = "티켓북 삭제")
     @DeleteMapping("/{ticketBookId}")
     public ResponseEntity<Long> deleteTicketBooks(@Auth Long memberId, @PathVariable Long ticketBookId) {
+
         return ResponseEntity.ok().body(ticketBookService.deleteTicketBook(memberId, ticketBookId));
     }
 
@@ -176,11 +180,11 @@ public class TicketBookController {
                                 memberId,
                                 ticketBookId,
                                 ticketBookEditRequest.viewDate(),
+                                ticketBookEditRequest.photos(),
                                 ticketBookEditRequest.star(),
                                 ticketBookEditRequest.content(),
                                 ticketBookEditRequest.visible(),
-                                ticketBookEditRequest.castMembers(),
-                                ticketBookEditRequest.photos()
+                                ticketBookEditRequest.castMembers()
                         )
                 );
     }

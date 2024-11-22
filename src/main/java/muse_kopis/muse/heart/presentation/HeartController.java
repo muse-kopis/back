@@ -33,7 +33,7 @@ public class HeartController {
     @Operation(summary = "관심 공연 지정",
             description = "관심 공연으로 지정합니다. 사용자-공연 연결 및 사용자의 가중치 테이블을 업데이트 합니다.")
     @PostMapping("/{performanceId}/like")
-    public ResponseEntity<Void> like(@Auth Long memberId, @PathVariable Long performanceId) {
+    public ResponseEntity<Void> like(@Auth Long memberId, @PathVariable("performanceId") Long performanceId) {
         log.info("memberId = {}", memberId);
         heartService.like(memberId, performanceId);
         return ResponseEntity.ok().build();
@@ -48,7 +48,7 @@ public class HeartController {
     @Operation(summary = "관심 공연 해제",
             description = "관심 공연을 해제합니다. 사용자-공연 연결을 제거합니다. 사용자 가중치 테이블은 업데이트 하지 않습니다.")
     @DeleteMapping("/{performanceId}/like")
-    public ResponseEntity<Void> unlike(@Auth Long memberId, @PathVariable Long performanceId) {
+    public ResponseEntity<Void> unlike(@Auth Long memberId, @PathVariable("performanceId") Long performanceId) {
         heartService.unlike(memberId, performanceId);
         return ResponseEntity.ok().build();
     }
@@ -74,7 +74,7 @@ public class HeartController {
     @Operation(summary = "사용자 관심 공연 조회",
             description = "해당 공연이 사용자가 관심 공연으로 지정한 공연인지 조회합니다.")
     @GetMapping("/{performanceId}/like")
-    public ResponseEntity<Boolean> getPerformance(@Auth Long memberId, @PathVariable Long performanceId) {
+    public ResponseEntity<Boolean> getPerformance(@Auth Long memberId, @PathVariable("performanceId") Long performanceId) {
         return ResponseEntity.ok().body(heartService.getMemberIsLikePerformance(memberId, performanceId));
     }
 }

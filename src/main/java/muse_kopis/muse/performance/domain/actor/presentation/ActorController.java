@@ -7,6 +7,7 @@ import java.util.List;
 import lombok.RequiredArgsConstructor;
 import muse_kopis.muse.auth.Auth;
 import muse_kopis.muse.performance.domain.actor.application.ActorService;
+import muse_kopis.muse.performance.domain.actor.application.ActorServiceImpl;
 import muse_kopis.muse.performance.domain.actor.domain.dto.ActorDto;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -16,7 +17,7 @@ import org.springframework.web.bind.annotation.*;
 @RequiredArgsConstructor
 public class ActorController {
 
-    private final ActorService favoriteActorService;
+    private final ActorService actorService;
 
     /**
      * @apiNote Favorite Actor
@@ -27,7 +28,7 @@ public class ActorController {
     @PostMapping
     @Operation(summary = "관심 배우 등록", description = "관심 배우를 등록합니다.")
     public ResponseEntity<Long> favorite(@Auth Long memberId, @RequestBody ActorDto actor) {
-        return ResponseEntity.ok().body(favoriteActorService.favorite(memberId, actor.name()));
+        return ResponseEntity.ok().body(actorService.favorite(memberId, actor.name()));
     }
 
     /**
@@ -38,6 +39,6 @@ public class ActorController {
     @GetMapping
     @Operation(summary = "관심 배우 조회", description = "관심 배우를 조회합니다.")
     public ResponseEntity<List<ActorDto>> favorites(@Auth Long memberId) {
-        return ResponseEntity.ok().body(favoriteActorService.favorites(memberId));
+        return ResponseEntity.ok().body(actorService.favorites(memberId));
     }
 }

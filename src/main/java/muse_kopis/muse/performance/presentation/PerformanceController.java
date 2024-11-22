@@ -43,7 +43,6 @@ public class PerformanceController {
     private final UserGenreService userGenreService;
     private final OauthService oauthService;
 
-
     /**
      * @apiNote Search Performance
      * @param String search

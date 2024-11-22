@@ -15,7 +15,7 @@ import muse_kopis.muse.auth.oauth.domain.dto.UserInfo;
 import muse_kopis.muse.heart.domain.Heart;
 import muse_kopis.muse.heart.domain.HeartRepository;
 import muse_kopis.muse.performance.domain.usergenre.domain.UserGenreRepository;
-import muse_kopis.muse.performance.domain.usergenre.application.UserGenreService;
+import muse_kopis.muse.performance.domain.usergenre.application.UserGenreServiceImpl;
 import muse_kopis.muse.ticketbook.domain.TicketBook;
 import muse_kopis.muse.ticketbook.domain.TicketBookRepository;
 import muse_kopis.muse.ticketbook.domain.photo.domain.PhotoRepository;
@@ -30,7 +30,7 @@ public class OauthService {
     private final AuthCodeRequestUrlProviderComposite authCodeRequestUrlProviderComposite;
     private final OauthMemberClientComposite oauthMemberClientComposite;
     private final OauthMemberRepository oauthMemberRepository;
-    private final UserGenreService userGenreService;
+    private final UserGenreServiceImpl userGenreService;
     private final HeartRepository heartRepository;
     private final TicketBookRepository ticketBookRepository;
     private final PhotoRepository photoRepository;
