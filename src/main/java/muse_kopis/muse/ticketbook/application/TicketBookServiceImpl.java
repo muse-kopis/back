@@ -20,6 +20,7 @@ import muse_kopis.muse.common.ticketbook.NotFoundTicketBookException;
 import muse_kopis.muse.performance.domain.Performance;
 import muse_kopis.muse.performance.domain.PerformanceRepository;
 import muse_kopis.muse.performance.domain.usergenre.application.UserGenreServiceImpl;
+import muse_kopis.muse.photo.application.PhotoService;
 import muse_kopis.muse.review.domain.ReviewRepository;
 import muse_kopis.muse.review.domain.dto.ReviewResponse;
 import muse_kopis.muse.ticketbook.domain.TicketBook;
@@ -29,7 +30,6 @@ import muse_kopis.muse.ticketbook.domain.dto.TicketBookCalender;
 import muse_kopis.muse.ticketbook.domain.dto.TicketBookResponse;
 import muse_kopis.muse.photo.domain.Photo;
 import muse_kopis.muse.photo.domain.PhotoRepository;
-import muse_kopis.muse.photo.application.PhotoServiceImpl;
 import org.springframework.stereotype.Service;
 
 @Slf4j
@@ -43,7 +43,7 @@ public class TicketBookServiceImpl implements TicketBookService {
     private final PerformanceRepository performanceRepository;
     private final PhotoRepository photoRepository;
     private final UserGenreServiceImpl userGenreService;
-    private final PhotoServiceImpl photoService;
+    private final PhotoService photoService;
     private final ReviewRepository reviewRepository;
 
     @Override
@@ -52,7 +52,7 @@ public class TicketBookServiceImpl implements TicketBookService {
         return ticketBookRepository.findAllByOauthMember(oauthMember)
                 .stream()
                 .map(ticketBook -> {
-                        List<Photo> photos = photoRepository.findAllByTicketBook(ticketBook);
+                        List<Photo> photos = photoService.getImagesByTicketBook(ticketBook);
                         return TicketBookResponse.from(ticketBook, photos);
                     }
                 )
@@ -62,7 +62,7 @@ public class TicketBookServiceImpl implements TicketBookService {
     @Override
     public TicketBookResponse getTicketBook(Long ticketBookId) {
         TicketBook ticketBook = ticketBookRepository.getByTicketBookId(ticketBookId);
-        List<Photo> photos = photoRepository.findAllByTicketBook(ticketBook);
+        List<Photo> photos = photoService.getImagesByTicketBook(ticketBook);
         return TicketBookResponse.from(ticketBook, photos);
     }
 
@@ -114,13 +114,15 @@ public class TicketBookServiceImpl implements TicketBookService {
         OauthMember oauthMember = oauthMemberRepository.getByOauthMemberId(memberId);
         TicketBook ticketBook = ticketBookRepository.getByTicketBookId(ticketBookId);
         ticketBook.validate(oauthMember);
-        photoRepository.findAllByTicketBook(ticketBook).forEach(photo -> photoService.deleteImage(photo.getUrl()));
+        photoService.deleteImages(ticketBook);
         photoRepository.deleteAll(photoRepository.findAllByTicketBook(ticketBook));
         reviewRepository.delete(ticketBook.getReview());
         ticketBookRepository.delete(ticketBook);
         tierUpdate(oauthMember);
         return ticketBookId;
     }
+
+
 
     @Override
     public List<TicketBookResponse> ticketBookInDate(Long memberId, LocalDate localDate) {

@@ -132,4 +132,14 @@ public class PhotoServiceImpl implements PhotoService {
             photoRepository.saveAll(photosToAdd);
         }
     }
+
+    @Override
+    public void deleteImages(TicketBook ticketBook) {
+        photoRepository.findAllByTicketBook(ticketBook).forEach(photo -> deleteImage(photo.getUrl()));
+    }
+
+    @Override
+    public List<Photo> getImagesByTicketBook(TicketBook ticketBook) {
+        return photoRepository.findAllByTicketBook(ticketBook);
+    }
 }
