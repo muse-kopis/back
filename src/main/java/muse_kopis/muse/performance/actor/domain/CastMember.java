@@ -1,4 +1,4 @@
-package muse_kopis.muse.performance.castmember;
+package muse_kopis.muse.performance.actor.domain;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -15,24 +15,23 @@ import muse_kopis.muse.performance.Performance;
 @Entity
 @Getter
 @NoArgsConstructor
-public class CastMember {
+public class CastMember extends Actor {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    private String name;
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "performance_id")
     private Performance performance;
 
     public CastMember(String name, Performance performance) {
-        this.name = name;
+        super(name);
         this.performance = performance;
     }
 
     @Override
     public String toString() {
-        return name;
+        return super.getName();
     }
 
     @Override
@@ -40,12 +39,12 @@ public class CastMember {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         CastMember that = (CastMember) o;
-        return Objects.equals(name, that.name) &&
+        return Objects.equals(super.getName(), that.getName()) &&
                 Objects.equals(performance, that.performance);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(name, performance);
+        return Objects.hash(super.getName(), performance);
     }
 }

@@ -89,6 +89,14 @@ public class TicketBookService {
         return ticketBook.getId();
     }
 
+    private List<Photo> validPhotos(List<String> urls, TicketBook ticketBook) {
+        if (urls == null) {
+            urls = new ArrayList<>();
+        }
+        urls = urls.stream().filter(url -> !url.isBlank()).toList();
+        return urls.stream().map(url -> new Photo(url, ticketBook)).toList();
+    }
+
     private void tierUpdate(OauthMember oauthMember) {
         long counted = ticketBookRepository.countTicketBookByOauthMember(oauthMember);
         UserTier tier = UserTier.fromCount(counted);
@@ -159,14 +167,6 @@ public class TicketBookService {
         ticketBook.update(viewDate, review);
         photoService.updateTicketBookImage(ticketBook, urls);
         return ticketBookRepository.save(ticketBook).getId();
-    }
-
-    private List<Photo> validPhotos(List<String> urls, TicketBook ticketBook) {
-        if (urls == null) {
-            urls = new ArrayList<>();
-        }
-        urls = urls.stream().filter(url -> !url.isBlank()).toList();
-        return urls.stream().map(url -> new Photo(url, ticketBook)).toList();
     }
 
     @Transactional

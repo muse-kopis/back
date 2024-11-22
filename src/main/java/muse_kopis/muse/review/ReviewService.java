@@ -8,7 +8,7 @@ import muse_kopis.muse.auth.oauth.domain.OauthMember;
 import muse_kopis.muse.auth.oauth.domain.OauthMemberRepository;
 import muse_kopis.muse.performance.Performance;
 import muse_kopis.muse.performance.PerformanceRepository;
-import muse_kopis.muse.performance.castmember.CastMember;
+import muse_kopis.muse.performance.actor.domain.CastMember;
 import muse_kopis.muse.review.dto.ReviewResponse;
 import org.springframework.stereotype.Service;
 

@@ -16,7 +16,7 @@ import java.util.Map.Entry;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import muse_kopis.muse.auth.oauth.domain.OauthMember;
-import muse_kopis.muse.performance.actor.FavoriteActor;
+import muse_kopis.muse.performance.actor.domain.FavoriteActor;
 import muse_kopis.muse.performance.genre.GenreType;
 
 @Slf4j
@@ -27,16 +27,22 @@ public class UserGenre {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
     @Enumerated
     private GenreType favorite;
+
     @Enumerated
     private GenreType second;
+
     @Enumerated
     private GenreType third;
+
     @OneToMany(mappedBy = "userGenre", cascade = CascadeType.ALL)
     private List<FavoriteActor> actors;
+
     @OneToOne
     private OauthMember oauthMember;
+
     private Integer crime;
     private Integer fantasy;
     private Integer fairyTale;
