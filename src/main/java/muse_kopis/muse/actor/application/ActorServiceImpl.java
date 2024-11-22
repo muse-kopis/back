@@ -1,11 +1,11 @@
-package muse_kopis.muse.performance.domain.actor.application;
+package muse_kopis.muse.actor.application;
 
 import lombok.RequiredArgsConstructor;
 import muse_kopis.muse.auth.oauth.domain.OauthMember;
 import muse_kopis.muse.auth.oauth.domain.OauthMemberRepository;
-import muse_kopis.muse.performance.domain.actor.domain.dto.ActorDto;
-import muse_kopis.muse.performance.domain.actor.domain.FavoriteActor;
-import muse_kopis.muse.performance.domain.actor.domain.FavoriteActorRepository;
+import muse_kopis.muse.actor.domain.dto.ActorDto;
+import muse_kopis.muse.actor.domain.FavoriteActor;
+import muse_kopis.muse.actor.domain.FavoriteActorRepository;
 import muse_kopis.muse.performance.domain.usergenre.domain.UserGenre;
 import muse_kopis.muse.performance.domain.usergenre.domain.UserGenreRepository;
 import org.springframework.stereotype.Service;

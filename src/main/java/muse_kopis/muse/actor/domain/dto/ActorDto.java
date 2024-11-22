@@ -1,7 +1,7 @@
-package muse_kopis.muse.performance.domain.actor.domain.dto;
+package muse_kopis.muse.actor.domain.dto;
 
 import lombok.Builder;
-import muse_kopis.muse.performance.domain.actor.domain.Actor;
+import muse_kopis.muse.actor.domain.Actor;
 
 @Builder
 public record ActorDto(

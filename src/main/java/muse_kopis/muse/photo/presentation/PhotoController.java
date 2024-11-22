@@ -1,10 +1,10 @@
-package muse_kopis.muse.ticketbook.domain.photo.presentation;
+package muse_kopis.muse.photo.presentation;
 
 import io.swagger.v3.oas.annotations.Operation;
 import java.util.ArrayList;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
-import muse_kopis.muse.ticketbook.domain.photo.application.PhotoService;
+import muse_kopis.muse.photo.application.PhotoService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PostMapping;

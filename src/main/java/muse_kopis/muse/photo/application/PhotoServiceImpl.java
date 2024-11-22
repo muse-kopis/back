@@ -1,4 +1,4 @@
-package muse_kopis.muse.ticketbook.domain.photo.application;
+package muse_kopis.muse.photo.application;
 
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.model.CannedAccessControlList;
@@ -23,9 +23,9 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import muse_kopis.muse.common.s3.S3Exception;
 import muse_kopis.muse.ticketbook.domain.TicketBook;
-import muse_kopis.muse.ticketbook.domain.photo.domain.Photo;
-import muse_kopis.muse.ticketbook.domain.photo.domain.PhotoRepository;
-import muse_kopis.muse.ticketbook.domain.photo.infra.PhotoValidator;
+import muse_kopis.muse.photo.domain.Photo;
+import muse_kopis.muse.photo.domain.PhotoRepository;
+import muse_kopis.muse.photo.infra.PhotoValidator;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;

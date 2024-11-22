@@ -1,6 +1,6 @@
-package muse_kopis.muse.performance.domain.actor.application;
+package muse_kopis.muse.actor.application;
 
-import muse_kopis.muse.performance.domain.actor.domain.dto.ActorDto;
+import muse_kopis.muse.actor.domain.dto.ActorDto;
 
 import java.util.List;
 

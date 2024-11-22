@@ -1,4 +1,4 @@
-package muse_kopis.muse.ticketbook.domain.photo.infra.config;
+package muse_kopis.muse.photo.infra.config;
 
 import com.amazonaws.auth.AWSCredentials;
 import com.amazonaws.auth.AWSStaticCredentialsProvider;

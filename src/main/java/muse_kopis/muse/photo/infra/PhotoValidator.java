@@ -1,4 +1,4 @@
-package muse_kopis.muse.ticketbook.domain.photo.infra;
+package muse_kopis.muse.photo.infra;
 
 import java.util.Arrays;
 import java.util.List;

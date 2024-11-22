@@ -8,8 +8,8 @@ import lombok.Builder;
 
 import muse_kopis.muse.review.domain.dto.ReviewResponse;
 import muse_kopis.muse.ticketbook.domain.TicketBook;
-import muse_kopis.muse.ticketbook.domain.photo.domain.Photo;
-import muse_kopis.muse.ticketbook.domain.photo.domain.dto.PhotoResponse;
+import muse_kopis.muse.photo.domain.Photo;
+import muse_kopis.muse.photo.domain.dto.PhotoResponse;
 
 @Builder
 public record TicketBookResponse(

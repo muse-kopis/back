@@ -2,7 +2,7 @@ package muse_kopis.muse.performance.application;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.dataformat.xml.XmlMapper;
-import jakarta.transaction.Transactional;
+
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.Arrays;
@@ -20,8 +20,8 @@ import muse_kopis.muse.common.api.FetchFailException;
 import muse_kopis.muse.common.performance.NotFoundPerformanceException;
 import muse_kopis.muse.performance.domain.Performance;
 import muse_kopis.muse.performance.domain.PerformanceRepository;
-import muse_kopis.muse.performance.domain.actor.domain.CastMember;
-import muse_kopis.muse.performance.domain.actor.domain.CastMemberRepository;
+import muse_kopis.muse.actor.domain.CastMember;
+import muse_kopis.muse.actor.domain.CastMemberRepository;
 import muse_kopis.muse.performance.domain.dto.Boxofs;
 import muse_kopis.muse.performance.domain.dto.Boxofs.Boxof;
 import muse_kopis.muse.performance.domain.dto.KOPISPerformanceDetailResponse.Detail;

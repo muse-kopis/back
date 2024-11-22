@@ -18,7 +18,7 @@ import muse_kopis.muse.performance.domain.usergenre.domain.UserGenreRepository;
 import muse_kopis.muse.performance.domain.usergenre.application.UserGenreServiceImpl;
 import muse_kopis.muse.ticketbook.domain.TicketBook;
 import muse_kopis.muse.ticketbook.domain.TicketBookRepository;
-import muse_kopis.muse.ticketbook.domain.photo.domain.PhotoRepository;
+import muse_kopis.muse.photo.domain.PhotoRepository;
 import org.springframework.stereotype.Service;
 
 @Slf4j

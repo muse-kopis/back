@@ -21,7 +21,7 @@ import muse_kopis.muse.common.auth.UnAuthorizationException;
 import muse_kopis.muse.performance.domain.Performance;
 import muse_kopis.muse.review.domain.Review;
 import muse_kopis.muse.review.domain.dto.ReviewResponse;
-import muse_kopis.muse.ticketbook.domain.photo.domain.Photo;
+import muse_kopis.muse.photo.domain.Photo;
 
 @Slf4j
 @Entity

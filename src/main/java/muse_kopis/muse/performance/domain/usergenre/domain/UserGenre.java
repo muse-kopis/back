@@ -16,7 +16,7 @@ import java.util.Map.Entry;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import muse_kopis.muse.auth.oauth.domain.OauthMember;
-import muse_kopis.muse.performance.domain.actor.domain.FavoriteActor;
+import muse_kopis.muse.actor.domain.FavoriteActor;
 import muse_kopis.muse.performance.domain.genre.domain.GenreType;
 
 @Slf4j

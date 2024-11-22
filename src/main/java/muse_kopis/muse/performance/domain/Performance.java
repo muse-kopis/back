@@ -14,7 +14,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import muse_kopis.muse.performance.domain.actor.domain.CastMember;
+import muse_kopis.muse.actor.domain.CastMember;
 import muse_kopis.muse.performance.domain.dto.KOPISPerformanceDetailResponse.Detail;
 
 @Entity

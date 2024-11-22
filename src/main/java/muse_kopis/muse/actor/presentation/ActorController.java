@@ -1,4 +1,4 @@
-package muse_kopis.muse.performance.domain.actor.presentation;
+package muse_kopis.muse.actor.presentation;
 
 import io.swagger.v3.oas.annotations.Operation;
 
@@ -6,8 +6,8 @@ import java.util.List;
 
 import lombok.RequiredArgsConstructor;
 import muse_kopis.muse.auth.Auth;
-import muse_kopis.muse.performance.domain.actor.application.ActorService;
-import muse_kopis.muse.performance.domain.actor.domain.dto.ActorDto;
+import muse_kopis.muse.actor.application.ActorService;
+import muse_kopis.muse.actor.domain.dto.ActorDto;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 

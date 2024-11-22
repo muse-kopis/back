@@ -1,4 +1,4 @@
-package muse_kopis.muse.ticketbook.domain.photo.application;
+package muse_kopis.muse.photo.application;
 
 import muse_kopis.muse.ticketbook.domain.TicketBook;
 import org.springframework.web.multipart.MultipartFile;

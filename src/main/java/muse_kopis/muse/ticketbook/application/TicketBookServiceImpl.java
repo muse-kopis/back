@@ -27,9 +27,9 @@ import muse_kopis.muse.ticketbook.domain.TicketBookRepository;
 import muse_kopis.muse.ticketbook.domain.dto.ShareablePage;
 import muse_kopis.muse.ticketbook.domain.dto.TicketBookCalender;
 import muse_kopis.muse.ticketbook.domain.dto.TicketBookResponse;
-import muse_kopis.muse.ticketbook.domain.photo.domain.Photo;
-import muse_kopis.muse.ticketbook.domain.photo.domain.PhotoRepository;
-import muse_kopis.muse.ticketbook.domain.photo.application.PhotoServiceImpl;
+import muse_kopis.muse.photo.domain.Photo;
+import muse_kopis.muse.photo.domain.PhotoRepository;
+import muse_kopis.muse.photo.application.PhotoServiceImpl;
 import org.springframework.stereotype.Service;
 
 @Slf4j

@@ -1,6 +1,5 @@
 package muse_kopis.muse.review.application;
 
-import jakarta.transaction.Transactional;
 import java.util.List;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
@@ -8,7 +7,7 @@ import muse_kopis.muse.auth.oauth.domain.OauthMember;
 import muse_kopis.muse.auth.oauth.domain.OauthMemberRepository;
 import muse_kopis.muse.performance.domain.Performance;
 import muse_kopis.muse.performance.domain.PerformanceRepository;
-import muse_kopis.muse.performance.domain.actor.domain.CastMember;
+import muse_kopis.muse.actor.domain.CastMember;
 import muse_kopis.muse.review.domain.Review;
 import muse_kopis.muse.review.domain.ReviewRepository;
 import muse_kopis.muse.review.domain.dto.ReviewResponse;

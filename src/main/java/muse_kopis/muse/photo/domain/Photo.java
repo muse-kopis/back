@@ -1,4 +1,4 @@
-package muse_kopis.muse.ticketbook.domain.photo.domain;
+package muse_kopis.muse.photo.domain;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;

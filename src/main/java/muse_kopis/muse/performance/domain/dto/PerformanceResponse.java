@@ -4,7 +4,7 @@ import java.time.LocalDate;
 import java.util.List;
 import lombok.Builder;
 import muse_kopis.muse.performance.domain.Performance;
-import muse_kopis.muse.performance.domain.actor.domain.dto.ActorDto;
+import muse_kopis.muse.actor.domain.dto.ActorDto;
 
 @Builder
 public record PerformanceResponse(
