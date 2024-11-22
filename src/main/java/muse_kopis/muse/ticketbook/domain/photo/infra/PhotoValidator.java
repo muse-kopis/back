@@ -5,6 +5,7 @@ import java.util.List;
 import muse_kopis.muse.common.s3.S3Exception;
 
 public class PhotoValidator {
+
     public void validateImageFileExtention(String filename) {
         int lastDotIndex = filename.lastIndexOf(".");
         if (lastDotIndex == -1) {

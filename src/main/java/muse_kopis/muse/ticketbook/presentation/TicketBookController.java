@@ -8,7 +8,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import muse_kopis.muse.auth.Auth;
 import muse_kopis.muse.ticketbook.application.TicketBookService;
-import muse_kopis.muse.ticketbook.application.TicketBookServiceImpl;
 import muse_kopis.muse.ticketbook.domain.photo.application.PhotoService;
 import muse_kopis.muse.ticketbook.infra.config.FrontURLConfig;
 import muse_kopis.muse.ticketbook.domain.dto.MonthDto;

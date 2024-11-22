@@ -5,7 +5,6 @@ import java.util.ArrayList;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import muse_kopis.muse.ticketbook.domain.photo.application.PhotoService;
-import muse_kopis.muse.ticketbook.domain.photo.application.PhotoServiceImpl;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PostMapping;

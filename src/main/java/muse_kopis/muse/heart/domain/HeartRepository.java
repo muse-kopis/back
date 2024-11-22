@@ -9,6 +9,7 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface HeartRepository extends JpaRepository<Heart, Long> {
+
     Optional<Heart> findByOauthMemberAndPerformance(OauthMember oauthMember, Performance performance);
     List<Heart> findByOauthMember(OauthMember member);
 

@@ -5,7 +5,6 @@ import java.util.List;
 import lombok.RequiredArgsConstructor;
 import muse_kopis.muse.auth.Auth;
 import muse_kopis.muse.review.application.ReviewService;
-import muse_kopis.muse.review.application.ReviewServiceImpl;
 import muse_kopis.muse.review.domain.Review;
 import muse_kopis.muse.review.domain.dto.ReviewRequest;
 import muse_kopis.muse.review.domain.dto.ReviewResponse;
