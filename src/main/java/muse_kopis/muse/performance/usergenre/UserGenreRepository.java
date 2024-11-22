@@ -2,7 +2,7 @@ package muse_kopis.muse.performance.usergenre;
 
 import java.util.Optional;
 import muse_kopis.muse.auth.oauth.domain.OauthMember;
-import muse_kopis.muse.common.NotFoundMemberException;
+import muse_kopis.muse.common.member.NotFoundMemberException;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface UserGenreRepository extends JpaRepository<UserGenre, Long> {

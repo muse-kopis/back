@@ -2,14 +2,12 @@ package muse_kopis.muse.heart;
 
 import jakarta.transaction.Transactional;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import muse_kopis.muse.auth.oauth.domain.OauthMember;
 import muse_kopis.muse.auth.oauth.domain.OauthMemberRepository;
-import muse_kopis.muse.common.HeartDuplicatedException;
-import muse_kopis.muse.common.NotFoundHeartException;
-import muse_kopis.muse.common.NotFoundPerformanceException;
+import muse_kopis.muse.common.like.HeartDuplicatedException;
+import muse_kopis.muse.common.like.NotFoundHeartException;
 import muse_kopis.muse.performance.Performance;
 import muse_kopis.muse.performance.PerformanceRepository;
 import muse_kopis.muse.performance.dto.PerformanceResponse;

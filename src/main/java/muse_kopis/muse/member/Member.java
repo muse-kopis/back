@@ -5,12 +5,10 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import muse_kopis.muse.auth.PasswordEncoder;
-import muse_kopis.muse.common.UnAuthorizationException;
+import muse_kopis.muse.common.auth.UnAuthorizationException;
 
 @Entity
 @Getter

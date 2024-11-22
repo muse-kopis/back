@@ -16,8 +16,8 @@ import java.util.stream.Collectors;
 import lombok.extern.slf4j.Slf4j;
 import muse_kopis.muse.auth.oauth.domain.OauthMember;
 import muse_kopis.muse.auth.oauth.domain.OauthMemberRepository;
-import muse_kopis.muse.common.FetchFailException;
-import muse_kopis.muse.common.NotFoundPerformanceException;
+import muse_kopis.muse.common.api.FetchFailException;
+import muse_kopis.muse.common.performance.NotFoundPerformanceException;
 import muse_kopis.muse.performance.castmember.CastMember;
 import muse_kopis.muse.performance.castmember.CastMemberRepository;
 import muse_kopis.muse.performance.dto.Boxofs;
@@ -35,7 +35,6 @@ import muse_kopis.muse.performance.usergenre.UserGenreRepository;
 import org.apache.commons.text.similarity.LevenshteinDistance;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.ByteArrayResource;
-import org.springframework.http.HttpHeaders;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 

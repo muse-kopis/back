@@ -4,7 +4,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import muse_kopis.muse.auth.oauth.domain.OauthMember;
-import muse_kopis.muse.common.NotFoundTicketBookException;
+import muse_kopis.muse.common.ticketbook.NotFoundTicketBookException;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;

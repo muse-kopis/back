@@ -13,16 +13,15 @@ import java.io.UnsupportedEncodingException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLDecoder;
-import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 import java.util.UUID;
-import java.util.stream.Collectors;
+
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import muse_kopis.muse.common.S3Exception;
+import muse_kopis.muse.common.s3.S3Exception;
 import muse_kopis.muse.ticketbook.TicketBook;
 import muse_kopis.muse.ticketbook.TicketBookRepository;
 import org.springframework.beans.factory.annotation.Value;

@@ -7,7 +7,7 @@ import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.exceptions.JWTVerificationException;
 import java.util.Date;
-import muse_kopis.muse.common.UnAuthorizationException;
+import muse_kopis.muse.common.auth.UnAuthorizationException;
 import org.springframework.stereotype.Service;
 
 @Service

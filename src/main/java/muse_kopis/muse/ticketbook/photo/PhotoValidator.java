@@ -2,7 +2,7 @@ package muse_kopis.muse.ticketbook.photo;
 
 import java.util.Arrays;
 import java.util.List;
-import muse_kopis.muse.common.S3Exception;
+import muse_kopis.muse.common.s3.S3Exception;
 
 public class PhotoValidator {
     public void validateImageFileExtention(String filename) {

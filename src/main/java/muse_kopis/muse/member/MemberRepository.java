@@ -1,7 +1,7 @@
 package muse_kopis.muse.member;
 
 import java.util.Optional;
-import muse_kopis.muse.common.NotFoundMemberException;
+import muse_kopis.muse.common.member.NotFoundMemberException;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

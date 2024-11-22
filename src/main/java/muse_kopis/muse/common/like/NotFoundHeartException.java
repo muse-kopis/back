@@ -1,4 +1,4 @@
-package muse_kopis.muse.common;
+package muse_kopis.muse.common.like;
 
 public class NotFoundHeartException extends RuntimeException {
 

@@ -17,7 +17,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import muse_kopis.muse.auth.oauth.domain.OauthMember;
-import muse_kopis.muse.common.UnAuthorizationException;
+import muse_kopis.muse.common.auth.UnAuthorizationException;
 import muse_kopis.muse.performance.Performance;
 import muse_kopis.muse.review.Review;
 import muse_kopis.muse.review.dto.ReviewResponse;

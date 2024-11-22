@@ -1,7 +1,7 @@
 package muse_kopis.muse.member;
 
 import lombok.RequiredArgsConstructor;
-import muse_kopis.muse.common.DuplicateUsernameException;
+import muse_kopis.muse.common.member.DuplicateUsernameException;
 import org.springframework.stereotype.Component;
 
 @RequiredArgsConstructor
