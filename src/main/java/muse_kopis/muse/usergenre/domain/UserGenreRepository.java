@@ -1,4 +1,4 @@
-package muse_kopis.muse.performance.domain.usergenre.domain;
+package muse_kopis.muse.usergenre.domain;
 
 import java.util.Optional;
 import muse_kopis.muse.auth.oauth.domain.OauthMember;

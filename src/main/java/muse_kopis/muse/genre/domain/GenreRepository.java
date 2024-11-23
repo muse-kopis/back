@@ -1,4 +1,4 @@
-package muse_kopis.muse.performance.domain.genre.domain;
+package muse_kopis.muse.genre.domain;
 
 import java.util.List;
 

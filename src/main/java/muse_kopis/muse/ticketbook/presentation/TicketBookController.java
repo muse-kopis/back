@@ -7,8 +7,8 @@ import java.util.Map;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import muse_kopis.muse.auth.Auth;
-import muse_kopis.muse.ticketbook.application.TicketBookService;
 import muse_kopis.muse.photo.application.PhotoService;
+import muse_kopis.muse.ticketbook.application.TicketBookService;
 import muse_kopis.muse.ticketbook.infra.config.FrontURLConfig;
 import muse_kopis.muse.ticketbook.domain.dto.MonthDto;
 import muse_kopis.muse.ticketbook.domain.dto.ShareablePage;
@@ -36,7 +36,6 @@ public class TicketBookController {
 
     private final FrontURLConfig frontURLConfig;
     private final TicketBookService ticketBookService;
-    private final PhotoService photoService;
 
     /**
      * @apiNote Shared TicketBook

@@ -3,7 +3,7 @@ package muse_kopis.muse.actor.domain;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import muse_kopis.muse.performance.domain.usergenre.domain.UserGenre;
+import muse_kopis.muse.usergenre.domain.UserGenre;
 
 @Getter
 @Entity

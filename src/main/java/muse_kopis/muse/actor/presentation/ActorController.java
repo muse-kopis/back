@@ -5,8 +5,8 @@ import io.swagger.v3.oas.annotations.Operation;
 import java.util.List;
 
 import lombok.RequiredArgsConstructor;
-import muse_kopis.muse.auth.Auth;
 import muse_kopis.muse.actor.application.ActorService;
+import muse_kopis.muse.auth.Auth;
 import muse_kopis.muse.actor.domain.dto.ActorDto;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;

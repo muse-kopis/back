@@ -11,14 +11,11 @@ import java.util.concurrent.Executors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import muse_kopis.muse.auth.Auth;
-import muse_kopis.muse.auth.oauth.application.OauthService;
 import muse_kopis.muse.performance.application.PerformanceService;
-import muse_kopis.muse.performance.domain.dto.Onboarding;
 import muse_kopis.muse.performance.domain.dto.PerformanceRequest;
 import muse_kopis.muse.performance.domain.dto.PerformanceResponse;
-import muse_kopis.muse.performance.domain.genre.application.GenreService;
-import muse_kopis.muse.performance.domain.genre.domain.GenreType;
-import muse_kopis.muse.performance.domain.usergenre.application.UserGenreService;
+import muse_kopis.muse.genre.application.GenreService;
+import muse_kopis.muse.genre.domain.GenreType;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
@@ -26,8 +23,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -40,8 +35,6 @@ public class PerformanceController {
 
     private final PerformanceService performanceService;
     private final GenreService genreService;
-    private final UserGenreService userGenreService;
-    private final OauthService oauthService;
 
     /**
      * @apiNote Search Performance
@@ -110,33 +103,6 @@ public class PerformanceController {
     @GetMapping("/random")
     public ResponseEntity<Set<PerformanceResponse>> randomPerformance(@Auth Long memberId) {
         return ResponseEntity.ok().body(performanceService.getRandomPerformance(memberId));
-    }
-
-    /**
-     * @apiNote Performance Onboarding
-     * @return List<PerformanceResponse>
-     */
-    @Operation(summary = "온보딩",
-            description = "온보딩 화면을 보여줍니다.")
-    @GetMapping("/onboarding")
-    public ResponseEntity<List<PerformanceResponse>> showOnboarding() {
-        return ResponseEntity.ok().body(userGenreService.showOnboarding());
-    }
-
-    /**
-     * @apiNote Write Performance Onboarding
-     * @param Long memberId (JWT Token)
-     * @param Onboarding onboarding
-     * @return String
-     */
-    @Operation(summary = "온보딩",
-            description = "온보딩 내용을 등록합니다., 공연 아이디를 받아옵니다.")
-    @PostMapping("/onboarding")
-    public ResponseEntity<String> updateUserGenre(@Auth Long memberId, @RequestBody Onboarding onboarding) {
-        String username = oauthService.updateUsername(memberId, onboarding.username());
-        oauthService.updateUserState(memberId);
-        userGenreService.updateGenres(onboarding.performanceId(), memberId);
-        return ResponseEntity.ok().body(username);
     }
 
     /**

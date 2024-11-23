@@ -1,4 +1,4 @@
-package muse_kopis.muse.performance.domain.usergenre.domain;
+package muse_kopis.muse.usergenre.domain;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
@@ -17,7 +17,7 @@ import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import muse_kopis.muse.auth.oauth.domain.OauthMember;
 import muse_kopis.muse.actor.domain.FavoriteActor;
-import muse_kopis.muse.performance.domain.genre.domain.GenreType;
+import muse_kopis.muse.genre.domain.GenreType;
 
 @Slf4j
 @Entity
@@ -183,7 +183,7 @@ public class UserGenre {
         List<Entry<GenreType, Integer>> collect = genreWeights.entrySet().stream()
                 .sorted(Entry.comparingByValue(Comparator.reverseOrder()))
                 .limit(3).toList();
-        log.info("{}", collect.getFirst());
+//        log.info("{}", collect.getFirst());
         favorite = collect.get(0).getKey();
         second = collect.get(1).getKey();
         third = collect.get(2).getKey();

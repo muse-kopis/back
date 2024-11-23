@@ -1,25 +1,25 @@
-package muse_kopis.muse.performance.domain.genre.application;
+package muse_kopis.muse.genre.application;
 
+import jakarta.transaction.Transactional;
 import java.util.List;
+import muse_kopis.muse.genre.domain.Genre;
+import muse_kopis.muse.genre.domain.GenreRepository;
+import muse_kopis.muse.genre.domain.GenreType;
 import muse_kopis.muse.performance.domain.Performance;
 import muse_kopis.muse.performance.domain.PerformanceRepository;
-import muse_kopis.muse.performance.domain.genre.domain.Genre;
-import muse_kopis.muse.performance.domain.genre.domain.GenreRepository;
-import muse_kopis.muse.performance.domain.genre.domain.GenreType;
 import org.springframework.stereotype.Service;
 
 @Service
-public class GenreServiceImpl implements GenreService {
+public class GenreService {
 
     private final GenreRepository genreRepository;
     private final PerformanceRepository performanceRepository;
 
-    public GenreServiceImpl(GenreRepository genreRepository, PerformanceRepository performanceRepository) {
+    public GenreService(GenreRepository genreRepository, PerformanceRepository performanceRepository) {
         this.genreRepository = genreRepository;
         this.performanceRepository = performanceRepository;
     }
 
-    @Override
     public void saveGenre(String performanceName, GenreType genreType) {
         List<Performance> performances = performanceRepository.findByPerformanceName(performanceName);
         for (Performance performance : performances) {
