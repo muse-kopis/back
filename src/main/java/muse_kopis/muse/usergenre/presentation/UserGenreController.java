@@ -55,7 +55,7 @@ public class UserGenreController {
     /**
      * @apiNote Update Genre Table
      * @param Long memberId (JWT Token)
-     * @param Long performanceId
+     * @param UpdateInfo updateInfo
      * @return Void
      */
     @Operation(summary = "가중치 테이블 갱신", description = "가중치 테이블을 장르 값에 따라 갱신합니다. 티켓북을 생성하거나, 관심 공연 지정 시 호출해주세요.")
