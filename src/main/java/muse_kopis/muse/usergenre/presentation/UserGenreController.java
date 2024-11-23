@@ -8,10 +8,8 @@ import muse_kopis.muse.auth.oauth.application.OauthService;
 import muse_kopis.muse.performance.domain.dto.Onboarding;
 import muse_kopis.muse.performance.domain.dto.PerformanceResponse;
 import muse_kopis.muse.usergenre.application.UserGenreService;
-import muse_kopis.muse.usergenre.domain.dto.UpdateInfo;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -50,18 +48,5 @@ public class UserGenreController {
         oauthService.updateUserState(memberId);
         userGenreService.updateGenres(onboarding.performanceId(), memberId);
         return ResponseEntity.ok().body(username);
-    }
-
-    /**
-     * @apiNote Update Genre Table
-     * @param Long memberId (JWT Token)
-     * @param UpdateInfo updateInfo
-     * @return Void
-     */
-    @Operation(summary = "가중치 테이블 갱신", description = "가중치 테이블을 장르 값에 따라 갱신합니다. 티켓북을 생성하거나, 관심 공연 지정 시 호출해주세요.")
-    @PatchMapping
-    public ResponseEntity<Void> updateGenre(@Auth Long memberId, @RequestBody UpdateInfo updateInfo) {
-        userGenreService.updateGenre(memberId, updateInfo.performanceId());
-        return ResponseEntity.ok().build();
     }
 }

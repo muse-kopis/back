@@ -13,6 +13,8 @@ import muse_kopis.muse.heart.domain.HeartRepository;
 import muse_kopis.muse.performance.domain.Performance;
 import muse_kopis.muse.performance.domain.PerformanceRepository;
 import muse_kopis.muse.performance.domain.dto.PerformanceResponse;
+import muse_kopis.muse.ticketbook.domain.dto.UserGenreEvent;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -22,6 +24,7 @@ public class HeartService {
     private final HeartRepository heartRepository;
     private final PerformanceRepository performanceRepository;
     private final OauthMemberRepository oauthMemberRepository;
+    private final ApplicationEventPublisher eventPublisher;
 
     @Transactional
     public void like(Long memberId, Long performanceId) {
@@ -30,6 +33,7 @@ public class HeartService {
         if (heartRepository.existsByOauthMemberAndPerformance(oauthMember, performance)) {
             throw new HeartDuplicatedException("이미 좋아요를 눌렀습니다.");
         }
+        eventPublisher.publishEvent(new UserGenreEvent(memberId, performanceId));
         heartRepository.save(new Heart(oauthMember, performance));
     }
 
