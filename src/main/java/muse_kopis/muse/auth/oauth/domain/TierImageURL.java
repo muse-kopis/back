@@ -10,6 +10,7 @@ import org.springframework.stereotype.Component;
 @Component
 @ConfigurationProperties(prefix = "tier")
 public class TierImageURL {
+
     private String mania;
     private String lover;
     private String newbie;

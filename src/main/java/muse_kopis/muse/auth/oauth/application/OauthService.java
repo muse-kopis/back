@@ -12,13 +12,15 @@ import muse_kopis.muse.auth.oauth.domain.authcode.AuthCodeRequestUrlProviderComp
 import muse_kopis.muse.auth.oauth.domain.client.OauthMemberClientComposite;
 import muse_kopis.muse.auth.oauth.domain.dto.LoginDto;
 import muse_kopis.muse.auth.oauth.domain.dto.UserInfo;
-import muse_kopis.muse.heart.Heart;
-import muse_kopis.muse.heart.HeartRepository;
-import muse_kopis.muse.performance.usergenre.UserGenreRepository;
-import muse_kopis.muse.performance.usergenre.UserGenreService;
-import muse_kopis.muse.ticketbook.TicketBook;
-import muse_kopis.muse.ticketbook.TicketBookRepository;
-import muse_kopis.muse.ticketbook.photo.PhotoRepository;
+import muse_kopis.muse.heart.domain.Heart;
+import muse_kopis.muse.heart.domain.HeartRepository;
+import muse_kopis.muse.usergenre.domain.UserGenreRepository;
+import muse_kopis.muse.usergenre.application.UserGenreService;
+import muse_kopis.muse.ticketbook.domain.TicketBook;
+import muse_kopis.muse.ticketbook.domain.TicketBookRepository;
+import muse_kopis.muse.photo.domain.PhotoRepository;
+import org.apache.catalina.core.ApplicationPushBuilder;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 
 @Slf4j
@@ -30,11 +32,11 @@ public class OauthService {
     private final AuthCodeRequestUrlProviderComposite authCodeRequestUrlProviderComposite;
     private final OauthMemberClientComposite oauthMemberClientComposite;
     private final OauthMemberRepository oauthMemberRepository;
-    private final UserGenreService userGenreService;
     private final HeartRepository heartRepository;
     private final TicketBookRepository ticketBookRepository;
     private final PhotoRepository photoRepository;
     private final UserGenreRepository userGenreRepository;
+    private final ApplicationEventPublisher eventPublisher;
 
     public String getAuthCodeRequestUrl(OauthServerType oauthServerType) {
         return authCodeRequestUrlProviderComposite.provide(oauthServerType);
@@ -46,7 +48,7 @@ public class OauthService {
                 .orElseGet(() -> {
                         oauthMember.updateUserTier(UserTier.NEWBIE, tierImageURL.getNewbie());
                         OauthMember save = oauthMemberRepository.save(oauthMember);
-                        userGenreService.initGenre(oauthMember);
+                        eventPublisher.publishEvent(save);
                         return save;
                     }
                 );

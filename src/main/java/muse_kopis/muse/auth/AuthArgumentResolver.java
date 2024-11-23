@@ -3,7 +3,7 @@ package muse_kopis.muse.auth;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import muse_kopis.muse.auth.jwt.JwtService;
-import muse_kopis.muse.common.UnAuthorizationException;
+import muse_kopis.muse.common.auth.UnAuthorizationException;
 import org.springframework.core.MethodParameter;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;

@@ -4,6 +4,7 @@ import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 public enum UserTier {
+
     MANIA, LOVER, NEWBIE;
 
     public static UserTier fromCount(long count) {
