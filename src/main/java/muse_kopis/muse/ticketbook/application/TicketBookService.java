@@ -30,6 +30,8 @@ import muse_kopis.muse.ticketbook.domain.dto.TicketBookCalender;
 import muse_kopis.muse.ticketbook.domain.dto.TicketBookResponse;
 import muse_kopis.muse.photo.domain.Photo;
 import muse_kopis.muse.photo.domain.PhotoRepository;
+import muse_kopis.muse.ticketbook.domain.dto.UserGenreEvent;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 
 @Slf4j
@@ -44,6 +46,7 @@ public class TicketBookService {
     private final PhotoRepository photoRepository;
     private final PhotoService photoService;
     private final ReviewRepository reviewRepository;
+    private final ApplicationEventPublisher eventPublisher;
 
     @Transactional
     public List<TicketBookResponse> getTicketBooks(Long memberId) {
@@ -84,6 +87,7 @@ public class TicketBookService {
         if (!photos.isEmpty()) {
             photoRepository.saveAll(photos);
         }
+        eventPublisher.publishEvent(new UserGenreEvent(memberId, performanceId));
         tierUpdate(oauthMember);
         return ticketBook.getId();
     }

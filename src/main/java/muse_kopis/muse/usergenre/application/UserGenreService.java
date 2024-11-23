@@ -12,6 +12,7 @@ import muse_kopis.muse.performance.domain.PerformanceRepository;
 import muse_kopis.muse.performance.domain.dto.PerformanceResponse;
 import muse_kopis.muse.genre.domain.Genre;
 import muse_kopis.muse.genre.domain.GenreRepository;
+import muse_kopis.muse.ticketbook.domain.dto.UserGenreEvent;
 import muse_kopis.muse.usergenre.domain.UserGenre;
 import muse_kopis.muse.usergenre.domain.UserGenreRepository;
 import org.springframework.context.event.EventListener;
@@ -26,6 +27,17 @@ public class UserGenreService {
     private final UserGenreRepository userGenreRepository;
     private final PerformanceRepository performanceRepository;
     private final OauthMemberRepository oauthMemberRepository;
+
+    @EventListener
+    @Transactional
+    public void updateGenre(UserGenreEvent event) {
+        OauthMember oauthMember = oauthMemberRepository.getByOauthMemberId(event.memberId());
+        Performance performance = performanceRepository.getByPerformanceId(event.performanceId());
+        List<Genre> genre = genreRepository.findAllByPerformance(performance);
+        UserGenre userGenre = userGenreRepository.findByOauthMember(oauthMember)
+                .orElseGet(() -> initGenre(oauthMember));
+        genre.forEach(it -> userGenre.incrementGenreWeight(it.getGenre()));
+    }
 
     @Transactional
     public void updateGenre(Long memberId, Long performanceId) {
@@ -44,7 +56,6 @@ public class UserGenreService {
 
     @EventListener
     public UserGenre initGenre(OauthMember oauthMember) {
-        log.info("init UserGenre table");
         return userGenreRepository.save(new UserGenre(oauthMember));
     }
 
