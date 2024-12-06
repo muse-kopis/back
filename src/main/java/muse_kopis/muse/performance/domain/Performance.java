@@ -62,4 +62,8 @@ public class Performance {
                 .map(CastMember::toString)
                 .collect(Collectors.joining(", "));
     }
+
+    public void updateState(String state) {
+        this.state = state;
+    }
 }

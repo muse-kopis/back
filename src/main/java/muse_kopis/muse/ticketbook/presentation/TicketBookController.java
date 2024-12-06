@@ -156,7 +156,6 @@ public class TicketBookController {
     @Operation(summary = "티켓북 삭제")
     @DeleteMapping("/{ticketBookId}")
     public ResponseEntity<Long> deleteTicketBooks(@Auth Long memberId, @PathVariable Long ticketBookId) {
-
         return ResponseEntity.ok().body(ticketBookService.deleteTicketBook(memberId, ticketBookId));
     }
 
