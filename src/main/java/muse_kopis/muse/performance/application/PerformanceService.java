@@ -183,7 +183,7 @@ public class PerformanceService {
         List<Genre> result = genreRepository.findAllByGenre(favorite).stream()
                 .distinct()
                 .filter(genre -> genre.getPerformance().getState().equals(CURRENT))
-                .toList();
+                .collect(Collectors.toList());
         fillPerformanceList(result, second);
         fillPerformanceList(result, third);
         return result.stream()
