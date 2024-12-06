@@ -5,6 +5,8 @@ import com.fasterxml.jackson.dataformat.xml.XmlMapper;
 
 import jakarta.transaction.Transactional;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.chrono.ChronoLocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.Arrays;
 import java.util.Collections;
@@ -38,17 +40,25 @@ import muse_kopis.muse.usergenre.domain.UserGenreRepository;
 import org.apache.commons.text.similarity.LevenshteinDistance;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.ByteArrayResource;
+import org.springframework.scheduling.annotation.EnableScheduling;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
 @Slf4j
 @Service
+@EnableScheduling
 public class PerformanceService {
 
     @Value("${KOPIS_API_KEY}")
     private String kopisKey;
-    private final String API_URL = "http://www.kopis.or.kr/openApi/restful/pblprfr";
-    private final String API_URL_BOX_OFFICE = "http://kopis.or.kr/openApi/restful/boxoffice";
+
+    @Value("${API_URL}")
+    private String API_URL;
+
+    @Value("${API_URL_BOX_OFFICE}")
+    private String API_URL_BOX_OFFICE;
+
     private final PerformanceRepository performanceRepository;
     private final CastMemberRepository castMemberRepository;
     private final UserGenreRepository userGenreRepository;
@@ -58,6 +68,7 @@ public class PerformanceService {
     private final XmlMapper xmlMapper;
     private final static String CURRENT = "공연중";
     private final static String UPCOMING = "공연예정";
+    private final static String COMPLETE = "공연완료";
     private final static String TYPE = "week";
     private final static String GENRE = "GGGA";
     private final static String BLANK_OR_COMMA = "[,\\s]+";
@@ -132,7 +143,7 @@ public class PerformanceService {
                     .map(String::trim)
                     .map(name -> name.endsWith("등") ? name.substring(0, name.length() - 1).trim() : name)
                     .filter(name -> !name.isEmpty())  // 빈 문자열 필터링
-                    .map(name -> new CastMember(name.replace("\"",""),performance))
+                    .map(name -> new CastMember(name.replace("\"",""), performance))
                     .toList();
             castMemberRepository.saveAll(castMembers);
         }
@@ -226,5 +237,16 @@ public class PerformanceService {
         } catch (Exception e) {
             throw new FetchFailException("이미지를 불러오지 못했습니다.");
         }
+    }
+
+    @Transactional
+    @Scheduled(cron = "0 0 2 ? * SUN", zone = "Asia/Seoul")
+    public void performanceStateUpdate() {
+        List<Performance> performances = performanceRepository.findAllByState(CURRENT);
+        performances.forEach(performance -> {
+            if(performance.getEndDate().isBefore(ChronoLocalDate.from(LocalDateTime.now()))) {
+                performance.updateState(COMPLETE);
+            }
+        });
     }
 }
