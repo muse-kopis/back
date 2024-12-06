@@ -15,7 +15,6 @@ import muse_kopis.muse.performance.application.PerformanceService;
 import muse_kopis.muse.performance.domain.dto.PerformanceRequest;
 import muse_kopis.muse.performance.domain.dto.PerformanceResponse;
 import muse_kopis.muse.genre.application.GenreService;
-import muse_kopis.muse.genre.domain.GenreType;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
