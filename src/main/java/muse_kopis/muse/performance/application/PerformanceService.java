@@ -69,7 +69,6 @@ public class PerformanceService {
     private final static String CURRENT = "공연중";
     private final static String UPCOMING = "공연예정";
     private final static String COMPLETE = "공연완료";
-    private final static String TYPE = "week";
     private final static String GENRE = "GGGA";
     private final static String BLANK_OR_COMMA = "[,\\s]+";
     public static final String BLANK_OR_PARENTHESIS = "[\\s()]";
@@ -151,7 +150,7 @@ public class PerformanceService {
 
     @Transactional
     public List<PerformanceResponse> fetchPopularPerformance() {
-        String url = API_URL_BOX_OFFICE + "?service=" + kopisKey + "&ststype=" + TYPE + "&date=" + LocalDate.now()
+        String url = API_URL_BOX_OFFICE + "?service=" + kopisKey + "&stdate="+ LocalDate.now().minusDays(31).format(DateTimeFormatter.ofPattern("yyyyMMdd"))+ "&eddate=" + LocalDate.now()
                 .format(DateTimeFormatter.ofPattern("yyyyMMdd")) + "&catecode=" + GENRE;
         log.info("url = {}", url);
         String response = restTemplate.getForObject(url, String.class);
