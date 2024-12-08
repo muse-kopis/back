@@ -3,6 +3,7 @@ package muse_kopis.muse.usergenre.presentation;
 import io.swagger.v3.oas.annotations.Operation;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import muse_kopis.muse.auth.Auth;
 import muse_kopis.muse.auth.oauth.application.OauthService;
 import muse_kopis.muse.performance.domain.dto.Onboarding;
@@ -15,6 +16,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+@Slf4j
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/users/genre")
@@ -46,7 +48,8 @@ public class UserGenreController {
     public ResponseEntity<String> updateUserGenre(@Auth Long memberId, @RequestBody Onboarding onboarding) {
         String username = oauthService.updateUsername(memberId, onboarding.username());
         oauthService.updateUserState(memberId);
-        userGenreService.updateGenres(onboarding.performanceId(), memberId);
+        log.info("{}", memberId);
+        userGenreService.updateGenres(memberId, onboarding.performanceIds());
         return ResponseEntity.ok().body(username);
     }
 }

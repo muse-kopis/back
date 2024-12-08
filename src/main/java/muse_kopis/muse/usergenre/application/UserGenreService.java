@@ -50,8 +50,8 @@ public class UserGenreService {
     }
 
     @Transactional
-    public void updateGenres(List<Long> performanceIds, Long memberId) {
-        performanceIds.forEach(performance -> updateGenre(performance, memberId));
+    public void updateGenres(Long memberId, List<Long> performanceIds) {
+        performanceIds.forEach(performanceId -> updateGenre(memberId, performanceId));
     }
 
     @EventListener
