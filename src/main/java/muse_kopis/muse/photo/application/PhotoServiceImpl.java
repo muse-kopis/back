@@ -80,7 +80,6 @@ public class PhotoServiceImpl implements PhotoService {
             byteArrayInputStream.close();
             is.close();
         }
-
         return amazonS3.getUrl(bucketName, s3FileName).toString();
     }
 
