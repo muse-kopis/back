@@ -33,7 +33,6 @@ import org.springframework.web.bind.annotation.RestController;
 public class PerformanceController {
 
     private final PerformanceService performanceService;
-    private final GenreService genreService;
 
     /**
      * @apiNote Search Performance

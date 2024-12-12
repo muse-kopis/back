@@ -1,8 +1,13 @@
 package muse_kopis.muse.genre.presentation;
 
+import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
 import muse_kopis.muse.genre.application.GenreService;
 import muse_kopis.muse.genre.domain.GenreType;
+import muse_kopis.muse.genre.domain.dto.PerformanceGenreInfo;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -12,6 +17,14 @@ import org.springframework.web.bind.annotation.RestController;
 public class GenreController {
 
     private final GenreService genreService;
+
+    @Operation(summary = "공연 장르를 저장",
+            description = "공연 장르를 저장합니다. 공연 ID와 장르타입으로 저장하고, 해당 공연의 장르를 갱신합니다.")
+    @PostMapping
+    public ResponseEntity<Void> setGenre(@RequestBody PerformanceGenreInfo performanceGenreInfo) {
+        genreService.saveGenre(performanceGenreInfo.performanceId(), performanceGenreInfo.genres());
+        return ResponseEntity.ok().build();
+    }
 
     //    @GetMapping("/genre")
     public void saveGenres() {

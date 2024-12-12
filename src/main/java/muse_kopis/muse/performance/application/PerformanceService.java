@@ -247,5 +247,6 @@ public class PerformanceService {
                 performance.updateState(COMPLETE);
             }
         });
+        performanceRepository.saveAll(performances);
     }
 }

@@ -15,6 +15,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import muse_kopis.muse.actor.domain.CastMember;
+import muse_kopis.muse.genre.domain.GenreType;
 import muse_kopis.muse.performance.domain.dto.KOPISPerformanceDetailResponse.Detail;
 
 @Entity
@@ -39,6 +40,7 @@ public class Performance {
     private String state; // 공연완료(03), 공연중(02), 공연예정(01)
     private String entertainment;
     private String performanceTime;
+    private GenreType genreType;
 
     public static Performance from(Detail performanceDetail) {
         return Performance.builder()
@@ -65,5 +67,9 @@ public class Performance {
 
     public void updateState(String state) {
         this.state = state;
+    }
+
+    public void updateGenre(GenreType genreType) {
+        this.genreType = genreType;
     }
 }
