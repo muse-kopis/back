@@ -5,11 +5,13 @@ import muse_kopis.muse.actor.domain.Actor;
 
 @Builder
 public record ActorDto(
+        String actorId,
         String name
 ) {
     public static ActorDto from(Actor actor) {
         return ActorDto.builder()
                 .name(actor.getName())
+                .actorId(actor.getActorId())
                 .build();
     }
 

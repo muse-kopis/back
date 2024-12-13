@@ -14,7 +14,6 @@ import muse_kopis.muse.auth.Auth;
 import muse_kopis.muse.performance.application.PerformanceService;
 import muse_kopis.muse.performance.domain.dto.PerformanceRequest;
 import muse_kopis.muse.performance.domain.dto.PerformanceResponse;
-import muse_kopis.muse.genre.application.GenreService;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
@@ -42,7 +41,7 @@ public class PerformanceController {
     @Operation(summary = "검색",
             description = "검색어를 통해 공연을 조회합니다.")
     @GetMapping("/search")
-    public ResponseEntity<List<PerformanceResponse>> searchPerformance(@RequestParam String search) {
+    public ResponseEntity<List<PerformanceResponse>> searchPerformance(@RequestParam(name = "search") String search) {
         return ResponseEntity.ok().body(performanceService.findAllPerformanceBySearch(search));
     }
 
