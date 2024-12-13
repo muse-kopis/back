@@ -24,8 +24,8 @@ public class CastMember extends Actor {
     @JoinColumn(name = "performance_id")
     private Performance performance;
 
-    public CastMember(String name, Performance performance) {
-        super(name);
+    public CastMember(String name, String actorId, Performance performance) {
+        super(name, actorId);
         this.performance = performance;
     }
 

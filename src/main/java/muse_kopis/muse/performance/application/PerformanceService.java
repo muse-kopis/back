@@ -142,11 +142,11 @@ public class PerformanceService {
                     .map(String::trim)
                     .map(name -> name.endsWith("등") ? name.substring(0, name.length() - 1).trim() : name)
                     .filter(name -> !name.isEmpty())  // 빈 문자열 필터링
-                    .map(name -> new CastMember(name.replace("\"",""), performance))
+                    .map(name -> new CastMember(name.replace("\"",""), "", performance))
                     .toList();
             castMemberRepository.saveAll(castMembers);
         }
-    }
+    }   // 동명이인 방지를 위한 actorId 생김에 따른 수정 필요
 
     @Transactional
     public List<PerformanceResponse> fetchPopularPerformance() {
@@ -190,24 +190,24 @@ public class PerformanceService {
         GenreType favorite = userGenre.favorite();
         GenreType second = userGenre.second();
         GenreType third = userGenre.third();
-        List<Genre> result = genreRepository.findAllByGenre(favorite).stream()
+        List<Performance> result = performanceRepository.findAllByGenreType(favorite).stream()
                 .distinct()
-                .filter(genre -> genre.getPerformance().getState().equals(CURRENT))
+                .filter(performance -> performance.getState().equals(CURRENT))
                 .collect(Collectors.toList());
         fillPerformanceList(result, second);
         fillPerformanceList(result, third);
         return result.stream()
-                .map(genre -> PerformanceResponse.from(genre.getPerformance()))
+                .map(PerformanceResponse::from)
                 .limit(7)
                 .toList();
     }
 
-    private void fillPerformanceList(List<Genre> result, GenreType genre) {
-        List<Genre> genres = genreRepository.findAllByGenre(genre);
-        if (result.size() < 7 && !genres.isEmpty()) {
-            result.addAll(genres.stream()
+    private void fillPerformanceList(List<Performance> result, GenreType genre) {
+        List<Performance> performances = performanceRepository.findAllByGenreType(genre);
+        if (result.size() < 7 && !performances.isEmpty()) {
+            result.addAll(performances.stream()
                     .distinct()
-                    .filter(g -> g.getPerformance().getState().equals(CURRENT))
+                    .filter(p -> p.getState().equals(CURRENT))
                     .limit(7 - result.size())
                     .toList());
         }
