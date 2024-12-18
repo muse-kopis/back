@@ -17,6 +17,7 @@ import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import muse_kopis.muse.auth.oauth.domain.OauthMember;
 import muse_kopis.muse.actor.domain.FavoriteActor;
+import muse_kopis.muse.common.genre.NotFoundGenreException;
 import muse_kopis.muse.genre.domain.GenreType;
 
 @Slf4j
@@ -111,6 +112,9 @@ public class UserGenre {
     }
 
     public void incrementGenreWeight(GenreType genreType) {
+        if(genreType == null) {
+            throw new NullPointerException();
+        }
         switch (genreType) {
             case CRIME -> crime++;
             case FANTASY -> fantasy++;
@@ -143,6 +147,7 @@ public class UserGenre {
             case RELIGION -> religion++;
             case CLASSIC_NOVEL -> classicNovel++;
             case TALK_CONCERT -> talkConcert++;
+            default -> throw new NotFoundGenreException("해당 장르가 존재하지 않습니다. \"" + genreType.name() + "\"");
         }
         updateFavoriteGenre();
     }
@@ -183,7 +188,6 @@ public class UserGenre {
         List<Entry<GenreType, Integer>> collect = genreWeights.entrySet().stream()
                 .sorted(Entry.comparingByValue(Comparator.reverseOrder()))
                 .limit(3).toList();
-//        log.info("{}", collect.getFirst());
         favorite = collect.get(0).getKey();
         second = collect.get(1).getKey();
         third = collect.get(2).getKey();

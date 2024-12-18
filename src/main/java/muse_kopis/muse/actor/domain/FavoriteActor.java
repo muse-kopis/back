@@ -19,8 +19,8 @@ public class FavoriteActor extends Actor {
     @JoinColumn(name = "user_genre_id")  // 외래 키 매핑
     private UserGenre userGenre;
 
-    public FavoriteActor(Long memberId, String actorName, UserGenre userGenre) {
-        super(actorName);
+    public FavoriteActor(Long memberId, String actorId, String actorName, UserGenre userGenre) {
+        super(actorName, actorId);
         this.userGenre = userGenre;
         this.memberId = memberId;
     }

@@ -21,10 +21,10 @@ public class ActorService {
     private final OauthMemberRepository oauthMemberRepository;
     private final UserGenreRepository userGenreRepository;
 
-    public Long favorite(Long memberId, String actorsName) {
+    public Long favorite(Long memberId, String actorsName, String actorId) {
         OauthMember oauthMember = oauthMemberRepository.getByOauthMemberId(memberId);
         UserGenre userGenre = userGenreRepository.getUserGenreByOauthMember(oauthMember);
-        FavoriteActor favoriteActor = new FavoriteActor(memberId, actorsName, userGenre);
+        FavoriteActor favoriteActor = new FavoriteActor(memberId, actorId, actorsName, userGenre);
         FavoriteActor save = favoriteActorRepository.save(favoriteActor);
         return save.id();
     }

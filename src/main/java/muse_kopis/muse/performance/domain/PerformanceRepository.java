@@ -4,6 +4,7 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 import muse_kopis.muse.common.performance.NotFoundPerformanceException;
+import muse_kopis.muse.genre.domain.GenreType;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -30,4 +31,5 @@ public interface PerformanceRepository extends JpaRepository<Performance, Long> 
     Optional<Performance> findByPerformanceNameAndVenue(String performanceName, String venue);
     @Query("SELECT p FROM Performance p WHERE :today BETWEEN p.startDate AND p.endDate")
     List<Performance> findPerformancesByDate(@Param("today") LocalDate today);
+    List<Performance> findAllByGenreType(GenreType genreType);
 }

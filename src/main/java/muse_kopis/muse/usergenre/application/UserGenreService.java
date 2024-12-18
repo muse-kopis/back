@@ -33,20 +33,25 @@ public class UserGenreService {
     public void updateGenre(UserGenreEvent event) {
         OauthMember oauthMember = oauthMemberRepository.getByOauthMemberId(event.memberId());
         Performance performance = performanceRepository.getByPerformanceId(event.performanceId());
-        List<Genre> genre = genreRepository.findAllByPerformance(performance);
-        UserGenre userGenre = userGenreRepository.findByOauthMember(oauthMember)
-                .orElseGet(() -> initGenre(oauthMember));
-        genre.forEach(it -> userGenre.incrementGenreWeight(it.getGenre()));
+        weightUpdate(oauthMember, performance);
     }
 
     @Transactional
     public void updateGenre(Long memberId, Long performanceId) {
         OauthMember oauthMember = oauthMemberRepository.getByOauthMemberId(memberId);
         Performance performance = performanceRepository.getByPerformanceId(performanceId);
+        weightUpdate(oauthMember, performance);
+    }
+
+    private void weightUpdate(OauthMember oauthMember, Performance performance) {
         List<Genre> genre = genreRepository.findAllByPerformance(performance);
         UserGenre userGenre = userGenreRepository.findByOauthMember(oauthMember)
                 .orElseGet(() -> initGenre(oauthMember));
-        genre.forEach(it -> userGenre.incrementGenreWeight(it.getGenre()));
+        try {
+            genre.forEach(it -> userGenre.incrementGenreWeight(it.getGenre()));
+        } catch (NullPointerException e) {
+            log.warn("장르 타입이 NULL 입니다.");
+        }
     }
 
     @Transactional
