@@ -23,10 +23,12 @@ public class CastMember extends Actor {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "performance_id")
     private Performance performance;
+    private String role;
 
-    public CastMember(String name, String actorId, Performance performance) {
+    public CastMember(String name, String actorId, Performance performance, String role) {
         super(name, actorId);
         this.performance = performance;
+        this.role = role;
     }
 
     @Override

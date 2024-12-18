@@ -142,7 +142,7 @@ public class PerformanceService {
                     .map(String::trim)
                     .map(name -> name.endsWith("등") ? name.substring(0, name.length() - 1).trim() : name)
                     .filter(name -> !name.isEmpty())  // 빈 문자열 필터링
-                    .map(name -> new CastMember(name.replace("\"",""), "", performance))
+                    .map(name -> new CastMember(name.replace("\"",""), "", performance, ""))
                     .toList();
             castMemberRepository.saveAll(castMembers);
         }
