@@ -150,16 +150,15 @@ public class PerformanceService {
 
     @Transactional
     public List<PerformanceResponse> fetchPopularPerformance() {
-        String url = API_URL_BOX_OFFICE + "?service=" + kopisKey + "&stdate="+ LocalDate.now().minusDays(31).format(DateTimeFormatter.ofPattern("yyyyMMdd"))+ "&eddate=" + LocalDate.now()
+        String url = API_URL_BOX_OFFICE + "?service=" + kopisKey + "&stdate="+ LocalDate.now().minusDays(30).format(DateTimeFormatter.ofPattern("yyyyMMdd"))+ "&eddate=" + LocalDate.now()
                 .format(DateTimeFormatter.ofPattern("yyyyMMdd")) + "&catecode=" + GENRE;
         log.info("url = {}", url);
         String response = restTemplate.getForObject(url, String.class);
-        log.info("{}", LocalDate.now());
         try {
             Boxofs boxofs = xmlMapper.readValue(response, Boxofs.class);
             List<Boxof> boxofList = boxofs.boxof()
                     .stream()
-                    .limit(7)
+                    .limit(50)
                     .toList();
             LevenshteinDistance levenshtein = new LevenshteinDistance();
             List<Performance> collect = boxofList.stream().map(it -> performanceRepository.findAllByStateOrState(CURRENT, UPCOMING).stream()
@@ -169,9 +168,7 @@ public class PerformanceService {
                     .filter(Optional::isPresent)
                     .map(Optional::get)
                     .toList();
-
-            log.info("{}", collect.size());
-            return collect.stream().map(PerformanceResponse::from).collect(Collectors.toList());
+            return collect.stream().limit(6).map(PerformanceResponse::from).collect(Collectors.toList());
         } catch (Exception e) {
             throw new NotFoundPerformanceException("공연을 찾을 수 없습니다.");
         }
