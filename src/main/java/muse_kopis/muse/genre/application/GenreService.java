@@ -3,7 +3,6 @@ package muse_kopis.muse.genre.application;
 import jakarta.transaction.Transactional;
 import java.util.List;
 
-import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import muse_kopis.muse.genre.domain.Genre;
