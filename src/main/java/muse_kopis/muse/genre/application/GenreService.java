@@ -49,6 +49,7 @@ public class GenreService {
     }
 
     @Scheduled(cron = "0 0 2 ? * SUN", zone = "Asia/Seoul")
+//    @Scheduled(fixedDelay = 3000)
     public void updatePerformanceGenre() {
         genreRepository.findAll().forEach(genre -> {
            try {

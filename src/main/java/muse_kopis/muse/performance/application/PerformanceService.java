@@ -153,8 +153,8 @@ public class PerformanceService {
         String url = API_URL_BOX_OFFICE + "?service=" + kopisKey + "&stdate="+ LocalDate.now().minusDays(30).format(DateTimeFormatter.ofPattern("yyyyMMdd"))+ "&eddate=" + LocalDate.now()
                 .format(DateTimeFormatter.ofPattern("yyyyMMdd")) + "&catecode=" + GENRE;
         log.info("url = {}", url);
-        String response = restTemplate.getForObject(url, String.class);
         try {
+            String response = restTemplate.getForObject(url, String.class);
             Boxofs boxofs = xmlMapper.readValue(response, Boxofs.class);
             List<Boxof> boxofList = boxofs.boxof()
                     .stream()
@@ -191,6 +191,7 @@ public class PerformanceService {
                 .distinct()
                 .filter(performance -> performance.getState().equals(CURRENT))
                 .collect(Collectors.toList());
+        log.info(result.getFirst().toString());
         fillPerformanceList(result, second);
         fillPerformanceList(result, third);
         return result.stream()
