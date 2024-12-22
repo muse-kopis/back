@@ -1,5 +1,6 @@
 package muse_kopis.muse.performance.domain;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -39,8 +40,10 @@ public class Performance {
     private String poster;
     private String state; // 공연완료(03), 공연중(02), 공연예정(01)
     private String entertainment;
+    @Column(length = 1000)
     private String performanceTime;
     private GenreType genreType;
+    private Double score;
 
     public static Performance from(Detail performanceDetail) {
         return Performance.builder()

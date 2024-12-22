@@ -5,20 +5,13 @@ import muse_kopis.muse.actor.domain.Actor;
 import muse_kopis.muse.actor.domain.CastMember;
 
 @Builder
-public record ActorDto(
+public record CastMemberDto(
         String actorId,
         String name,
         String role
 ) {
-    public static ActorDto from(Actor actor) {
-        return ActorDto.builder()
-                .name(actor.getName())
-                .actorId(actor.getActorId())
-                .build();
-    }
-
-    public static ActorDto from(CastMember castMember) {
-        return ActorDto.builder()
+    public static CastMemberDto from(CastMember castMember) {
+        return CastMemberDto.builder()
                 .name(castMember.getName())
                 .actorId(castMember.getActorId())
                 .role(castMember.getRole())

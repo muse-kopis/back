@@ -1,9 +1,10 @@
 package muse_kopis.muse.actor.application;
 
 import lombok.RequiredArgsConstructor;
+import muse_kopis.muse.actor.domain.dto.FavoriteActorDto;
 import muse_kopis.muse.auth.oauth.domain.OauthMember;
 import muse_kopis.muse.auth.oauth.domain.OauthMemberRepository;
-import muse_kopis.muse.actor.domain.dto.ActorDto;
+import muse_kopis.muse.actor.domain.dto.CastMemberDto;
 import muse_kopis.muse.actor.domain.FavoriteActor;
 import muse_kopis.muse.actor.domain.FavoriteActorRepository;
 import muse_kopis.muse.usergenre.domain.UserGenre;
@@ -29,9 +30,9 @@ public class ActorService {
         return save.id();
     }
 
-    public List<ActorDto> favorites(Long memberId) {
+    public List<FavoriteActorDto> favorites(Long memberId) {
         return favoriteActorRepository.findAllByMemberId(memberId).stream()
-                .map(ActorDto::from)
+                .map(FavoriteActorDto::from)
                 .collect(Collectors.toList());
     }
 }

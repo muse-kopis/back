@@ -3,6 +3,7 @@ package muse_kopis.muse.performance.presentation;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import io.swagger.v3.oas.annotations.Operation;
 
+import jakarta.annotation.PostConstruct;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.ExecutorService;
@@ -121,7 +122,7 @@ public class PerformanceController {
     public void init() {
         log.info("Initialization started");
         ExecutorService executorService = Executors.newVirtualThreadPerTaskExecutor();
-        for (int i = 1; i < 10; i++) {
+        for (int i = 1; i < 142; i++) {
             final int currentPage = i;
             log.info("Processing page: " + currentPage);
             if (i < 3) {
@@ -129,16 +130,6 @@ public class PerformanceController {
                     try {
                         performanceService.fetchPerformances("20180101", "20241231",
                                 String.valueOf(currentPage), "100", "02", "GGGA");
-                    } catch (JsonProcessingException e) {
-                        throw new RuntimeException(e);
-                    }
-                });
-            }
-            if (i < 9) {
-                executorService.submit(() -> {
-                    try {
-                        performanceService.fetchPerformances("20180101", "20241231",
-                                String.valueOf(currentPage), "200", "03", "GGGA");
                     } catch (JsonProcessingException e) {
                         throw new RuntimeException(e);
                     }
@@ -154,6 +145,14 @@ public class PerformanceController {
                     }
                 });
             }
+            executorService.submit(() -> {
+                try {
+                    performanceService.fetchPerformances("20180101", "20241231",
+                            String.valueOf(currentPage), "100", "03", "GGGA");
+                } catch (JsonProcessingException e) {
+                    throw new RuntimeException(e);
+                }
+            });
         }
         log.info("Initialization ended");
     }

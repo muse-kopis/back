@@ -22,6 +22,7 @@ public interface PerformanceRepository extends JpaRepository<Performance, Long> 
         return findByPerformanceNameAndVenue(performanceName, venue)
                 .orElseThrow(() -> new NotFoundPerformanceException("공연을 찾을 수 없습니다."));
     }
+
     List<Performance> findAllByPerformanceNameContains(String search);
     List<Performance> findByPerformanceName(String performanceName);
     List<Performance> findAllByIdIn(List<Long> performanceIds);
@@ -32,4 +33,13 @@ public interface PerformanceRepository extends JpaRepository<Performance, Long> 
     @Query("SELECT p FROM Performance p WHERE :today BETWEEN p.startDate AND p.endDate")
     List<Performance> findPerformancesByDate(@Param("today") LocalDate today);
     List<Performance> findAllByGenreType(GenreType genreType);
+    @Query("SELECT CASE WHEN COUNT(p) > 0 THEN true ELSE false END FROM Performance p " +
+            "WHERE p.performanceName = :performanceName " +
+            "AND p.venue = :venue " +
+            "AND p.startDate = :startDate " +
+            "AND p.endDate = :endDate")
+    Boolean existsPerformance(@Param("performanceName") String performanceName,
+                              @Param("venue") String venue,
+                              @Param("startDate") LocalDate startDate,
+                              @Param("endDate") LocalDate endDate);
 }
