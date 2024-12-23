@@ -1,7 +1,6 @@
 package muse_kopis.muse.actor.domain.dto;
 
 import lombok.Builder;
-import muse_kopis.muse.actor.domain.Actor;
 import muse_kopis.muse.actor.domain.CastMember;
 
 @Builder
@@ -12,8 +11,8 @@ public record CastMemberDto(
 ) {
     public static CastMemberDto from(CastMember castMember) {
         return CastMemberDto.builder()
-                .name(castMember.getName())
-                .actorId(castMember.getActorId())
+                .name(castMember.getActor().getName())
+                .actorId(castMember.getActor().getActorId())
                 .role(castMember.getRole())
                 .build();
     }

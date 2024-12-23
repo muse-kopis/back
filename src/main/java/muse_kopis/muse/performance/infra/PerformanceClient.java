@@ -13,6 +13,7 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import muse_kopis.muse.actor.domain.Actor;
 import muse_kopis.muse.actor.domain.CastMember;
 import muse_kopis.muse.actor.domain.CastMemberRepository;
 import muse_kopis.muse.common.api.FetchFailException;
@@ -58,7 +59,7 @@ public class PerformanceClient {
     private final XmlMapper xmlMapper;
 
     @Transactional
-    @Retryable(value = { SQLException.class }, maxAttempts = 3, backoff = @Backoff(delay = 2000))
+    @Retryable(value = { SQLException.class }, maxAttempts = 3, backoff = @Backoff(delay = 1000))
     public void fetchPerformances(String startDate, String endDate, String currentPage, String rows, String state, String genre) {
         String url = API_URL + "?service=" + kopisKey + "&stdate=" + startDate + "&eddate=" + endDate +
                 "&cpage=" + currentPage + "&rows=" + rows + "&prfstate=" + state+"&shcate=" + genre;
@@ -96,7 +97,7 @@ public class PerformanceClient {
                     .map(String::trim)
                     .map(name -> name.endsWith("등") ? name.substring(0, name.length() - 1).trim() : name)
                     .filter(name -> !name.isEmpty())  // 빈 문자열 필터링
-                    .map(name -> new CastMember(name.replace("\"",""), "", performance, ""))
+                    .map(name -> new CastMember(new Actor(name.replace("\"",""), ""), performance, ""))
                     .toList();
             castMemberRepository.saveAll(castMembers);
         }

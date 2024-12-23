@@ -1,10 +1,10 @@
 package muse_kopis.muse.actor.application;
 
 import lombok.RequiredArgsConstructor;
+import muse_kopis.muse.actor.domain.Actor;
 import muse_kopis.muse.actor.domain.dto.FavoriteActorDto;
 import muse_kopis.muse.auth.oauth.domain.OauthMember;
 import muse_kopis.muse.auth.oauth.domain.OauthMemberRepository;
-import muse_kopis.muse.actor.domain.dto.CastMemberDto;
 import muse_kopis.muse.actor.domain.FavoriteActor;
 import muse_kopis.muse.actor.domain.FavoriteActorRepository;
 import muse_kopis.muse.usergenre.domain.UserGenre;
@@ -25,7 +25,8 @@ public class ActorService {
     public Long favorite(Long memberId, String actorsName, String actorId) {
         OauthMember oauthMember = oauthMemberRepository.getByOauthMemberId(memberId);
         UserGenre userGenre = userGenreRepository.getUserGenreByOauthMember(oauthMember);
-        FavoriteActor favoriteActor = new FavoriteActor(memberId, actorId, actorsName, userGenre);
+        Actor actor = new Actor(actorsName, actorId);
+        FavoriteActor favoriteActor = new FavoriteActor(memberId, actor, userGenre);
         FavoriteActor save = favoriteActorRepository.save(favoriteActor);
         return save.id();
     }

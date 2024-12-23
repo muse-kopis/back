@@ -118,7 +118,7 @@ public class PerformanceController {
         return ResponseEntity.ok().headers(headers).body(image);
     }
 
-//    @PostConstruct
+    @PostConstruct
     public void init() {
         log.info("Initialization started");
         ExecutorService executorService = Executors.newVirtualThreadPerTaskExecutor();
@@ -145,14 +145,14 @@ public class PerformanceController {
                     }
                 });
             }
-            executorService.submit(() -> {
-                try {
-                    performanceService.fetchPerformances("20180101", "20241231",
-                            String.valueOf(currentPage), "100", "03", "GGGA");
-                } catch (JsonProcessingException e) {
-                    throw new RuntimeException(e);
-                }
-            });
+//            executorService.submit(() -> {
+//                try {
+//                    performanceService.fetchPerformances("20180101", "20241231",
+//                            String.valueOf(currentPage), "100", "03", "GGGA");
+//                } catch (JsonProcessingException e) {
+//                    throw new RuntimeException(e);
+//                }
+//            });
         }
         log.info("Initialization ended");
     }
