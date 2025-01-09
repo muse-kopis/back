@@ -6,6 +6,7 @@ import muse_kopis.muse.genre.application.GenreService;
 import muse_kopis.muse.genre.domain.GenreType;
 import muse_kopis.muse.genre.domain.dto.PerformanceGenreInfo;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -26,7 +27,7 @@ public class GenreController {
         return ResponseEntity.ok().build();
     }
 
-    //    @GetMapping("/genre")
+    @GetMapping("/genre")
     public void saveGenres() {
         genreService.saveGenre("진짜나쁜소녀", GenreType.CRIME);
         genreService.saveGenre("진짜나쁜소녀", GenreType.THRILLER);

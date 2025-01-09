@@ -19,7 +19,7 @@ public record KOPISPerformanceDetailResponse(
         @JacksonXmlProperty(localName = "prfpdfrom") String startDate,
         @JacksonXmlProperty(localName = "prfpdto") String endDate,
         @JacksonXmlProperty(localName = "fcltynm") String venue, // 공연장
-        @JacksonXmlProperty(localName = "prfcrew") String crews,
+        @JacksonXmlProperty(localName = "prfcast") String cast,
         @JacksonXmlProperty(localName = "prfage") String limitAge,
         @JacksonXmlProperty(localName = "entrpsnm") String entertainment, // 제작사
         @JacksonXmlProperty(localName = "pcseguidance") String price,

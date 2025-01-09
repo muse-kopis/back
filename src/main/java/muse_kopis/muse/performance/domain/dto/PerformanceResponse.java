@@ -4,7 +4,7 @@ import java.time.LocalDate;
 import java.util.List;
 import lombok.Builder;
 import muse_kopis.muse.performance.domain.Performance;
-import muse_kopis.muse.actor.domain.dto.ActorDto;
+import muse_kopis.muse.actor.domain.dto.CastMemberDto;
 
 @Builder
 public record PerformanceResponse(
@@ -16,7 +16,7 @@ public record PerformanceResponse(
         String venue,
         String performanceTime,
         String limitAge,
-        List<ActorDto> castMembers,
+        List<CastMemberDto> castMembers,
         String entertainment
 ) {
     public static PerformanceResponse from(Performance performance) {
@@ -31,7 +31,7 @@ public record PerformanceResponse(
                 .limitAge(performance.getLimitAge())
                 .castMembers(performance.getCastMembers()
                         .stream()
-                        .map(ActorDto::from)
+                        .map(CastMemberDto::from)
                         .toList())
                 .entertainment(performance.getEntertainment())
                 .build();
