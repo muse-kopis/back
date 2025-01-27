@@ -28,12 +28,23 @@ public class UserGenreService {
     private final PerformanceRepository performanceRepository;
     private final OauthMemberRepository oauthMemberRepository;
 
+    /**
+    * User 가 좋아요를 누르거나 티켓북을 등록하면 선호 장르 업데이트를 진행 Event 로 처리
+    */
     @EventListener
     @Transactional
     public void updateGenre(UserGenreEvent event) {
         OauthMember oauthMember = oauthMemberRepository.getByOauthMemberId(event.memberId());
         Performance performance = performanceRepository.getByPerformanceId(event.performanceId());
         weightUpdate(oauthMember, performance);
+    }
+
+    /**
+     * Onboarding 시에 초기 선호 장르 업데이틀 위해서 사용, 여러 장르를 한번에 업데이트 하기 위한 용도
+     * */
+    @Transactional
+    public void updateGenres(Long memberId, List<Long> performanceIds) {
+        performanceIds.forEach(performanceId -> updateGenre(memberId, performanceId));
     }
 
     @Transactional
@@ -52,11 +63,6 @@ public class UserGenreService {
         } catch (NullPointerException e) {
             log.warn("장르 타입이 NULL 입니다.");
         }
-    }
-
-    @Transactional
-    public void updateGenres(Long memberId, List<Long> performanceIds) {
-        performanceIds.forEach(performanceId -> updateGenre(memberId, performanceId));
     }
 
     @EventListener

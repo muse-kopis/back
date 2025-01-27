@@ -118,7 +118,7 @@ public class PerformanceController {
         return ResponseEntity.ok().headers(headers).body(image);
     }
 
-    @PostConstruct
+//    @PostConstruct
     public void init() {
         log.info("Initialization started");
         ExecutorService executorService = Executors.newVirtualThreadPerTaskExecutor();
