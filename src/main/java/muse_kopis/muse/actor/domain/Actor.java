@@ -21,9 +21,11 @@ public class Actor {
     private String name;
 
     private String actorId;
+    private String url;
 
-    public Actor(String name, String actorId) {
+    public Actor(String name, String actorId, String url) {
         this.name = name;
         this.actorId = actorId;
+        this.url = url;
     }
 }

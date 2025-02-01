@@ -62,7 +62,7 @@ public class PerformanceClient {
     @Retryable(value = { SQLException.class }, maxAttempts = 3, backoff = @Backoff(delay = 1000))
     public void fetchPerformances(String startDate, String endDate, String currentPage, String rows, String state, String genre) {
         String url = API_URL + "?service=" + kopisKey + "&stdate=" + startDate + "&eddate=" + endDate +
-                "&cpage=" + currentPage + "&rows=" + rows + "&prfstate=" + state+"&shcate=" + genre;
+                "&cpage=" + currentPage + "&rows=" + rows + "&prfstate=" + state + "&shcate=" + genre;
         log.info("데이터 요청 {}, {}", currentPage, state);
         String response = restTemplate.getForObject(url, String.class);
         try {
@@ -97,7 +97,7 @@ public class PerformanceClient {
                     .map(String::trim)
                     .map(name -> name.endsWith("등") ? name.substring(0, name.length() - 1).trim() : name)
                     .filter(name -> !name.isEmpty())  // 빈 문자열 필터링
-                    .map(name -> new CastMember(new Actor(name.replace("\"",""), ""), performance, ""))
+                    .map(name -> new CastMember(new Actor(name.replace("\"", ""), "", ""), performance, ""))
                     .toList();
             castMemberRepository.saveAll(castMembers);
         }

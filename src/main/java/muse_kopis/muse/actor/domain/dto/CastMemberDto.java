@@ -7,13 +7,15 @@ import muse_kopis.muse.actor.domain.CastMember;
 public record CastMemberDto(
         String actorId,
         String name,
-        String role
+        String role,
+        String url
 ) {
     public static CastMemberDto from(CastMember castMember) {
         return CastMemberDto.builder()
                 .name(castMember.getActor().getName())
                 .actorId(castMember.getActor().getActorId())
                 .role(castMember.getRole())
+                .url(castMember.getActor().getUrl())
                 .build();
     }
 

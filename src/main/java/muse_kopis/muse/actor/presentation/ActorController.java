@@ -28,7 +28,7 @@ public class ActorController {
     @PostMapping
     @Operation(summary = "관심 배우 등록", description = "관심 배우를 등록합니다.")
     public ResponseEntity<Long> favorite(@Auth Long memberId, @RequestBody CastMemberDto actor) {
-        return ResponseEntity.ok().body(actorService.favorite(memberId, actor.actorId(), actor.name()));
+        return ResponseEntity.ok().body(actorService.favorite(memberId, actor.actorId(), actor.name(), actor.url()));
     }
 
     /**
@@ -40,5 +40,10 @@ public class ActorController {
     @Operation(summary = "관심 배우 조회", description = "관심 배우를 조회합니다.")
     public ResponseEntity<List<FavoriteActorDto>> favorites(@Auth Long memberId) {
         return ResponseEntity.ok().body(actorService.favorites(memberId));
+    }
+
+    @GetMapping("/search")
+    public ResponseEntity<List<FavoriteActorDto>> findActors(@RequestParam String actorName) {
+        return ResponseEntity.ok().body(actorService.findActors(actorName));
     }
 }
