@@ -1,5 +1,6 @@
 package muse_kopis.muse.genre.domain;
 
+
 public enum GenreType {
     CRIME("범죄"),
     FANTASY("판타지"),
