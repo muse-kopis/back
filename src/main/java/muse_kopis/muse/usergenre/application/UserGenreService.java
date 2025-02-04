@@ -33,7 +33,7 @@ public class UserGenreService {
     */
     @EventListener
     @Transactional
-    public void updateGenre(UserGenreEvent event) {
+    public void updateUserGenre(UserGenreEvent event) {
         OauthMember oauthMember = oauthMemberRepository.getByOauthMemberId(event.memberId());
         Performance performance = performanceRepository.getByPerformanceId(event.performanceId());
         weightUpdate(oauthMember, performance);
@@ -43,12 +43,12 @@ public class UserGenreService {
      * Onboarding 시에 초기 선호 장르 업데이틀 위해서 사용, 여러 장르를 한번에 업데이트 하기 위한 용도
      * */
     @Transactional
-    public void updateGenres(Long memberId, List<Long> performanceIds) {
-        performanceIds.forEach(performanceId -> updateGenre(memberId, performanceId));
+    public void updateUserGenres(Long memberId, List<Long> performanceIds) {
+        performanceIds.forEach(performanceId -> updateUserGenre(memberId, performanceId));
     }
 
     @Transactional
-    public void updateGenre(Long memberId, Long performanceId) {
+    public void updateUserGenre(Long memberId, Long performanceId) {
         OauthMember oauthMember = oauthMemberRepository.getByOauthMemberId(memberId);
         Performance performance = performanceRepository.getByPerformanceId(performanceId);
         weightUpdate(oauthMember, performance);
