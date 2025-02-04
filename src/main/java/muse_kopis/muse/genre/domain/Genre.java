@@ -7,8 +7,11 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.OneToOne;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import muse_kopis.muse.auth.oauth.domain.OauthMember;
 import muse_kopis.muse.performance.domain.Performance;
 
 @Entity
@@ -23,6 +26,14 @@ public class Genre {
     private Performance performance;
     @Enumerated(EnumType.STRING)
     private GenreType genre;
+    @ManyToOne
+    private OauthMember oauthMember;
+
+    public Genre(Performance performance, GenreType genre, OauthMember oauthMember) {
+        this.performance = performance;
+        this.genre = genre;
+        this.oauthMember = oauthMember;
+    }
 
     public Genre(Performance performance, GenreType genre) {
         this.performance = performance;

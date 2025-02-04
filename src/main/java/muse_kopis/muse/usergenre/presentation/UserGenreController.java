@@ -49,7 +49,7 @@ public class UserGenreController {
         String username = oauthService.updateUsername(memberId, onboarding.username());
         oauthService.updateUserState(memberId);
         log.info("{}", memberId);
-        userGenreService.updateGenres(memberId, onboarding.performanceIds());
+        userGenreService.updateUserGenres(memberId, onboarding.performanceIds());
         return ResponseEntity.ok().body(username);
     }
 }
