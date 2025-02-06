@@ -1,7 +1,6 @@
 package muse_kopis.muse.genre.application;
 
 import jakarta.transaction.Transactional;
-import java.util.ArrayList;
 import java.util.List;
 
 import java.util.Set;
@@ -87,5 +86,12 @@ public class GenreService {
                log.error("updatePerformanceGenre {}", e.getMessage());
            }
         });
+    }
+
+    public List<GenreType> getGenres(Long memberId, Long performanceId) {
+        OauthMember oauthMember = oauthMemberRepository.getByOauthMemberId(memberId);
+        Performance performance = performanceRepository.getByPerformanceId(performanceId);
+        List<Genre> genres = genreRepository.findAllByPerformanceAndOauthMember(performance, oauthMember);
+        return genres.stream().map(Genre::getGenre).collect(Collectors.toList());
     }
 }
