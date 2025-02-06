@@ -1,7 +1,9 @@
 package muse_kopis.muse.genre.presentation;
 
 import io.swagger.v3.oas.annotations.Operation;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import muse_kopis.muse.auth.Auth;
 import muse_kopis.muse.genre.application.GenreService;
 import muse_kopis.muse.genre.domain.GenreType;
@@ -9,11 +11,14 @@ import muse_kopis.muse.genre.domain.dto.PerformanceGenreInfo;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+@Slf4j
 @RestController
 @RequestMapping("/genre")
 @RequiredArgsConstructor
@@ -37,7 +42,14 @@ public class GenreController {
         return ResponseEntity.ok().build();
     }
 
-    @GetMapping
+    @Operation(summary = "공연 장르 조회",
+            description = "공연 장르를 조회합니다. 공연 ID와 사용자 토큰을 사용합니다.")
+    @GetMapping("/{performanceId}")
+    public ResponseEntity<List<GenreType>> getGenres(@Auth Long memberId, @PathVariable Long performanceId) {
+        return ResponseEntity.ok().body(genreService.getGenres(memberId, performanceId));
+    }
+
+    @GetMapping("init")
     public void saveGenres() {
         genreService.saveGenre("진짜나쁜소녀", GenreType.CRIME);
         genreService.saveGenre("진짜나쁜소녀", GenreType.THRILLER);
