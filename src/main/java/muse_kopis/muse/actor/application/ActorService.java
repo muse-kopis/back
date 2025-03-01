@@ -1,6 +1,8 @@
 package muse_kopis.muse.actor.application;
 
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import muse_kopis.muse.actor.domain.Actor;
 import muse_kopis.muse.actor.domain.ActorRepository;
 import muse_kopis.muse.actor.domain.dto.FavoriteActorDto;
@@ -15,6 +17,7 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.stream.Collectors;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class ActorService {
@@ -24,10 +27,11 @@ public class ActorService {
     private final UserGenreRepository userGenreRepository;
     private final ActorRepository actorRepository;
 
+    @Transactional
     public Long favorite(Long memberId, String actorsName, String actorId, String url) {
         OauthMember oauthMember = oauthMemberRepository.getByOauthMemberId(memberId);
         UserGenre userGenre = userGenreRepository.getUserGenreByOauthMember(oauthMember);
-        Actor actor = new Actor(actorsName, actorId, url);
+        Actor actor = actorRepository.findByActorId(actorId);
         FavoriteActor favoriteActor = new FavoriteActor(memberId, actor, userGenre);
         FavoriteActor save = favoriteActorRepository.save(favoriteActor);
         return save.id();
@@ -40,6 +44,6 @@ public class ActorService {
     }
 
     public List<FavoriteActorDto> findActors(String actorName) {
-        return actorRepository.findByName(actorName);
+        return actorRepository.findAllByName(actorName);
     }
 }

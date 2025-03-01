@@ -5,6 +5,7 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.UniqueConstraint;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -20,7 +21,9 @@ public class Actor {
     @Column(name = "actor_name")
     private String name;
 
+    @Column(unique = true)
     private String actorId;
+
     private String url;
 
     public Actor(String name, String actorId, String url) {
