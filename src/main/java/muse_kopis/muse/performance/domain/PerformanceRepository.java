@@ -23,16 +23,12 @@ public interface PerformanceRepository extends JpaRepository<Performance, Long> 
                 .orElseThrow(() -> new NotFoundPerformanceException("공연을 찾을 수 없습니다."));
     }
 
-    List<Performance> findAllByPerformanceNameContains(String search);
-    List<Performance> findByPerformanceName(String performanceName);
-    List<Performance> findAllByIdIn(List<Long> performanceIds);
     @Query("SELECT p FROM Performance p WHERE p.state = :state ORDER BY function('RAND')")
     List<Performance> findAllByState(@Param("state") String state);
-    List<Performance> findAllByStateOrState(String currentPerformances, String upcomingPerformances);
-    Optional<Performance> findByPerformanceNameAndVenue(String performanceName, String venue);
+
     @Query("SELECT p FROM Performance p WHERE :today BETWEEN p.startDate AND p.endDate")
     List<Performance> findPerformancesByDate(@Param("today") LocalDate today);
-    List<Performance> findAllByGenreType(GenreType genreType);
+
     @Query("SELECT CASE WHEN COUNT(p) > 0 THEN true ELSE false END FROM Performance p " +
             "WHERE p.performanceName = :performanceName " +
             "AND p.venue = :venue " +
@@ -42,4 +38,17 @@ public interface PerformanceRepository extends JpaRepository<Performance, Long> 
                               @Param("venue") String venue,
                               @Param("startDate") LocalDate startDate,
                               @Param("endDate") LocalDate endDate);
+
+    @Query("SELECT DISTINCT p FROM Performance p " +
+            "JOIN p.castMembers cm " +
+            "JOIN cm.actor a " +
+            "WHERE a.name = :favoriteActor")
+    List<Performance> findPerformancesByFavoriteActor(@Param("favoriteActor") String favoriteActor);
+
+    List<Performance> findAllByPerformanceNameContains(String search);
+    List<Performance> findByPerformanceName(String performanceName);
+    List<Performance> findAllByIdIn(List<Long> performanceIds);
+    List<Performance> findAllByStateOrState(String currentPerformances, String upcomingPerformances);
+    List<Performance> findAllByGenreType(GenreType genreType);
+    Optional<Performance> findByPerformanceNameAndVenue(String performanceName, String venue);
 }

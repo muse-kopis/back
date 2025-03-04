@@ -27,7 +27,7 @@ public class CastMember {
     @JoinColumn(name = "performance_id")
     private Performance performance;
 
-    @OneToOne(cascade = CascadeType.ALL)
+    @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(nullable = false)
     private Actor actor;
 

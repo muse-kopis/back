@@ -9,4 +9,5 @@ import java.util.List;
 public interface FavoriteActorRepository extends JpaRepository<FavoriteActor, Long> {
 
     List<FavoriteActor> findAllByMemberId(Long memberId);
+    FavoriteActor findFavoriteActorByMemberId(Long memberId);
 }

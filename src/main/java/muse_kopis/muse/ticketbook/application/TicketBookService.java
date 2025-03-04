@@ -18,6 +18,8 @@ import muse_kopis.muse.auth.oauth.domain.TierImageURL;
 import muse_kopis.muse.auth.oauth.domain.UserTier;
 import muse_kopis.muse.common.ticketbook.InvalidLocalDateException;
 import muse_kopis.muse.common.ticketbook.NotFoundTicketBookException;
+import muse_kopis.muse.genre.domain.Genre;
+import muse_kopis.muse.genre.domain.GenreRepository;
 import muse_kopis.muse.performance.domain.Performance;
 import muse_kopis.muse.performance.domain.PerformanceRepository;
 import muse_kopis.muse.photo.application.PhotoService;
@@ -46,6 +48,7 @@ public class TicketBookService {
     private final PhotoRepository photoRepository;
     private final PhotoService photoService;
     private final ReviewRepository reviewRepository;
+    private final GenreRepository genreRepository;
     private final ApplicationEventPublisher eventPublisher;
 
     @Transactional
@@ -53,19 +56,14 @@ public class TicketBookService {
         OauthMember oauthMember = oauthMemberRepository.getByOauthMemberId(memberId);
         return ticketBookRepository.findAllByOauthMember(oauthMember)
                 .stream()
-                .map(ticketBook -> {
-                        List<Photo> photos = photoService.getImagesByTicketBook(ticketBook);
-                        return TicketBookResponse.from(ticketBook, photos);
-                    }
-                )
+                .map(this::toTicketBookResponse)
                 .collect(Collectors.toList());
     }
 
     @Transactional
     public TicketBookResponse getTicketBook(Long ticketBookId) {
         TicketBook ticketBook = ticketBookRepository.getByTicketBookId(ticketBookId);
-        List<Photo> photos = photoService.getImagesByTicketBook(ticketBook);
-        return TicketBookResponse.from(ticketBook, photos);
+        return toTicketBookResponse(ticketBook);
     }
 
     @Transactional
@@ -129,9 +127,8 @@ public class TicketBookService {
         OauthMember oauthMember = oauthMemberRepository.getByOauthMemberId(memberId);
         LocalDateTime startDateTime = localDate.atStartOfDay();
         LocalDateTime endDateTime = localDate.plusDays(1).atStartOfDay();
-        List<TicketBook> ticketBook = ticketBookRepository.findByOauthMemberAndViewDate(memberId, startDateTime, endDateTime);
-        return ticketBook.stream().map(ticket ->
-            TicketBookResponse.from(ticket, photoRepository.findAllByTicketBook(ticket))).toList();
+        List<TicketBook> ticketBooks = ticketBookRepository.findByOauthMemberAndViewDate(memberId, startDateTime, endDateTime);
+        return ticketBooks.stream().map(this::toTicketBookResponse).toList();
     }
 
     @Transactional
@@ -175,10 +172,8 @@ public class TicketBookService {
     @Transactional
     public ShareablePage findByIdentifier(String identifier) {
         List<TicketBookResponse> ticketBooks = ticketBookRepository.findAllByIdentifier(identifier).stream()
-                .map(ticketBook -> {
-                    List<Photo> photos = photoRepository.findAllByTicketBook(ticketBook);
-                    return TicketBookResponse.from(ticketBook, photos);
-                }).toList();
+                .map(this::toTicketBookResponse)
+                .toList();
         if (ticketBooks.isEmpty()) {
             throw new NotFoundTicketBookException("티켓북을 찾을 수 없습니다.");
         }
@@ -204,7 +199,13 @@ public class TicketBookService {
     @Transactional
     public TicketBookResponse getSharedTicketBook(String identifier) {
         TicketBook ticketBook = ticketBookRepository.getByIdentifier(identifier);
-        List<Photo> photos = photoRepository.findAllByTicketBook(ticketBook);
-        return TicketBookResponse.from(ticketBook, photos);
+        return toTicketBookResponse(ticketBook);
+    }
+
+    private TicketBookResponse toTicketBookResponse(TicketBook ticketBook) {
+        List<Photo> photos = photoService.getImagesByTicketBook(ticketBook);
+        List<Genre> genres = genreRepository.findAllByPerformanceAndOauthMember(ticketBook.getReview().getPerformance(),
+                ticketBook.getOauthMember());
+        return TicketBookResponse.from(ticketBook, photos, genres);
     }
 }

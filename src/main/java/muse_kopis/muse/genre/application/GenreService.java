@@ -62,6 +62,13 @@ public class GenreService {
                 .forEach(genreType -> genreRepository.save(new Genre(performance, genreType, oauthMember)));
     }
 
+    public List<GenreType> getGenres(Long memberId, Long performanceId) {
+        OauthMember oauthMember = oauthMemberRepository.getByOauthMemberId(memberId);
+        Performance performance = performanceRepository.getByPerformanceId(performanceId);
+        List<Genre> genres = genreRepository.findAllByPerformanceAndOauthMember(performance, oauthMember);
+        return genres.stream().map(Genre::getGenre).collect(Collectors.toList());
+    }
+
     @EventListener
     @Transactional
     public void updatePerformanceGenre(Performance performance) {
@@ -86,12 +93,5 @@ public class GenreService {
                log.error("updatePerformanceGenre {}", e.getMessage());
            }
         });
-    }
-
-    public List<GenreType> getGenres(Long memberId, Long performanceId) {
-        OauthMember oauthMember = oauthMemberRepository.getByOauthMemberId(memberId);
-        Performance performance = performanceRepository.getByPerformanceId(performanceId);
-        List<Genre> genres = genreRepository.findAllByPerformanceAndOauthMember(performance, oauthMember);
-        return genres.stream().map(Genre::getGenre).collect(Collectors.toList());
     }
 }

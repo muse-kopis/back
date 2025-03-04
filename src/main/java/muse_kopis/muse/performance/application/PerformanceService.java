@@ -5,6 +5,8 @@ import jakarta.transaction.Transactional;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.chrono.ChronoLocalDate;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Random;
@@ -12,6 +14,10 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import muse_kopis.muse.actor.domain.CastMember;
+import muse_kopis.muse.actor.domain.CastMemberRepository;
+import muse_kopis.muse.actor.domain.FavoriteActor;
+import muse_kopis.muse.actor.domain.FavoriteActorRepository;
 import muse_kopis.muse.auth.oauth.domain.OauthMember;
 import muse_kopis.muse.auth.oauth.domain.OauthMemberRepository;
 import muse_kopis.muse.performance.domain.Performance;
@@ -38,6 +44,8 @@ public class PerformanceService {
     private final UserGenreRepository userGenreRepository;
     private final OauthMemberRepository oauthMemberRepository;
     private final PerformanceClient performanceClient;
+    private final FavoriteActorRepository favoriteActorRepository;
+
 
     public List<PerformanceResponse> fetchPopularPerformance() {
         return performanceClient.fetchPopularPerformance();
@@ -78,14 +86,20 @@ public class PerformanceService {
     public List<PerformanceResponse> recommendPerformance(Long memberId) {
         OauthMember oauthMember = oauthMemberRepository.getByOauthMemberId(memberId);
         UserGenre userGenre = userGenreRepository.getUserGenreByOauthMember(oauthMember);
+        if (userGenre == null) {
+            return Collections.emptyList();
+        }
         GenreType favorite = userGenre.favorite();
         GenreType second = userGenre.second();
         GenreType third = userGenre.third();
-        List<Performance> result = performanceRepository.findAllByGenreType(favorite).stream()
-                .distinct()
-                .filter(performance -> performance.getState().equals(CURRENT))
-                .collect(Collectors.toList());
-//        log.info(result.getFirst().toString());
+        FavoriteActor favoriteActor = favoriteActorRepository.findFavoriteActorByMemberId(memberId);
+        List<Performance> result = (favoriteActor != null) ?
+                performanceRepository.findPerformancesByFavoriteActor(favoriteActor.getActor().getName())
+                        .stream()
+                        .filter(p -> p.getState().equals(CURRENT))
+                        .collect(Collectors.toList())
+                : new ArrayList<>();
+        fillPerformanceList(result, favorite);
         fillPerformanceList(result, second);
         fillPerformanceList(result, third);
         return result.stream()
@@ -95,8 +109,10 @@ public class PerformanceService {
     }
 
     private void fillPerformanceList(List<Performance> result, GenreType genre) {
+        if(genre == null) return;
         List<Performance> performances = performanceRepository.findAllByGenreType(genre);
         if (result.size() < 7 && !performances.isEmpty()) {
+            Collections.shuffle(performances);
             result.addAll(performances.stream()
                     .distinct()
                     .filter(p -> p.getState().equals(CURRENT))

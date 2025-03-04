@@ -6,6 +6,8 @@ import java.util.List;
 import java.util.stream.Collectors;
 import lombok.Builder;
 
+import muse_kopis.muse.genre.domain.Genre;
+import muse_kopis.muse.genre.domain.GenreType;
 import muse_kopis.muse.review.domain.dto.ReviewResponse;
 import muse_kopis.muse.ticketbook.domain.TicketBook;
 import muse_kopis.muse.photo.domain.Photo;
@@ -21,9 +23,10 @@ public record TicketBookResponse(
         ReviewResponse reviewResponse,
         String performanceName,
         String poster,
-        Long performanceId
+        Long performanceId,
+        List<GenreType> genres
 ) {
-    public static TicketBookResponse from(TicketBook ticketBook, List<Photo> photos) {
+    public static TicketBookResponse from(TicketBook ticketBook, List<Photo> photos, List<Genre> genres) {
         return TicketBookResponse.builder()
                 .id(ticketBook.getId())
                 .viewDate(ticketBook.getViewDate())
@@ -35,6 +38,8 @@ public record TicketBookResponse(
                 .performanceName(ticketBook.getReview().getPerformance().getPerformanceName())
                 .poster(ticketBook.getReview().getPerformance().getPoster())
                 .performanceId(ticketBook.getReview().getPerformance().getId())
+                .genres(genres.stream()
+                        .map(Genre::getGenre).toList())
                 .build();
     }
 }
