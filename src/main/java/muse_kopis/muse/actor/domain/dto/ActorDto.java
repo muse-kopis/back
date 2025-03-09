@@ -4,12 +4,12 @@ import lombok.Builder;
 import muse_kopis.muse.actor.domain.FavoriteActor;
 
 @Builder
-public record FavoriteActorDto(
+public record ActorDto(
         String name,
         String actorId
 ) {
-    public static FavoriteActorDto from(FavoriteActor actor) {
-        return FavoriteActorDto.builder()
+    public static ActorDto from(FavoriteActor actor) {
+        return ActorDto.builder()
                 .name(actor.getActor().getName())
                 .actorId(actor.getActor().getActorId())
                 .build();

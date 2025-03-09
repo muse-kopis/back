@@ -5,7 +5,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import muse_kopis.muse.actor.domain.Actor;
 import muse_kopis.muse.actor.domain.ActorRepository;
-import muse_kopis.muse.actor.domain.dto.FavoriteActorDto;
+import muse_kopis.muse.actor.domain.dto.ActorDto;
 import muse_kopis.muse.auth.oauth.domain.OauthMember;
 import muse_kopis.muse.auth.oauth.domain.OauthMemberRepository;
 import muse_kopis.muse.actor.domain.FavoriteActor;
@@ -37,13 +37,13 @@ public class ActorService {
         return save.id();
     }
 
-    public List<FavoriteActorDto> favorites(Long memberId) {
+    public List<ActorDto> favorites(Long memberId) {
         return favoriteActorRepository.findAllByMemberId(memberId).stream()
-                .map(FavoriteActorDto::from)
+                .map(ActorDto::from)
                 .collect(Collectors.toList());
     }
 
-    public List<FavoriteActorDto> findActors(String actorName) {
-        return actorRepository.findAllByName(actorName);
+    public List<ActorDto> findActors(String actorName) {
+        return actorRepository.findAllByNameIsContaining(actorName);
     }
 }
