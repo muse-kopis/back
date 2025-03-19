@@ -84,6 +84,7 @@ public class PerformanceService {
 
     @Transactional
     public List<PerformanceResponse> recommendPerformance(Long memberId) {
+        log.info("memberId : {}", memberId.toString());
         OauthMember oauthMember = oauthMemberRepository.getByOauthMemberId(memberId);
         UserGenre userGenre = userGenreRepository.getUserGenreByOauthMember(oauthMember);
         if (userGenre == null) {
