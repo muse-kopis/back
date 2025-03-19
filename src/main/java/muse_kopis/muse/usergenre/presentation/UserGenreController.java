@@ -47,9 +47,9 @@ public class UserGenreController {
     @PostMapping("/onboarding")
     public ResponseEntity<String> updateUserGenre(@Auth Long memberId, @RequestBody Onboarding onboarding) {
         String username = oauthService.updateUsername(memberId, onboarding.username());
+        userGenreService.updateUserGenres(memberId, onboarding.performanceIds());
         oauthService.updateUserState(memberId);
         log.info("{}", memberId);
-        userGenreService.updateUserGenres(memberId, onboarding.performanceIds());
         return ResponseEntity.ok().body(username);
     }
 }

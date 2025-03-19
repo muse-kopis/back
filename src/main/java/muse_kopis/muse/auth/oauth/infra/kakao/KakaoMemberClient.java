@@ -32,7 +32,7 @@ public class KakaoMemberClient implements OauthMemberClient {
         KakaoToken tokenInfo = kakaoApiClient.fetchToken(tokenRequestParams(authCode));
         KakaoMemberResponse kakaoMemberResponse =
                 kakaoApiClient.fetchMember("Bearer " + tokenInfo.accessToken());
-        log.info("kakao access token : {}",tokenInfo.accessToken());
+        log.info("kakao access token : {}", tokenInfo.accessToken());
         return kakaoMemberResponse.toDomain();
     }
 
